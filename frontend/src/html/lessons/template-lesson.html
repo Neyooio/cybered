@@ -1,0 +1,123 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Lesson</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/global.css">
+  <link rel="stylesheet" href="../../css/profile.css">
+  <link rel="stylesheet" href="../../css/lessons.css">
+  <link rel="stylesheet" href="../../css/battle-quiz.css">
+</head>
+<body class="site-background" data-module="__MODULE__" data-lesson="__LESSON__">
+  <div class="layout-shell">
+    <main class="main-wrapper">
+      <section class="content-section content-stack">
+        <div class="page-header">
+          <h1 class="title-medium">__TITLE__</h1>
+          <a id="backToModule" href="#" class="exit-button"><img src="../../../../assets/images/Exit.png" alt="" aria-hidden="true" class="exit-icon"><span class="exit-text">Back to module</span></a>
+        </div>
+        <div class="card-panel">
+          <div class="lesson-hero">
+            <div>
+              <div class="lesson-title">__TITLE__</div>
+              <p class="text-small text-muted">A quick overview of what you'll learn in this lesson.</p>
+            </div>
+            <div class="meta-chips">
+              <span class="chip">Level: Beginner</span>
+              <span class="chip">Time: 10–15 min</span>
+              <span class="chip">Prereq: None</span>
+            </div>
+          </div>
+
+          <div class="lesson-grid">
+            <article class="section">
+              <h3>Overview</h3>
+              <p class="text-small">This section introduces the core idea of the lesson with a simple real‑world analogy. Keep the mental model in mind as you work through the steps below.</p>
+
+              <div class="callout info" style="margin:.75rem 0 1rem 0;">
+                <strong>Tip:</strong> Focus on the process, not memorizing. You’ll practice with a short example shortly.
+              </div>
+
+              <h3>Walkthrough</h3>
+              <ol class="checklist">
+                <li>Understand the problem space and goal.</li>
+                <li>Identify key inputs, constraints, and assumptions.</li>
+                <li>Apply the technique step by step.</li>
+                <li>Validate the output and reflect on the result.</li>
+              </ol>
+
+              <h3 style="margin-top:1rem;">Example</h3>
+              <pre class="code-block"># Pseudocode example
+input  ← sample_data
+result ← technique(input)
+if result is valid:
+    print("Success: ", summarize(result))
+else:
+    print("Revisit your steps and try again")
+              </pre>
+
+              <h3 style="margin-top:1rem;">Try it ⚙️</h3>
+              <ul class="checklist">
+                <li>Complete the example with your own inputs.</li>
+                <li>Change one variable and predict the outcome.</li>
+                <li>Explain the “why” behind the result in one sentence.</li>
+              </ul>
+            </article>
+
+            <aside class="section">
+              <h3>Objectives</h3>
+              <ul class="checklist">
+                <li>Define the core concept in plain words.</li>
+                <li>Apply the process to a basic example.</li>
+                <li>Evaluate whether an answer makes sense.</li>
+              </ul>
+
+              <h3 style="margin-top:1rem;">Key terms</h3>
+              <ul class="checklist">
+                <li>Term A — a concise definition.</li>
+                <li>Term B — what it's used for.</li>
+                <li>Term C — how it relates to A and B.</li>
+              </ul>
+
+              <!-- Battle Quiz Panel -->
+              <div class="battle-quiz-container" style="margin-top: 1.5rem;">
+                <!-- Battle quiz will be loaded here by JavaScript -->
+              </div>
+
+              <div class="callout warn" style="margin-top:1rem;">
+                <strong>Reminder:</strong> Small mistakes early compound. Double‑check assumptions and units.
+              </div>
+
+              <h3 style="margin-top:1rem;">Resources</h3>
+              <ul class="resource-list">
+                <li><a href="#" target="_blank" rel="noopener">One‑page cheat sheet</a></li>
+                <li><a href="#" target="_blank" rel="noopener">Short reference article</a></li>
+              </ul>
+            </aside>
+          </div>
+
+          <div class="quiz-card" style="margin-top:1rem;">
+            <div>
+              <div class="quiz-title">Knowledge check</div>
+              <div class="text-muted">3 quick questions to reinforce learning.</div>
+            </div>
+            <a class="secondary-button" href="#">Start quiz</a>
+          </div>
+
+          <div class="lesson-actions">
+            <button id="completeLesson" class="primary-button">Mark Complete</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../../js/includes.js"></script>
+  <script src="../../js/lesson-page.js"></script>
+  <script src="../../js/battle-quiz.js"></script>
+</body>
+</html>
+

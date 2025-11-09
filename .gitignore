@@ -1,0 +1,34 @@
+# Node backend dependencies
+backend/node_modules/
+
+# Environment files
+backend/.env
+backend/.env.local
+
+# Logs
+*.log
+backend/logs/
+
+# OS / Editor junk
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+*.swp
+
+# Build / coverage outputs (add if later introduced)
+dist/
+coverage/
+
+# Temp files
+*.tmp
+*.bak
+
+# npm / yarn debug files
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# Generated assets copies (if any future scripts)
+frontend/assets/cache/
+

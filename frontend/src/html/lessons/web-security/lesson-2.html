@@ -1,0 +1,317 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Web Security - Lesson 2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../css/global.css">
+  <link rel="stylesheet" href="../../../css/profile.css">
+  <link rel="stylesheet" href="../../../css/lessons.css">
+</head>
+<body class="site-background" data-module="web-security" data-lesson="2">
+  <div class="layout-shell">
+    <main class="main-wrapper">
+      <section class="content-section content-stack">
+        <div class="page-header">
+          <h1 class="title-medium">Lesson 2</h1>
+          <a id="backToModule" href="#" class="exit-button"><img src="../../../../assets/images/Exit.png" alt="" aria-hidden="true" class="exit-icon"><span class="exit-text">Back to module</span></a>
+        </div>
+        <div class="card-panel">
+          <div class="lesson-hero">
+            <div>
+              <div class="lesson-title">Understanding Application Security Components</div>
+              <p class="text-small text-muted">Learning how attacks happen, what weaknesses make them possible, and what defenses can stop them.</p>
+            </div>
+            <div class="meta-chips">
+              <span class="chip">Level: Intermediate</span>
+              <span class="chip">Time: 20-25 min</span>
+              <span class="chip">Prereq: Lesson 1</span>
+            </div>
+          </div>
+
+          <div class="lesson-grid">
+            <!-- Introduction Panel -->
+            <div style="grid-column: 1 / -1;">
+              <div class="intro-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📖</div>
+                  <h3 class="panel-title">Introduction</h3>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Understanding application security components means learning how an attack happens, what weaknesses make it possible, and what defenses can stop it. Every security incident is not random; it follows a logical pattern, and knowing each part of that pattern helps developers and security professionals identify risks early and protect systems more effectively.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Content Column -->
+            <article>
+              <!-- Threat Agents Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">👤</div>
+                  <h3 class="panel-title">Threat Agents: The Attackers</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Everything begins with a <strong>threat agent</strong>, the individual or entity attempting to harm or gain unauthorized access to a system. This could be a cybercriminal, an inside employee who misuses access, a competing business, or even automated bots constantly scanning the internet for weaknesses.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/WebSecurity/threat-agent-categories.png" alt="Threat Agent Categories" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">Different categories of threat agents and their characteristics</p>
+                  </div>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Types of Threat Agents</h4>
+                  <ul class="checklist">
+                    <li><strong>External Attackers:</strong> Hackers, cybercriminals, nation-state actors</li>
+                    <li><strong>Insiders:</strong> Disgruntled employees, contractors with access</li>
+                    <li><strong>Competitors:</strong> Industrial espionage and sabotage</li>
+                    <li><strong>Automated Threats:</strong> Bots, scanners, worms</li>
+                    <li><strong>Script Kiddies:</strong> Inexperienced attackers using existing tools</li>
+                    <li><strong>Advanced Persistent Threats (APT):</strong> Sophisticated, well-funded attackers</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Motivations Behind Attacks</h4>
+                  <p class="text-small">Each threat agent has motives that drive their actions:</p>
+                  <ul class="checklist">
+                    <li><strong>Financial Gain:</strong> Stealing data for profit, ransomware, fraud</li>
+                    <li><strong>Curiosity:</strong> Exploring systems to learn or prove capabilities</li>
+                    <li><strong>Revenge:</strong> Harming organizations or individuals</li>
+                    <li><strong>Espionage:</strong> Stealing intellectual property or state secrets</li>
+                    <li><strong>Recognition:</strong> Building reputation in hacker communities</li>
+                    <li><strong>Ideological:</strong> Hacktivism, political or social causes</li>
+                  </ul>
+
+                  <p class="text-small">By identifying who might want to attack a system and why, organizations can better predict and prepare for potential threats.</p>
+                </div>
+              </div>
+
+              <!-- Attacks Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">⚔️</div>
+                  <h3 class="panel-title">Attacks: The Methods Used</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Once a threat agent exists, they need a method to execute the attack, which is simply called an <strong>attack</strong>. An attack is the specific technique used to exploit weaknesses in an application.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Common Attack Techniques</h4>
+                  <ul class="checklist">
+                    <li><strong>Injection Attacks:</strong> Injecting malicious code into database queries or commands</li>
+                    <li><strong>Phishing:</strong> Tricking users into clicking harmful links or revealing credentials</li>
+                    <li><strong>Session Hijacking:</strong> Stealing active user sessions</li>
+                    <li><strong>Brute Force:</strong> Guessing passwords through automated attempts</li>
+                    <li><strong>Cross-Site Scripting (XSS):</strong> Injecting malicious scripts into web pages</li>
+                    <li><strong>Man-in-the-Middle:</strong> Intercepting communications between parties</li>
+                  </ul>
+
+                  <p class="text-small">These attacks succeed only when the system being targeted has a flaw that can be taken advantage of.</p>
+                </div>
+              </div>
+
+              <!-- Vulnerabilities Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🔓</div>
+                  <h3 class="panel-title">Vulnerabilities: The Weaknesses</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">That flaw is known as a <strong>vulnerability</strong>, which is any weakness in a system, code, configuration, or design that an attacker can exploit. Vulnerabilities can arise from poor coding practices, lack of proper data validation, missing access controls, weak authentication systems, or insecure configurations.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Common Sources of Vulnerabilities</h4>
+                  <ul class="checklist">
+                    <li><strong>Poor Coding Practices:</strong> Not following secure development standards</li>
+                    <li><strong>Lack of Input Validation:</strong> Trusting user data without verification</li>
+                    <li><strong>Weak Authentication:</strong> Poor password policies, no multi-factor authentication</li>
+                    <li><strong>Missing Access Controls:</strong> Users accessing resources they shouldn't</li>
+                    <li><strong>Insecure Configuration:</strong> Default settings, unnecessary services enabled</li>
+                    <li><strong>Outdated Components:</strong> Using libraries or frameworks with known flaws</li>
+                    <li><strong>Information Disclosure:</strong> Error messages revealing system details</li>
+                  </ul>
+
+                  <p class="text-small">Even a small oversight, such as failing to sanitize user input or leaving error messages visible, can create an opening for attackers. A vulnerability is not harmful by itself, but it becomes dangerous when an attacker discovers and uses it.</p>
+
+                  <div class="callout warn" style="margin:.75rem 0 1rem 0;">
+                    <strong>Critical Insight:</strong> Every application has potential vulnerabilities. The difference between secure and insecure systems is how proactively these weaknesses are identified and addressed.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Security Controls Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🛡️</div>
+                  <h3 class="panel-title">Security Controls: The Defenses</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">To prevent vulnerabilities from being exploited, systems implement <strong>security controls</strong>. These are defensive mechanisms designed to block, detect, or minimize attacks.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/WebSecurity/vulnerability-management.png" alt="Vulnerability Management Lifecycle" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">The lifecycle of identifying and managing vulnerabilities</p>
+                  </div>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Types of Security Controls</h4>
+                  <ul class="checklist">
+                    <li><strong>Preventive Controls:</strong> Stop attacks before they occur (firewalls, encryption, access controls)</li>
+                    <li><strong>Detective Controls:</strong> Identify attacks in progress (IDS, logging, monitoring)</li>
+                    <li><strong>Corrective Controls:</strong> Fix issues after detection (patches, incident response)</li>
+                    <li><strong>Technical Controls:</strong> Implemented through technology (authentication, encryption)</li>
+                    <li><strong>Administrative Controls:</strong> Policies and procedures (security training, audits)</li>
+                    <li><strong>Physical Controls:</strong> Protecting physical access (locks, guards, cameras)</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Common Security Control Mechanisms</h4>
+                  <ul class="checklist">
+                    <li><strong>Encryption:</strong> Protecting data in transit and at rest</li>
+                    <li><strong>Authentication:</strong> Verifying user identities</li>
+                    <li><strong>Authorization:</strong> Controlling what authenticated users can do</li>
+                    <li><strong>Input Validation:</strong> Checking and sanitizing user input</li>
+                    <li><strong>Firewalls:</strong> Filtering network traffic</li>
+                    <li><strong>Logging:</strong> Recording system activities for review</li>
+                    <li><strong>Security Headers:</strong> Protecting against common web attacks</li>
+                    <li><strong>Rate Limiting:</strong> Preventing abuse through throttling</li>
+                  </ul>
+
+                  <p class="text-small">When controls are properly designed and implemented, they greatly reduce the chance that vulnerabilities can cause real damage. However, if a control is poorly implemented or missing entirely, it becomes a serious risk and may lead to a successful attack.</p>
+                </div>
+              </div>
+
+              <!-- Impacts Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">💥</div>
+                  <h3 class="panel-title">Technical and Business Impacts</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">If an attack succeeds, it produces a <strong>technical impact</strong>, which refers to the direct consequences on the system itself.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Common Technical Impacts</h4>
+                  <ul class="checklist">
+                    <li><strong>Data Breach:</strong> Sensitive information stolen or exposed</li>
+                    <li><strong>Data Modification:</strong> Records altered or corrupted</li>
+                    <li><strong>Data Deletion:</strong> Critical information removed</li>
+                    <li><strong>System Crash:</strong> Services become unavailable</li>
+                    <li><strong>Defacement:</strong> Website appearance altered</li>
+                    <li><strong>Unauthorized Access:</strong> Attackers gain system privileges</li>
+                    <li><strong>Resource Exhaustion:</strong> System performance degraded</li>
+                  </ul>
+
+                  <p class="text-small" style="margin-top: 1rem;">While the technical impact is the immediate result, it leads to the more serious consequence: the <strong>business impact</strong>. Business impact involves real-world effects that can devastate organizations.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Types of Business Impact</h4>
+                  <ul class="checklist">
+                    <li><strong>Financial Loss:</strong> Direct costs, recovery expenses, fines</li>
+                    <li><strong>Legal Penalties:</strong> Regulatory violations, lawsuits</li>
+                    <li><strong>Reputation Damage:</strong> Loss of customer trust and brand value</li>
+                    <li><strong>Operational Downtime:</strong> Business interruption, lost productivity</li>
+                    <li><strong>Competitive Disadvantage:</strong> Stolen intellectual property</li>
+                    <li><strong>Customer Churn:</strong> Users leaving for competitors</li>
+                    <li><strong>Regulatory Sanctions:</strong> Loss of licenses or certifications</li>
+                  </ul>
+
+                  <p class="text-small">Even a single breach can cost an organization millions or destroy its reputation permanently. This is why companies prioritize fixing vulnerabilities and strengthening controls—to avoid losses far greater than the cost of prevention.</p>
+
+                  <div class="callout info" style="margin:.75rem 0 1rem 0;">
+                    <strong>Cost of Prevention vs. Breach:</strong> The average cost of a data breach is millions of dollars, while investing in security controls is significantly less expensive. Prevention is always more cost-effective than recovery.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Security Mindset Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🧠</div>
+                  <h3 class="panel-title">Building a Security Mindset</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Ultimately, understanding these components builds a <strong>security mindset</strong>. Instead of viewing security as optional or something handled only by specialists, developers and teams begin to see the full lifecycle of risks and take responsibility for preventing them.</p>
+
+                  <p class="text-small"><strong>Key principles for a security mindset:</strong></p>
+                  <ul class="checklist">
+                    <li>Assume all input is malicious until validated</li>
+                    <li>Design with security from the start (Security by Design)</li>
+                    <li>Implement defense in depth (multiple layers of controls)</li>
+                    <li>Follow the principle of least privilege</li>
+                    <li>Fail securely (errors shouldn't expose vulnerabilities)</li>
+                    <li>Keep security simple (complexity increases risk)</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Conclusion Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🎯</div>
+                  <h3 class="panel-title">Conclusion</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Every system has potential weaknesses, and attackers are constantly searching for them. By recognizing the roles of threat agents, attacks, vulnerabilities, controls, and impacts, organizations can defend themselves more effectively and ensure that applications remain safe, reliable, and trustworthy.</p>
+
+                  <p class="text-small">This understanding transforms how teams approach development—making security an integral part of the process rather than an afterthought. In the next lessons, we'll explore specific vulnerabilities and attacks that threaten web applications, along with the practical defenses needed to stop them.</p>
+                </div>
+              </div>
+            </article>
+
+            <aside class="section">
+              <h3>Learning Objectives</h3>
+              <ul class="checklist">
+                <li>Identify different types of threat agents and their motivations</li>
+                <li>Understand common attack techniques targeting applications</li>
+                <li>Recognize how vulnerabilities create security weaknesses</li>
+                <li>Explain the role of security controls in defense</li>
+                <li>Differentiate between technical and business impacts</li>
+                <li>Develop a proactive security mindset</li>
+              </ul>
+
+              <h3 style="margin-top:1rem;">Key Terms</h3>
+              <ul class="checklist">
+                <li><strong>Threat Agent</strong> — Attacker targeting systems</li>
+                <li><strong>Attack</strong> — Method used to exploit weakness</li>
+                <li><strong>Vulnerability</strong> — Exploitable weakness in system</li>
+                <li><strong>Security Control</strong> — Defensive mechanism or safeguard</li>
+                <li><strong>Technical Impact</strong> — Direct system consequences</li>
+                <li><strong>Business Impact</strong> — Real-world organizational effects</li>
+                <li><strong>Defense in Depth</strong> — Multiple layers of security</li>
+                <li><strong>Least Privilege</strong> — Minimal access rights principle</li>
+              </ul>
+
+              <div class="callout warn" style="margin-top:1rem;">
+                <strong>Remember:</strong> Understanding the attack lifecycle helps you intervene at multiple points—before, during, and after an attack attempt.
+              </div>
+            </aside>
+          </div>
+
+          <div class="quiz-card" style="margin-top:1rem;">
+            <div>
+              <div class="quiz-title">Knowledge check</div>
+              <div class="text-muted">3 quick questions to reinforce learning.</div>
+            </div>
+            <a class="secondary-button" href="#">Start quiz</a>
+          </div>
+
+          <div class="nav-row">
+            <a id="prevLesson" class="secondary-button" href="#">Previous lesson</a>
+            <a id="nextLesson" class="secondary-button" href="#">Next lesson</a>
+          </div>
+
+          <div class="lesson-actions">
+            <button id="completeLesson" class="primary-button">Mark Complete</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../../../js/includes.js"></script>
+  <script src="../../../js/lesson-page.js"></script>
+</body>
+</html>
+

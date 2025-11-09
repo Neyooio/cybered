@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cyber Ed - Home</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/cybered.css">
+</head>
+<body class="site-background home-bg">
+  <div class="layout-shell">
+    <div data-include="./partials/navbar.html"></div>
+    <main class="main-wrapper">
+      <div data-include="./partials/topbar.html"></div>
+      <section class="content-section content-stack">
+        <div class="content-stack">
+          <h1 class="title-large">Welcome back, <span id="homeUser" class="accent-text">Player</span>!</h1>
+          <div class="home-hero">
+            <!-- Left: Module hero card -->
+            <div class="hero-card">
+              <div class="hero-stack">
+                <div class="hero-icon">
+                  <img id="homeHeroIcon" src="../../assets/images/Web Security.png" alt="" />
+                </div>
+                <div class="hero-title" id="homeHeroTitle">Web Security</div>
+                <div class="hero-progress"><div class="hero-fill" id="homeHeroFill" style="width:23%"></div></div>
+                <p id="homeHeroDesc" class="hero-desc text-small muted-text"></p>
+              </div>
+            </div>
+
+            <!-- Right: Daily Missions + buttons -->
+            <div class="mission-card">
+              <div class="mission-header">Daily Missions</div>
+              <div class="mission-body">
+                <div class="text-small" style="text-align:center;">
+                  Complete Quiz 1
+                  <div class="xp-bonus">+ 35 XP</div>
+                </div>
+                <div style="margin-top:1rem; display:flex; flex-direction:column;">
+                  <a href="module-web-security.html" id="homeContinueLink" class="dark-button">Continue Module</a>
+                  <a href="leaderboards.html" class="dark-button">Leaderboards</a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../js/includes.js"></script>
+  <script src="../js/cybered.js"></script>
+</body>
+</html>

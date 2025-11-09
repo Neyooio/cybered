@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Web Security - Lesson 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../css/global.css">
+  <link rel="stylesheet" href="../../../css/profile.css">
+  <link rel="stylesheet" href="../../../css/lessons.css">
+</head>
+<body class="site-background" data-module="web-security" data-lesson="1">
+  <div class="layout-shell">
+    <main class="main-wrapper">
+      <section class="content-section content-stack">
+        <div class="page-header">
+          <h1 class="title-medium">Lesson 1</h1>
+          <a id="backToModule" href="#" class="exit-button"><img src="../../../../assets/images/Exit.png" alt="" aria-hidden="true" class="exit-icon"><span class="exit-text">Back to module</span></a>
+        </div>
+        <div class="card-panel">
+          <div class="lesson-hero">
+            <div>
+              <div class="lesson-title">Introduction to Web Application Security</div>
+              <p class="text-small text-muted">Understanding core security principles and the fundamental concepts that protect web applications and online systems.</p>
+            </div>
+            <div class="meta-chips">
+              <span class="chip">Level: Beginner</span>
+              <span class="chip">Time: 20-25 min</span>
+              <span class="chip">Prereq: None</span>
+            </div>
+          </div>
+
+          <div class="lesson-grid">
+            <!-- Introduction Panel -->
+            <div style="grid-column: 1 / -1;">
+              <div class="intro-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📖</div>
+                  <h3 class="panel-title">Introduction</h3>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Web security is a critical foundation of the digital world, ensuring that websites, applications, and online systems remain safe, trustworthy, and resilient against cyber threats. As organizations and individuals increasingly rely on the internet for communication, banking, education, business operations, and personal activities, the protection of online platforms has become more important than ever.</p>
+
+                  <p class="text-small">Every interaction on the web involves data being shared, stored, and processed, making security essential not only for safeguarding information but also for maintaining confidence in the systems we use every day.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Content Column -->
+            <article>
+              <!-- What is Web Security Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🌐</div>
+                  <h3 class="panel-title">What is Web Application Security?</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Web application security is the discipline of protecting websites and online systems from unauthorized access, abuse, or damage. As the world increasingly depends on digital platforms for banking, communication, education, and business, securing these web systems has become essential.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/WebSecurity/web-app-security.png" alt="Web Application Security" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">Web application security protecting the digital layer between users and systems</p>
+                  </div>
+
+                  <p class="text-small">Every time someone logs into a website, sends data, or performs an online transaction, there is potential for an attacker to intercept, steal, or manipulate information. This is why understanding web security is not just a technical requirement but a <strong>critical foundation for trust</strong> in modern online services.</p>
+                </div>
+              </div>
+
+              <!-- CIA Triad Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🔒</div>
+                  <h3 class="panel-title">Core Security Principles: The CIA Triad</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">At the core of web security is the concept of safeguarding data and services so that only the right people can access them, information remains accurate, and systems stay available whenever users need them. These three principles are known as <strong>Confidentiality, Integrity, and Availability</strong> (the CIA Triad).</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/WebSecurity/cia-triad.png" alt="CIA Triad" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">The CIA Triad: Foundation of information security</p>
+                  </div>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Confidentiality</h4>
+                  <p class="text-small"><strong>Confidentiality</strong> means information must remain private and accessible only to authorized individuals. It prevents identity theft, leaks of personal information, and unauthorized viewing of business data.</p>
+
+                  <ul class="checklist">
+                    <li><strong>Protected Information:</strong> Passwords, financial records, personal data, business secrets</li>
+                    <li><strong>Protection Methods:</strong> Encryption, access controls, authentication</li>
+                    <li><strong>Threats:</strong> Data breaches, eavesdropping, unauthorized access</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Integrity</h4>
+                  <p class="text-small"><strong>Integrity</strong> ensures that information is trustworthy and unaltered unless approved. For instance, financial records, grades, and medical data must remain accurate because a single unauthorized change can have serious consequences.</p>
+
+                  <ul class="checklist">
+                    <li><strong>Key Concern:</strong> Data accuracy and trustworthiness</li>
+                    <li><strong>Protection Methods:</strong> Digital signatures, checksums, version control</li>
+                    <li><strong>Threats:</strong> Data tampering, malicious modifications, corruption</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Availability</h4>
+                  <p class="text-small"><strong>Availability</strong> guarantees that users can always reach the service when they need it. An online banking site that goes down during payday, or a government portal crashing during a deadline, shows how essential availability is.</p>
+
+                  <ul class="checklist">
+                    <li><strong>Key Concern:</strong> System uptime and reliability</li>
+                    <li><strong>Protection Methods:</strong> Redundancy, backup systems, DDoS protection</li>
+                    <li><strong>Threats:</strong> Denial of service attacks, system failures, resource exhaustion</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Accountability</h4>
+                  <p class="text-small">Alongside these principles, <strong>accountability</strong> plays an important role because systems must be able to trace actions to responsible users; this enables auditing, investigation, and enforcement of security policies.</p>
+
+                  <ul class="checklist">
+                    <li><strong>Key Mechanisms:</strong> Logging, auditing, non-repudiation</li>
+                    <li><strong>Purpose:</strong> Track who did what and when</li>
+                    <li><strong>Benefits:</strong> Forensic investigation, compliance, deterrence</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Security Layers Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🛡️</div>
+                  <h3 class="panel-title">Layers of Web Security</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Web security stretches across different levels, each contributing to overall protection:</p>
+
+                  <ul class="checklist">
+                    <li><strong>Physical Security:</strong> Protects the equipment that runs applications, such as servers inside data centers</li>
+                    <li><strong>Network Security:</strong> Defends the communication pathways that data travels through, using technologies like firewalls and secure connections to block intruders</li>
+                    <li><strong>Application Security:</strong> Focuses specifically on the software itself—ensuring that code, configurations, and user interactions do not create openings for attackers</li>
+                  </ul>
+
+                  <p class="text-small">This layer is especially important because even if the building and network are fully protected, a <strong>single vulnerable web application can become the doorway</strong> attackers use to break in.</p>
+
+                  <div class="callout warn" style="margin:.75rem 0 1rem 0;">
+                    <strong>Security Principle:</strong> Security must be implemented at every layer. A chain is only as strong as its weakest link—attackers will exploit any vulnerable layer to compromise the entire system.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Incident Chain Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🔗</div>
+                  <h3 class="panel-title">The Security Incident Chain</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Every security incident follows a certain pattern. Understanding this chain helps organizations predict and stop attacks before they happen:</p>
+
+                  <ol style="margin-left: 1.5rem; line-height: 1.8;">
+                    <li><strong>Threat Agent:</strong> The attacker (hacker, insider, bot, competitor)</li>
+                    <li><strong>Attack Technique:</strong> The method used (SQL injection, phishing, brute force)</li>
+                    <li><strong>Vulnerability:</strong> The weakness exploited (poor coding, unpatched system)</li>
+                    <li><strong>Security Controls:</strong> Defenses in place (or missing)</li>
+                    <li><strong>Technical Impact:</strong> Immediate result (stolen data, crashed server)</li>
+                    <li><strong>Business Impact:</strong> Real-world consequences (financial loss, reputation damage)</li>
+                  </ol>
+
+                  <p class="text-small">By understanding this chain, organizations can intervene at multiple points—strengthening controls, fixing vulnerabilities, and detecting threats early.</p>
+                </div>
+              </div>
+
+              <!-- Shared Responsibility Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">👥</div>
+                  <h3 class="panel-title">Shared Responsibility for Security</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">In everyday practice, web application security is not limited to cybersecurity professionals. Everyone plays a role:</p>
+
+                  <ul class="checklist">
+                    <li><strong>Developers:</strong> Must write secure code from the beginning to avoid introducing weaknesses</li>
+                    <li><strong>Testers:</strong> Must learn to identify security flaws while checking functionality</li>
+                    <li><strong>System Administrators:</strong> Must ensure that configurations, servers, and databases remain hardened against attacks</li>
+                    <li><strong>Regular Users:</strong> Play a part by following secure practices, such as choosing strong passwords and recognizing suspicious emails or links</li>
+                  </ul>
+
+                  <div class="callout info" style="margin:.75rem 0 1rem 0;">
+                    <strong>Security Culture:</strong> Building a security-first mindset across all roles creates a much stronger defense than relying on technology alone. Security is everyone's responsibility.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Why It Matters Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">⚠️</div>
+                  <h3 class="panel-title">Why Web Security Matters</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">The importance of web application security cannot be overstated:</p>
+
+                  <ul class="checklist">
+                    <li><strong>Trust:</strong> Users must trust that their data is safe</li>
+                    <li><strong>Privacy:</strong> Personal information must remain confidential</li>
+                    <li><strong>Business Continuity:</strong> Services must remain available</li>
+                    <li><strong>Legal Compliance:</strong> Organizations must meet regulatory requirements</li>
+                    <li><strong>Reputation:</strong> Security breaches damage organizational credibility</li>
+                    <li><strong>Financial Protection:</strong> Breaches can cost millions in damages and fines</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Conclusion Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🎯</div>
+                  <h3 class="panel-title">Conclusion</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Web application security is the continuous process of protecting digital systems and data against threats. It requires awareness, discipline, and proper implementation of safeguards at every level of technology. As the digital world continues to evolve, mastering these core security concepts becomes essential for anyone working with web systems, whether they are building them, testing them, or simply using them responsibly.</p>
+
+                  <p class="text-small">In the following lessons, we will explore the components of application security, the most critical web application risks, and the defensive strategies needed to build secure and trustworthy online systems.</p>
+                </div>
+              </div>
+            </article>
+
+            <aside class="section">
+              <h3>Learning Objectives</h3>
+              <ul class="checklist">
+                <li>Understand the importance of web security in modern digital environments</li>
+                <li>Explain the CIA Triad principles (Confidentiality, Integrity, Availability)</li>
+                <li>Recognize the different layers of web security</li>
+                <li>Understand the security incident chain</li>
+                <li>Identify shared responsibilities in web security</li>
+                <li>Appreciate why web security is critical for trust and business</li>
+              </ul>
+
+              <h3 style="margin-top:1rem;">Key Terms</h3>
+              <ul class="checklist">
+                <li><strong>Web Application Security</strong> — Protecting online systems from threats</li>
+                <li><strong>CIA Triad</strong> — Confidentiality, Integrity, Availability</li>
+                <li><strong>Confidentiality</strong> — Keeping data private and protected</li>
+                <li><strong>Integrity</strong> — Ensuring data accuracy and trustworthiness</li>
+                <li><strong>Availability</strong> — Ensuring systems are accessible when needed</li>
+                <li><strong>Accountability</strong> — Tracing actions to responsible parties</li>
+                <li><strong>Threat Agent</strong> — Individual or entity attempting attack</li>
+                <li><strong>Vulnerability</strong> — Weakness that can be exploited</li>
+              </ul>
+
+              <div class="callout warn" style="margin-top:1rem;">
+                <strong>Remember:</strong> Security is not a one-time implementation but a continuous process of monitoring, updating, and improving defenses.
+              </div>
+            </aside>
+          </div>
+
+          <div class="quiz-card" style="margin-top:1rem;">
+            <div>
+              <div class="quiz-title">Knowledge check</div>
+              <div class="text-muted">3 quick questions to reinforce learning.</div>
+            </div>
+            <a class="secondary-button" href="#">Start quiz</a>
+          </div>
+
+          <div class="nav-row">
+            <a id="prevLesson" class="secondary-button" href="#">Previous lesson</a>
+            <a id="nextLesson" class="secondary-button" href="#">Next lesson</a>
+          </div>
+
+          <div class="lesson-actions">
+            <button id="completeLesson" class="primary-button">Mark Complete</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../../../js/includes.js"></script>
+  <script src="../../../js/lesson-page.js"></script>
+</body>
+</html>
+

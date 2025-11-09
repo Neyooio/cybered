@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cryptography - Lesson 3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../css/global.css">
+  <link rel="stylesheet" href="../../../css/profile.css">
+  <link rel="stylesheet" href="../../../css/lessons.css">
+</head>
+<body class="site-background" data-module="cryptography" data-lesson="3">
+  <div class="layout-shell">
+    <main class="main-wrapper">
+      <section class="content-section content-stack">
+        <div class="page-header">
+          <h1 class="title-medium">Lesson 3</h1>
+          <a id="backToModule" href="#" class="exit-button"><img src="../../../../assets/images/Exit.png" alt="" aria-hidden="true" class="exit-icon"><span class="exit-text">Back to module</span></a>
+        </div>
+        <div class="card-panel">
+          <div class="lesson-hero">
+            <div>
+              <div class="lesson-title">Hashing and Digital Signatures</div>
+              <p class="text-small text-muted">Understanding how cryptography ensures data integrity, authenticity, and non-repudiation through hashing and digital signatures.</p>
+            </div>
+            <div class="meta-chips">
+              <span class="chip">Level: Intermediate</span>
+              <span class="chip">Time: 20-25 min</span>
+              <span class="chip">Prereq: Lessons 1-2</span>
+            </div>
+          </div>
+
+          <div class="lesson-grid">
+            <!-- Introduction Panel -->
+            <div style="grid-column: 1 / -1;">
+              <div class="intro-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📖</div>
+                  <h3 class="panel-title">Introduction</h3>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">In modern cryptography, secrecy is only one part of the picture. While encryption protects data from being read, it does not automatically guarantee that the data is authentic, unchanged, or sent by the right person. That is where hashing and digital signatures come in. These two concepts focus not on confidentiality, but on <strong>integrity</strong>, <strong>authenticity</strong>, and <strong>non-repudiation</strong>—three pillars of trust in digital communication.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Content Column -->
+            <article>
+              <!-- Hashing Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🔗</div>
+                  <h3 class="panel-title">Hashing: The Guardian of Integrity</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">A <strong>hash function</strong> is a mathematical process that takes any amount of data—whether a single word or an entire file—and transforms it into a fixed-length string of characters. This output is called a hash, digest, or fingerprint. What makes hashing extraordinary is that the output is completely different even if the input changes by just one character. Changing "hello" to "hallo" produces a completely unrelated hash. This sensitivity makes hashing the perfect tool for detecting tampering.</p>
+
+                  <p class="text-small">Hashing is designed to be <strong>one-way</strong>. There is no reversal. Once data is hashed, there is no computational method to retrieve the original message from the digest. This is why it is used for things like password storage. Instead of storing plaintext passwords, systems store their hash values. When a user logs in, the system hashes the password input and compares it with the stored hash. Even if a database is stolen, attackers cannot reverse the hashes to discover the original passwords.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/Cryptography/hashing-process.png" alt="Hash Function" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">How hash functions transform input data into fixed-length digests</p>
+                  </div>
+
+                  <div class="callout info" style="margin:.75rem 0 1rem 0;">
+                    <strong>Key Property:</strong> A secure hash function must be collision-resistant, meaning it should be virtually impossible to find two different messages that produce the same hash.
+                  </div>
+
+                  <p class="text-small">A secure hash function must also be <strong>collision-resistant</strong>. This means it should be virtually impossible to find two different messages that produce the same hash. If collisions were easy to find, attackers could exploit them to forge data, pretending corrupted information was still valid. Algorithms like <strong>SHA-256</strong> and <strong>SHA-3</strong> are widely used because they maintain strong collision resistance even under intense cryptographic analysis.</p>
+                </div>
+              </div>
+
+              <!-- Applications Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">💼</div>
+                  <h3 class="panel-title">Applications of Hashing</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Hashing forms the backbone of integrity verification in countless systems:</p>
+                  
+                  <ul class="checklist">
+                    <li><strong>File Verification:</strong> When you download software, the website often provides a hash value. You can compute the hash of your downloaded file, and if it matches, you know the file has not been tampered with.</li>
+                    <li><strong>Blockchain Technology:</strong> Hashing links blocks together, making it nearly impossible to alter past transactions.</li>
+                    <li><strong>Password Storage:</strong> Systems store password hashes instead of plaintext, protecting users even if databases are breached.</li>
+                    <li><strong>Data Integrity:</strong> Hashing silently protects from data corruption and undetected modifications.</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Digital Signatures Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">✍️</div>
+                  <h3 class="panel-title">Digital Signatures: Authenticity, Integrity, and Non-Repudiation</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">While hashing alone can tell you whether data has been altered, it cannot tell you who created or sent the data. To achieve this, cryptography combines hashing with asymmetric encryption, creating what is known as a <strong>digital signature</strong>. A digital signature is the modern equivalent of signing a contract or stamping an official seal, but it goes far beyond traditional signatures in both security and reliability.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/Cryptography/digital-signature.png" alt="Digital Signatures" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">The process of creating and verifying digital signatures</p>
+                  </div>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">How Digital Signatures Work</h4>
+                  <p class="text-small">The process begins by <strong>hashing the message</strong>. Hashing reduces the size of the data, ensuring the signature remains small and efficient while maintaining a precise fingerprint of the content. The sender then <strong>encrypts this hash using their private key</strong>. The encrypted hash becomes the digital signature.</p>
+
+                  <p class="text-small">When the message and the signature arrive at the recipient, the recipient uses the sender's <strong>public key to decrypt the signature</strong>. This reveals the original hash. The recipient then <strong>hashes the received message independently</strong>. If the two hashes match, it proves two things: the message has not been altered, and the signature could only have been created by the owner of the private key.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Security Guarantees</h4>
+                  <ul class="checklist">
+                    <li><strong>Integrity:</strong> Any modification—even a single character—would change the hash and invalidate the signature.</li>
+                    <li><strong>Authentication:</strong> Only the owner of the private key can create a valid signature.</li>
+                    <li><strong>Non-Repudiation:</strong> The sender cannot deny creating or sending the message.</li>
+                  </ul>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/Cryptography/digital-signature.png" alt="Digital Signature Process" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">Complete digital signature verification process</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Real-World Applications Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🌐</div>
+                  <h3 class="panel-title">Real-World Applications</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Digital signatures are used everywhere in the digital world:</p>
+                  
+                  <ul class="checklist">
+                    <li><strong>HTTPS/SSL:</strong> Digital certificates signed by trusted Certificate Authorities verify that you are communicating with the real server, not an impostor.</li>
+                    <li><strong>Blockchain:</strong> Digital signatures authorize transactions, proving that a user owns the private key tied to their wallet.</li>
+                    <li><strong>Secure Email:</strong> Digital signatures ensure that messages are genuine and safe.</li>
+                    <li><strong>Software Updates:</strong> Digitally signed code confirms you are installing authentic, unaltered software.</li>
+                    <li><strong>Legal Documents:</strong> Electronic signatures provide legally binding proof of authorship.</li>
+                  </ul>
+
+                  <p class="text-small" style="margin-top: 1rem;">Together, hashing and digital signatures create a powerful framework for trust. Hashing guarantees that data remains unchanged, and digital signatures guarantee that the sender is legitimate. They work silently beneath the surface of the internet, allowing billions of transactions, messages, and files to flow securely every day. In a world where communication is instant and global, these mechanisms ensure that authenticity and integrity never become casualties of speed and convenience.</p>
+                </div>
+              </div>
+            </article>
+
+            <aside class="section">
+              <h3>Learning Objectives</h3>
+              <ul class="checklist">
+                <li>Understand the purpose and properties of hash functions</li>
+                <li>Explain why hashing is one-way and collision-resistant</li>
+                <li>Describe how digital signatures combine hashing and asymmetric encryption</li>
+                <li>Identify the three security properties provided by digital signatures</li>
+                <li>Recognize real-world applications of hashing and digital signatures</li>
+                <li>Explain the difference between encryption and hashing</li>
+              </ul>
+
+              <h3 style="margin-top:1rem;">Key Terms</h3>
+              <ul class="checklist">
+                <li><strong>Hash Function</strong> — One-way transformation creating fixed-length digest</li>
+                <li><strong>Digest/Fingerprint</strong> — Output of a hash function</li>
+                <li><strong>Collision Resistance</strong> — Property preventing two inputs from having same hash</li>
+                <li><strong>SHA-256</strong> — Secure Hash Algorithm producing 256-bit digests</li>
+                <li><strong>Digital Signature</strong> — Encrypted hash proving authenticity and integrity</li>
+                <li><strong>Integrity</strong> — Assurance that data has not been altered</li>
+                <li><strong>Authentication</strong> — Verification of sender's identity</li>
+                <li><strong>Non-Repudiation</strong> — Proof that sender cannot deny sending message</li>
+              </ul>
+
+              <div class="callout warn" style="margin-top:1rem;">
+                <strong>Critical Distinction:</strong> Encryption provides confidentiality (hiding content), while hashing provides integrity (detecting changes). Both are essential but serve different purposes.
+              </div>
+            </aside>
+          </div>
+
+          <div class="quiz-card" style="margin-top:1rem;">
+            <div>
+              <div class="quiz-title">Knowledge check</div>
+              <div class="text-muted">3 quick questions to reinforce learning.</div>
+            </div>
+            <a class="secondary-button" href="#">Start quiz</a>
+          </div>
+
+          <div class="nav-row">
+            <a id="prevLesson" class="secondary-button" href="#">Previous lesson</a>
+            <a id="nextLesson" class="secondary-button" href="#">Next lesson</a>
+          </div>
+
+          <div class="lesson-actions">
+            <button id="completeLesson" class="primary-button">Mark Complete</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../../../js/includes.js"></script>
+  <script src="../../../js/lesson-page.js"></script>
+</body>
+</html>

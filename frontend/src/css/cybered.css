@@ -1,0 +1,51 @@
+.panel-gradient{
+  background: linear-gradient(
+    160deg,
+    rgba(12, 74, 110, 0.70) 0%,
+    rgba(30, 58, 138, 0.70) 45%,
+    rgba(49, 46, 129, 0.70) 100%
+  );
+}
+
+/* Home hero layout */
+.home-hero{ display:grid; grid-template-columns: 1fr; gap:1.5rem; }
+@media (min-width: 900px){ .home-hero{ grid-template-columns: 1fr 1fr; } }
+
+.hero-card{
+  background: linear-gradient(160deg, rgba(12, 74, 110, 0.80) 0%, rgba(30, 58, 138, 0.80) 45%, rgba(49, 46, 129, 0.80) 100%);
+  border:3px solid rgba(249,115,22,.85); 
+  border-radius:1rem; 
+  padding:1.25rem; 
+  box-shadow: 0 8px 20px rgba(0,0,0,.35), 0 0 20px rgba(249,115,22,.3);
+}
+.hero-inner{ display:grid; grid-template-columns: 7.5rem 1fr; gap:1rem; align-items:center; }
+.hero-stack{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.5rem; min-height: 12rem; }
+.hero-icon{ width:7rem; height:7rem; border-radius:.75rem; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,.15); border:2px solid var(--indigo-400); }
+.hero-icon img{ width:5.5rem; height:5.5rem; object-fit:contain; display:block; }
+.hero-title{ font-size: clamp(1rem, 2.5vw, 1.25rem); }
+.hero-title{ font-weight:700; text-align:center; margin-top:.25rem; }
+.hero-desc{ text-align:center; margin-top:.35rem; max-width:36rem; }
+.hero-progress{ height:.9rem; background: rgba(15,23,42,.65); border-radius:999px; overflow:hidden; width:70%; margin:.6rem auto 0; box-shadow: inset 0 1px 1px rgba(0,0,0,.35); }
+.hero-fill{ height:100%; width:23%; background: linear-gradient(to right, var(--blue-600), var(--blue-500)); }
+
+.mission-card{ 
+  background: linear-gradient(180deg, rgba(33, 65, 177, .85), rgba(32, 58, 168, .85)); 
+  border:3px solid rgba(249,115,22,.85); 
+  border-radius:1rem; 
+  box-shadow: 0 8px 20px rgba(0,0,0,.35), 0 0 20px rgba(249,115,22,.3); 
+  overflow:hidden; 
+}
+.mission-header{ background: linear-gradient(180deg, rgba(57,91,230,.95), rgba(40,75,210,.95)); padding:.6rem 1rem; border-bottom:1px solid var(--indigo-700); border-top-left-radius:1rem; border-top-right-radius:1rem; text-align:center; font-weight:700; }
+.mission-body{ padding:5.25rem; }
+.xp-bonus{ color: var(--yellow-400); font-weight:800; font-size:1.25rem; text-shadow:0 1px 0 rgba(0,0,0,.35); }
+.dark-button{ background-color:#0a2a74; color:#fff; border:1px solid rgba(255,255,255,.08); border-radius:1rem; padding:.7rem 1.25rem; font-weight:700; text-align:center; box-shadow:0 4px 0 rgba(0,0,0,.35); text-decoration:none; display:block; }
+.dark-button + .dark-button{ margin-top:.75rem; }
+
+/* Mobile adjustments */
+@media (max-width: 900px){
+  .hero-stack{ min-height: 8rem; }
+  .hero-icon{ width:5rem; height:5rem; }
+  .hero-icon img{ width:4rem; height:4rem; }
+  .mission-body{ padding:1rem; }
+}
+

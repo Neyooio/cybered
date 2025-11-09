@@ -1,0 +1,350 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Web Security - Lesson 3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../css/global.css">
+  <link rel="stylesheet" href="../../../css/profile.css">
+  <link rel="stylesheet" href="../../../css/lessons.css">
+</head>
+<body class="site-background" data-module="web-security" data-lesson="3">
+  <div class="layout-shell">
+    <main class="main-wrapper">
+      <section class="content-section content-stack">
+        <div class="page-header">
+          <h1 class="title-medium">Lesson 3</h1>
+          <a id="backToModule" href="#" class="exit-button"><img src="../../../../assets/images/Exit.png" alt="" aria-hidden="true" class="exit-icon"><span class="exit-text">Back to module</span></a>
+        </div>
+        <div class="card-panel">
+          <div class="lesson-hero">
+            <div>
+              <div class="lesson-title">OWASP Top 10 Risks - Part 1 (A1-A5)</div>
+              <p class="text-small text-muted">Exploring the first five critical web application security risks and how to defend against them.</p>
+            </div>
+            <div class="meta-chips">
+              <span class="chip">Level: Intermediate</span>
+              <span class="chip">Time: 30-35 min</span>
+              <span class="chip">Prereq: Lessons 1-2</span>
+            </div>
+          </div>
+
+          <div class="lesson-grid">
+            <!-- Introduction Panel -->
+            <div style="grid-column: 1 / -1;">
+              <div class="intro-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📖</div>
+                  <h3 class="panel-title">Introduction to OWASP Top 10</h3>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">The <strong>OWASP Top 10</strong> represents the most critical security risks found in web applications, and understanding the first five of these threats is essential for anyone involved in building or maintaining online systems. These risks are based on real-world attack data and highlight the most common and dangerous ways that cybercriminals compromise web applications.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/WebSecurity/owasp-top10.png" alt="OWASP Top 10 Evolution" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">Evolution of OWASP Top 10 vulnerabilities over time</p>
+                  </div>
+
+                  <p class="text-small">Rather than being a checklist of technical mistakes, the OWASP Top 10 serves as a framework to help developers and security testers think like attackers, anticipate weaknesses, and create more resilient applications. At its core, this model emphasizes that security is about balancing the <strong>likelihood of an attack</strong> with the <strong>impact it can cause</strong>—meaning the most dangerous weaknesses are those that are both easy to exploit and capable of causing severe damage.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Content Column -->
+            <article>
+              <!-- Injection Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">💉</div>
+                  <h3 class="panel-title">A1: Injection</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">The first risk is <strong>Injection</strong>, a type of attack that occurs when an application processes untrusted or improperly validated input. When an attacker sends malicious data to an interpreter—for example, a database query, a system command, or a directory search—the system may mistakenly execute it as legitimate instructions.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">SQL Injection: The Most Common Form</h4>
+                  <p class="text-small"><strong>SQL injection</strong> remains one of the most known forms of this attack, allowing hackers to manipulate or steal database content simply by inserting crafted input into vulnerable application fields.</p>
+
+                  <p class="text-small"><strong>Example vulnerable code:</strong></p>
+                  <pre style="background: #1a1a1a; padding: 1rem; border-radius: 0.5rem; overflow-x: auto;">
+String query = "SELECT * FROM users WHERE username='" + userInput + "'";
+              </pre>
+
+                  <p class="text-small">If an attacker enters: <code>' OR '1'='1</code>, the query becomes:</p>
+                  <pre style="background: #1a1a1a; padding: 1rem; border-radius: 0.5rem; overflow-x: auto;">
+SELECT * FROM users WHERE username='' OR '1'='1'
+              </pre>
+
+                  <p class="text-small">This returns all users because <code>'1'='1'</code> is always true.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Other Injection Types</h4>
+                  <ul class="checklist">
+                    <li><strong>Command Injection:</strong> Executing system commands</li>
+                    <li><strong>LDAP Injection:</strong> Manipulating directory queries</li>
+                    <li><strong>XML Injection:</strong> Attacking XML parsers</li>
+                    <li><strong>NoSQL Injection:</strong> Exploiting NoSQL databases</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Prevention Strategies</h4>
+                  <ul class="checklist">
+                    <li>Use parameterized queries (prepared statements)</li>
+                    <li>Implement input validation and sanitization</li>
+                    <li>Use ORM frameworks properly</li>
+                    <li>Apply principle of least privilege to database accounts</li>
+                    <li>Escape special characters in user input</li>
+                  </ul>
+
+                  <p class="text-small">This risk persists mainly because some systems fail to properly filter and sanitize user input, treating everything entered by a user as trustworthy.</p>
+                </div>
+              </div>
+
+              <!-- Broken Authentication Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🔑</div>
+                  <h3 class="panel-title">A2: Broken Authentication and Session Management</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Web applications rely on systems for verifying identity and preserving user sessions, such as login credentials and session tokens. When these mechanisms are poorly designed or implemented, attackers can impersonate users.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Common Authentication Weaknesses</h4>
+                  <ul class="checklist">
+                    <li><strong>Weak Password Storage:</strong> Storing passwords in plain text or using weak hashing</li>
+                    <li><strong>Predictable Session IDs:</strong> Easily guessable session tokens</li>
+                    <li><strong>Session Fixation:</strong> Forcing users to use attacker-controlled sessions</li>
+                    <li><strong>Missing Session Expiration:</strong> Sessions that never timeout</li>
+                    <li><strong>No Multi-Factor Authentication:</strong> Relying solely on passwords</li>
+                    <li><strong>Credential Stuffing Vulnerability:</strong> No protection against automated login attempts</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Attack Consequences</h4>
+                  <p class="text-small">This often leads to:</p>
+                  <ul class="checklist">
+                    <li>Account takeover</li>
+                    <li>Unauthorized access to personal data</li>
+                    <li>Administrative system control</li>
+                    <li>Identity theft</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Defense Measures</h4>
+                  <ul class="checklist">
+                    <li>Implement multi-factor authentication (MFA)</li>
+                    <li>Use strong password policies and secure storage (bcrypt, Argon2)</li>
+                    <li>Generate cryptographically random session IDs</li>
+                    <li>Implement proper session timeout and logout</li>
+                    <li>Use HTTPS for all authentication communications</li>
+                    <li>Implement rate limiting and account lockout</li>
+                  </ul>
+
+                  <p class="text-small">The consequences are severe because authentication is the foundation of trust in any online platform.</p>
+                </div>
+              </div>
+
+              <!-- XSS Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📜</div>
+                  <h3 class="panel-title">A3: Cross-Site Scripting (XSS)</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">This vulnerability emerges when applications allow the delivery of untrusted data to users' browsers without proper validation or escaping. Instead of attacking the system directly, the attacker injects a malicious script into a site, causing it to run inside another user's browser.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Types of XSS</h4>
+                  <ul class="checklist">
+                    <li><strong>Stored XSS:</strong> Malicious script stored in database, executed when viewed</li>
+                    <li><strong>Reflected XSS:</strong> Script reflected from web server (e.g., in URL parameters)</li>
+                    <li><strong>DOM-Based XSS:</strong> Vulnerability in client-side JavaScript code</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">What Attackers Can Do</h4>
+                  <p class="text-small">Through XSS, attackers can:</p>
+                  <ul class="checklist">
+                    <li>Steal cookies and session tokens</li>
+                    <li>Hijack user sessions</li>
+                    <li>Manipulate website content</li>
+                    <li>Redirect victims to malicious sites</li>
+                    <li>Log keystrokes</li>
+                    <li>Deliver malware</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Prevention Techniques</h4>
+                  <ul class="checklist">
+                    <li>Output encoding/escaping for all user input</li>
+                    <li>Use Content Security Policy (CSP) headers</li>
+                    <li>Sanitize HTML input using trusted libraries</li>
+                    <li>Validate input on both client and server side</li>
+                    <li>Use HTTPOnly and Secure flags on cookies</li>
+                    <li>Implement proper context-aware encoding</li>
+                  </ul>
+
+                  <p class="text-small">The threat is powerful because it abuses the trust that users place in the website, and it spreads through simple user interactions such as clicking links or loading pages.</p>
+                </div>
+              </div>
+
+              <!-- Insecure Direct Object References Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🔍</div>
+                  <h3 class="panel-title">A4: Insecure Direct Object References</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">The fourth risk, <strong>Insecure Direct Object References</strong>, occurs when developers expose internal identifiers such as database keys, file paths, or record IDs to users without adding access control checks.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Example Attack Scenario</h4>
+                  <p class="text-small">Consider a URL like:</p>
+                  <pre style="background: #1a1a1a; padding: 1rem; border-radius: 0.5rem; overflow-x: auto;">
+https://example.com/account?id=12345
+              </pre>
+
+                  <p class="text-small">An attacker simply changes the ID:</p>
+                  <pre style="background: #1a1a1a; padding: 1rem; border-radius: 0.5rem; overflow-x: auto;">
+https://example.com/account?id=12346
+              </pre>
+
+                  <p class="text-small">If no access control exists, they can access another user's account data.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Common Vulnerable References</h4>
+                  <ul class="checklist">
+                    <li>Database primary keys in URLs</li>
+                    <li>File paths directly accessible</li>
+                    <li>Usernames or account IDs</li>
+                    <li>Sequential order numbers</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Protection Methods</h4>
+                  <ul class="checklist">
+                    <li>Implement proper authorization checks for every object access</li>
+                    <li>Use indirect references (mapping tables)</li>
+                    <li>Use UUIDs instead of sequential IDs</li>
+                    <li>Verify user permissions before returning data</li>
+                    <li>Never trust user-supplied references</li>
+                  </ul>
+
+                  <p class="text-small">This issue arises when developers assume that users will only access objects or records they are meant to see, forgetting that malicious users deliberately test for hidden access points.</p>
+                </div>
+              </div>
+
+              <!-- Security Misconfiguration Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">⚙️</div>
+                  <h3 class="panel-title">A5: Security Misconfiguration</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">The fifth major risk is <strong>Security Misconfiguration</strong>, a broad problem that results from improper setup or incomplete hardening of applications, servers, and entire technology stacks.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Common Misconfigurations</h4>
+                  <ul class="checklist">
+                    <li><strong>Default Credentials:</strong> Using admin/admin, root/root</li>
+                    <li><strong>Unnecessary Features Enabled:</strong> Sample applications, debugging modes</li>
+                    <li><strong>Detailed Error Messages:</strong> Revealing system information to users</li>
+                    <li><strong>Missing Security Headers:</strong> No CSP, X-Frame-Options, etc.</li>
+                    <li><strong>Outdated Software:</strong> Unpatched systems and libraries</li>
+                    <li><strong>Overly Permissive Settings:</strong> Allowing more access than needed</li>
+                    <li><strong>Directory Listing Enabled:</strong> Exposing file structures</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Why This Is Dangerous</h4>
+                  <p class="text-small">This vulnerability is dangerously common because even a perfectly written application can be compromised if the environment hosting it is not secured. Many breaches happen not because software code is flawed, but because systems are deployed without proper security settings.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Hardening Checklist</h4>
+                  <ul class="checklist">
+                    <li>Change all default passwords and credentials</li>
+                    <li>Disable unnecessary services and features</li>
+                    <li>Keep all software updated and patched</li>
+                    <li>Implement proper error handling (generic messages)</li>
+                    <li>Use security headers (CSP, HSTS, X-Frame-Options)</li>
+                    <li>Regular security audits and configuration reviews</li>
+                    <li>Automated configuration scanning</li>
+                    <li>Principle of least privilege everywhere</li>
+                  </ul>
+
+                  <div class="callout warn" style="margin:.75rem 0 1rem 0;">
+                    <strong>Critical Pattern:</strong> Attacks succeed not simply due to advanced hacking techniques, but because systems trust user input too easily, fail to guard identity and access mechanisms, expose internal objects, or operate in insecure environments.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Conclusion Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🎯</div>
+                  <h3 class="panel-title">Conclusion</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Taken together, these first five OWASP risks reveal a recurring pattern: attacks succeed because systems trust user input too easily, fail to guard identity and access mechanisms, expose internal objects, or operate in insecure environments.</p>
+
+                  <p class="text-small">As a result, developers, administrators, and security professionals must work as a team to enforce:</p>
+                  <ul class="checklist">
+                    <li>Strict input validation and sanitization</li>
+                    <li>Secure authentication processes</li>
+                    <li>Robust access controls</li>
+                    <li>Thorough configuration practices</li>
+                  </ul>
+
+                  <p class="text-small">By understanding these threats and building defensive habits early, organizations can drastically reduce their risk of exploitation and create safer digital environments for users and data.</p>
+                </div>
+              </div>
+            </article>
+
+            <aside class="section">
+              <h3>Learning Objectives</h3>
+              <ul class="checklist">
+                <li>Understand the OWASP Top 10 framework and its importance</li>
+                <li>Explain injection attacks and SQL injection specifically</li>
+                <li>Identify authentication and session management vulnerabilities</li>
+                <li>Recognize XSS attacks and their impact</li>
+                <li>Understand insecure direct object references</li>
+                <li>Identify common security misconfigurations</li>
+              </ul>
+
+              <h3 style="margin-top:1rem;">Key Terms</h3>
+              <ul class="checklist">
+                <li><strong>OWASP</strong> — Open Web Application Security Project</li>
+                <li><strong>Injection</strong> — Inserting malicious code into queries</li>
+                <li><strong>SQL Injection</strong> — Database query manipulation</li>
+                <li><strong>Session Hijacking</strong> — Stealing active user sessions</li>
+                <li><strong>XSS</strong> — Cross-Site Scripting attack</li>
+                <li><strong>IDOR</strong> — Insecure Direct Object Reference</li>
+                <li><strong>Security Misconfiguration</strong> — Improper system setup</li>
+                <li><strong>CSP</strong> — Content Security Policy</li>
+              </ul>
+
+              <div class="callout warn" style="margin-top:1rem;">
+                <strong>Defense Priority:</strong> These five risks represent the most common and impactful vulnerabilities. Focus defensive efforts here for maximum security improvement.
+              </div>
+            </aside>
+          </div>
+
+          <div class="quiz-card" style="margin-top:1rem;">
+            <div>
+              <div class="quiz-title">Knowledge check</div>
+              <div class="text-muted">3 quick questions to reinforce learning.</div>
+            </div>
+            <a class="secondary-button" href="#">Start quiz</a>
+          </div>
+
+          <div class="nav-row">
+            <a id="prevLesson" class="secondary-button" href="#">Previous lesson</a>
+            <a id="nextLesson" class="secondary-button" href="#">Next lesson</a>
+          </div>
+
+          <div class="lesson-actions">
+            <button id="completeLesson" class="primary-button">Mark Complete</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../../../js/includes.js"></script>
+  <script src="../../../js/lesson-page.js"></script>
+</body>
+</html>

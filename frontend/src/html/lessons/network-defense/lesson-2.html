@@ -1,0 +1,290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Network Defense - Lesson 2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../css/global.css">
+  <link rel="stylesheet" href="../../../css/profile.css">
+  <link rel="stylesheet" href="../../../css/lessons.css">
+</head>
+<body class="site-background" data-module="network-defense" data-lesson="2">
+  <div class="layout-shell">
+    <main class="main-wrapper">
+      <section class="content-section content-stack">
+        <div class="page-header">
+          <h1 class="title-medium">Lesson 2</h1>
+          <a id="backToModule" href="#" class="exit-button"><img src="../../../../assets/images/Exit.png" alt="" aria-hidden="true" class="exit-icon"><span class="exit-text">Back to module</span></a>
+        </div>
+        <div class="card-panel">
+          <div class="lesson-hero">
+            <div>
+              <div class="lesson-title">Common Network Threats</div>
+              <p class="text-small text-muted">Understanding the major attack methods that target network infrastructure and communication protocols.</p>
+            </div>
+            <div class="meta-chips">
+              <span class="chip">Level: Intermediate</span>
+              <span class="chip">Time: 25-30 min</span>
+              <span class="chip">Prereq: Lesson 1</span>
+            </div>
+          </div>
+
+          <div class="lesson-grid">
+            <!-- Introduction Panel -->
+            <div style="grid-column: 1 / -1;">
+              <div class="intro-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📖</div>
+                  <h3 class="panel-title">Introduction</h3>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Before you can defend a network, you must understand the threats that target it. Common network threats aim to disrupt communication, steal information, or silently manipulate data as it travels across systems. These attacks often blend technical strategy with deception, making them difficult to detect unless you understand how they operate at the network level.</p>
+
+                  <p class="text-small">The most widely encountered threats include attacks that overwhelm systems, trick devices into trusting malicious machines, secretly capture data flowing through the network, and quietly position an attacker between two communicating devices.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Content Column -->
+            <article>
+              <!-- DDoS Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">💥</div>
+                  <h3 class="panel-title">Distributed Denial of Service (DDoS) Attacks</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">One of the best-known threats is the <strong>Distributed Denial of Service (DDoS) attack</strong>, where an attacker uses a network of compromised systems—known as a <strong>botnet</strong>—to bombard a server or service with overwhelming traffic.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/NetworkDefense/ddos-attack.png" alt="DDoS Attack Diagram" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">How DDoS attacks overwhelm target systems with coordinated traffic</p>
+                  </div>
+
+                  <p class="text-small">Instead of a single attacker, hundreds or thousands of devices flood a victim system with connection attempts or data packets until it slows, crashes, or becomes unable to serve legitimate users. This threat focuses on <strong>exhaustion</strong> rather than stealth, aiming to disrupt availability and paralyze online services.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Types of DDoS Attacks</h4>
+                  <ul class="checklist">
+                    <li><strong>Volume-Based:</strong> Overwhelms bandwidth with massive traffic (e.g., UDP floods, ICMP floods)</li>
+                    <li><strong>Protocol-Based:</strong> Exploits weaknesses in protocols (e.g., SYN floods, fragmented packet attacks)</li>
+                    <li><strong>Application-Layer:</strong> Targets web servers and applications (e.g., HTTP floods)</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Impact and Mitigation</h4>
+                  <p class="text-small">DDoS attacks can cause:</p>
+                  <ul class="checklist">
+                    <li>Complete service outages</li>
+                    <li>Severe performance degradation</li>
+                    <li>Financial losses from downtime</li>
+                    <li>Reputational damage</li>
+                  </ul>
+
+                  <p class="text-small"><strong>Defense strategies:</strong> Traffic filtering, rate limiting, DDoS mitigation services, redundant infrastructure, and content delivery networks (CDNs).</p>
+                </div>
+              </div>
+
+              <!-- ARP Spoofing Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🎭</div>
+                  <h3 class="panel-title">ARP Spoofing (ARP Poisoning)</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Another threat is <strong>ARP spoofing</strong>, which takes advantage of how devices inside a local network learn each other's MAC addresses. The attacker sends fake ARP (Address Resolution Protocol) messages to devices on the same network, convincing them that the attacker's machine is the router or another trusted device.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/NetworkDefense/arp-poisoning.png" alt="ARP Poisoning Attack" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">How ARP spoofing redirects network traffic through an attacker</p>
+                  </div>
+
+                  <p class="text-small">Once that deception succeeds, all traffic meant for the real gateway is silently diverted to the attacker first. This allows the attacker to:</p>
+
+                  <ul class="checklist">
+                    <li>Intercept and read sensitive traffic</li>
+                    <li>Modify data in transit</li>
+                    <li>Launch man-in-the-middle attacks</li>
+                    <li>Conduct session hijacking</li>
+                    <li>Perform denial of service on specific targets</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Detection and Prevention</h4>
+                  <p class="text-small"><strong>Detection methods:</strong></p>
+                  <ul class="checklist">
+                    <li>Monitor for duplicate MAC addresses</li>
+                    <li>Use intrusion detection systems (IDS)</li>
+                    <li>Implement ARP monitoring tools</li>
+                    <li>Watch for unusual traffic patterns</li>
+                  </ul>
+
+                  <p class="text-small"><strong>Prevention techniques:</strong></p>
+                  <ul class="checklist">
+                    <li>Static ARP entries for critical systems</li>
+                    <li>Dynamic ARP Inspection (DAI) on switches</li>
+                    <li>Network segmentation with VLANs</li>
+                    <li>Port security on network switches</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Packet Sniffing Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📡</div>
+                  <h3 class="panel-title">Packet Sniffing</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small"><strong>Packet sniffing</strong> represents a quieter but equally dangerous threat. By putting a network interface into promiscuous mode, an attacker can capture data traveling over the network. If the network traffic isn't encrypted, sensitive information like passwords, session cookies, and private communications becomes exposed.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/NetworkDefense/packet-sniffing.png" alt="Packet Sniffing" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">Packet sniffing captures network data in transit</p>
+                  </div>
+
+                  <p class="text-small">Even on switched networks, attackers may pair sniffing with ARP spoofing to gain access to traffic that isn't meant for them. This attack highlights why <strong>encryption is a foundational security requirement</strong> in any network, especially in environments with shared access.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">What Attackers Can Capture</h4>
+                  <ul class="checklist">
+                    <li>Usernames and passwords sent in clear text</li>
+                    <li>Email contents and attachments</li>
+                    <li>Web browsing activity and cookies</li>
+                    <li>File transfers and documents</li>
+                    <li>VoIP conversations</li>
+                    <li>Internal network structure and device information</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Defense Against Packet Sniffing</h4>
+                  <ul class="checklist">
+                    <li><strong>Encryption:</strong> Use HTTPS, SSH, VPNs, and TLS for all communications</li>
+                    <li><strong>Network Segmentation:</strong> Isolate sensitive systems</li>
+                    <li><strong>Switched Networks:</strong> Use switches instead of hubs</li>
+                    <li><strong>Port Security:</strong> Limit unauthorized device connections</li>
+                    <li><strong>Wireless Security:</strong> Use WPA3 encryption on Wi-Fi networks</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- MITM Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🔀</div>
+                  <h3 class="panel-title">Man-in-the-Middle (MITM) Attacks</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Finally, there are <strong>Man-in-the-Middle (MITM) attacks</strong>—broader, more flexible versions of ARP spoofing—where an attacker secretly inserts themselves between two communicating parties. Instead of just intercepting data, the attacker can modify it, impersonate legitimate systems, and alter transactions or messages without alerting the users.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/NetworkDefense/mitm-attack.png" alt="MITM Attack" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">Man-in-the-middle attack intercepting communication</p>
+                  </div>
+
+                  <p class="text-small">In secure environments, attackers sometimes attempt to bypass encrypted communications through methods like fake certificates, tricking devices into trusting their disguised presence. The threat here is not just theft of information, but also <strong>manipulation and trust damage</strong> within the communication chain.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Common MITM Attack Techniques</h4>
+                  <ul class="checklist">
+                    <li><strong>SSL Stripping:</strong> Downgrading HTTPS connections to HTTP</li>
+                    <li><strong>DNS Spoofing:</strong> Redirecting domain name lookups to malicious sites</li>
+                    <li><strong>Session Hijacking:</strong> Stealing active session tokens</li>
+                    <li><strong>Email Hijacking:</strong> Intercepting and modifying email communications</li>
+                    <li><strong>Wi-Fi Eavesdropping:</strong> Creating fake access points (evil twin attacks)</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Protection Strategies</h4>
+                  <ul class="checklist">
+                    <li><strong>Certificate Validation:</strong> Verify SSL/TLS certificates</li>
+                    <li><strong>HTTPS Everywhere:</strong> Force encrypted connections</li>
+                    <li><strong>VPN Usage:</strong> Encrypt all network traffic</li>
+                    <li><strong>Multi-Factor Authentication:</strong> Protect against stolen credentials</li>
+                    <li><strong>HSTS (HTTP Strict Transport Security):</strong> Prevent SSL stripping</li>
+                    <li><strong>Certificate Pinning:</strong> Ensure specific certificates are used</li>
+                  </ul>
+
+                  <div class="callout warn" style="margin:.75rem 0 1rem 0;">
+                    <strong>Critical Insight:</strong> Network attacks do not rely solely on brute force or malware; they often exploit trust mechanisms, communication protocols, and the lack of encryption. Understanding how these attacks work prepares defenders to implement proper countermeasures.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Conclusion Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🎯</div>
+                  <h3 class="panel-title">Conclusion</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Together, these threats demonstrate that network attacks exploit trust mechanisms, communication protocols, and the lack of encryption. Understanding how these attacks work prepares defenders to implement proper countermeasures such as:</p>
+
+                  <ul class="checklist">
+                    <li>Network segmentation and isolation</li>
+                    <li>Strong encryption for all communications</li>
+                    <li>Certificate validation and management</li>
+                    <li>Intrusion detection and monitoring</li>
+                    <li>Secure device configuration</li>
+                  </ul>
+
+                  <p class="text-small">By recognizing these common threats and their attack patterns, cybersecurity professionals can deploy effective defenses so that malicious activity is recognized and stopped before real damage occurs.</p>
+                </div>
+              </div>
+            </article>
+
+            <aside class="section">
+              <h3>Learning Objectives</h3>
+              <ul class="checklist">
+                <li>Identify and explain common network attack methods</li>
+                <li>Understand how DDoS attacks overwhelm systems</li>
+                <li>Describe ARP spoofing and its impact on local networks</li>
+                <li>Recognize packet sniffing as a passive threat</li>
+                <li>Explain man-in-the-middle attack techniques</li>
+                <li>Apply appropriate countermeasures to each threat type</li>
+              </ul>
+
+              <h3 style="margin-top:1rem;">Key Terms</h3>
+              <ul class="checklist">
+                <li><strong>DDoS</strong> — Distributed Denial of Service attack</li>
+                <li><strong>Botnet</strong> — Network of compromised devices</li>
+                <li><strong>ARP Spoofing</strong> — Fake ARP messages to redirect traffic</li>
+                <li><strong>Packet Sniffing</strong> — Capturing network traffic</li>
+                <li><strong>Promiscuous Mode</strong> — Network card capturing all traffic</li>
+                <li><strong>MITM</strong> — Man-in-the-Middle attack</li>
+                <li><strong>SSL Stripping</strong> — Downgrading secure connections</li>
+                <li><strong>Evil Twin</strong> — Fake wireless access point</li>
+              </ul>
+
+              <div class="callout warn" style="margin-top:1rem;">
+                <strong>Remember:</strong> Encryption is the most fundamental defense against network interception attacks. Always use encrypted protocols for sensitive communications.
+              </div>
+            </aside>
+          </div>
+
+          <div class="quiz-card" style="margin-top:1rem;">
+            <div>
+              <div class="quiz-title">Knowledge check</div>
+              <div class="text-muted">3 quick questions to reinforce learning.</div>
+            </div>
+            <a class="secondary-button" href="#">Start quiz</a>
+          </div>
+
+          <div class="nav-row">
+            <a id="prevLesson" class="secondary-button" href="#">Previous lesson</a>
+            <a id="nextLesson" class="secondary-button" href="#">Next lesson</a>
+          </div>
+
+          <div class="lesson-actions">
+            <button id="completeLesson" class="primary-button">Mark Complete</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../../../js/includes.js"></script>
+  <script src="../../../js/lesson-page.js"></script>
+</body>
+</html>
+

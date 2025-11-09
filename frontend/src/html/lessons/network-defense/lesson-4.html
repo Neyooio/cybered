@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Network Defense - Lesson 4</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../css/global.css">
+  <link rel="stylesheet" href="../../../css/profile.css">
+  <link rel="stylesheet" href="../../../css/lessons.css">
+</head>
+<body class="site-background" data-module="network-defense" data-lesson="4">
+  <div class="layout-shell">
+    <main class="main-wrapper">
+      <section class="content-section content-stack">
+        <div class="page-header">
+          <h1 class="title-medium">Lesson 4</h1>
+          <a id="backToModule" href="#" class="exit-button"><img src="../../../../assets/images/Exit.png" alt="" aria-hidden="true" class="exit-icon"><span class="exit-text">Back to module</span></a>
+        </div>
+        <div class="card-panel">
+          <div class="lesson-hero">
+            <div>
+              <div class="lesson-title">Network Monitoring and Incident Response</div>
+              <p class="text-small text-muted">Mastering the tools and processes for detecting threats and responding effectively to security incidents.</p>
+            </div>
+            <div class="meta-chips">
+              <span class="chip">Level: Advanced</span>
+              <span class="chip">Time: 30-35 min</span>
+              <span class="chip">Prereq: Lessons 1-3</span>
+            </div>
+          </div>
+
+          <div class="lesson-grid">
+            <!-- Introduction Panel -->
+            <div style="grid-column: 1 / -1;">
+              <div class="intro-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📖</div>
+                  <h3 class="panel-title">Introduction</h3>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Defending a network is not only about preventing attacks; it is equally about <strong>detecting suspicious behavior</strong> and <strong>responding quickly</strong> when threats slip through. Even the most advanced firewalls and security systems cannot guarantee total protection, which is why monitoring and incident response play a critical role in cybersecurity.</p>
+
+                  <p class="text-small">Network monitoring gives security teams visibility into what is happening across systems, allowing them to observe patterns, detect anomalies, and identify early warning signs of compromise. Incident response provides the structured process that organizations follow when a threat becomes real, ensuring they contain attacks efficiently, remove intruders, and restore normal operations without panic or confusion.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Content Column -->
+            <article>
+              <!-- Monitoring Tools Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🔍</div>
+                  <h3 class="panel-title">Essential Network Monitoring Tools</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Effective monitoring requires specialized tools designed to inspect and understand the massive flow of data moving across the network. Three foundational tools dominate professional network security:</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Wireshark: The Packet Analyzer</h4>
+                  <p class="text-small"><strong>Wireshark</strong> is a powerful packet analyzer that allows analysts to capture and inspect network traffic at every level of the OSI model. With it, a cybersecurity professional can:</p>
+
+                  <ul class="checklist">
+                    <li>Trace suspicious activity down to the individual packet</li>
+                    <li>Examine protocols in detail</li>
+                    <li>View packet payloads and contents</li>
+                    <li>Reconstruct the path of an attack</li>
+                    <li>Filter traffic by protocol, IP, port, or content</li>
+                    <li>Analyze encrypted traffic patterns</li>
+                  </ul>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/NetworkDefense/nmap-vs-wireshark.png" alt="Nmap vs Wireshark" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">Nmap and Wireshark serving different but complementary roles</p>
+                  </div>
+
+                  <p class="text-small">Wireshark is invaluable for deep forensic analysis, troubleshooting network issues, and understanding exactly what happened during a security incident.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Nmap: The Network Scanner</h4>
+                  <p class="text-small"><strong>Nmap</strong> is a widely used network scanning tool that identifies active devices, open ports, running services, and potential vulnerabilities. Nmap isn't just for attackers—defenders use it to discover weaknesses before someone else does.</p>
+
+                  <p class="text-small"><strong>Key Nmap capabilities:</strong></p>
+                  <ul class="checklist">
+                    <li><strong>Host Discovery:</strong> Identifying active devices on the network</li>
+                    <li><strong>Port Scanning:</strong> Finding open and closed ports</li>
+                    <li><strong>Service Detection:</strong> Determining what services are running</li>
+                    <li><strong>OS Fingerprinting:</strong> Identifying operating systems</li>
+                    <li><strong>Vulnerability Scanning:</strong> Using NSE (Nmap Scripting Engine) for security checks</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Snort: The Intrusion Detection Tool</h4>
+                  <p class="text-small"><strong>Snort</strong> applies intrusion detection logic, scanning traffic in real time and generating alerts when patterns resemble known attacks or abnormal behavior. As an open-source IDS/IPS, Snort can:</p>
+
+                  <ul class="checklist">
+                    <li>Perform real-time traffic analysis</li>
+                    <li>Detect protocol anomalies</li>
+                    <li>Match signatures of known attacks</li>
+                    <li>Log suspicious packets for forensic review</li>
+                    <li>Generate alerts based on custom rules</li>
+                    <li>Operate in both detection and prevention modes</li>
+                  </ul>
+
+                  <p class="text-small">Together, these tools turn raw network activity into <strong>actionable intelligence</strong>, allowing security teams to see what others might miss.</p>
+                </div>
+              </div>
+
+              <!-- IR Framework Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🚨</div>
+                  <h3 class="panel-title">The Incident Response Framework</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">But seeing the threat is only half the battle. When an attack succeeds or suspicious activity is confirmed, <strong>incident response</strong> begins. The incident response process follows a structured approach to handle security events effectively.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/NetworkDefense/network-incident-response.png" alt="Incident Response Process" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">The structured incident response lifecycle</p>
+                  </div>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Phase 1: Preparation</h4>
+                  <p class="text-small">The first step is <strong>preparation</strong>—ensuring monitoring systems are in place, employees are trained, backups are ready, and procedures are documented long before a breach occurs.</p>
+
+                  <p class="text-small"><strong>Preparation activities include:</strong></p>
+                  <ul class="checklist">
+                    <li>Deploying monitoring and detection systems</li>
+                    <li>Creating incident response policies and playbooks</li>
+                    <li>Training security teams on response procedures</li>
+                    <li>Testing backup and recovery systems</li>
+                    <li>Establishing communication channels and escalation paths</li>
+                    <li>Maintaining current network and asset documentation</li>
+                    <li>Building relationships with external partners (law enforcement, vendors)</li>
+                  </ul>
+
+                  <p class="text-small">Preparation embeds security into the organization's daily operations, ensuring that when an incident occurs, confusion does not replace action.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Phase 2: Detection and Analysis</h4>
+                  <p class="text-small">When an incident is detected, the team must swiftly verify and analyze the incident, gathering logs, evidence, and technical data to understand the scope and nature of the intrusion.</p>
+
+                  <p class="text-small"><strong>Key detection and analysis tasks:</strong></p>
+                  <ul class="checklist">
+                    <li>Determine which systems are affected</li>
+                    <li>Identify what type of threat is present</li>
+                    <li>Assess whether data or services are at risk</li>
+                    <li>Collect forensic evidence from logs, memory, and disk</li>
+                    <li>Determine attack vectors and entry points</li>
+                    <li>Document all findings and observations with timestamps</li>
+                  </ul>
+
+                  <p class="text-small">This step ensures that the response is accurate and targeted rather than chaotic or incomplete.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Phase 3: Containment</h4>
+                  <p class="text-small">Following detection, <strong>rapid containment</strong> measures follow. This may involve isolating compromised devices, blocking malicious connections, or applying emergency firewall rules to prevent further spread.</p>
+
+                  <p class="text-small"><strong>Containment strategies:</strong></p>
+                  <ul class="checklist">
+                    <li><strong>Short-term Containment:</strong> Immediate actions to stop spread (disconnect infected systems)</li>
+                    <li><strong>Long-term Containment:</strong> Temporary fixes while preparing for recovery (clean backups, patched systems)</li>
+                    <li>Network segmentation to isolate affected areas</li>
+                    <li>Blocking malicious IP addresses and domains</li>
+                    <li>Disabling compromised user accounts</li>
+                    <li>Preserving evidence for forensic analysis</li>
+                  </ul>
+
+                  <p class="text-small">Without immediate isolation, the malware may spread, extract data, or deepen its foothold in the system. Containment acts like building a fire-break: the objective is not yet to extinguish the fire, but to stop it from spreading.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Phase 4: Eradication</h4>
+                  <p class="text-small">Only after containment is secured should <strong>eradication</strong> take place. This involves removing malicious files, terminating harmful processes, resetting compromised credentials, and deploying security tools to ensure no remnants remain.</p>
+
+                  <p class="text-small"><strong>Eradication activities:</strong></p>
+                  <ul class="checklist">
+                    <li>Remove all malicious files and processes</li>
+                    <li>Close exploited vulnerabilities with patches</li>
+                    <li>Eliminate hidden backdoors and persistence mechanisms</li>
+                    <li>Reset all compromised passwords and credentials</li>
+                    <li>Rebuild severely compromised systems from clean images</li>
+                    <li>Verify complete removal through scanning and monitoring</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Phase 5: Recovery</h4>
+                  <p class="text-small">When systems are clean, the <strong>recovery</strong> phase begins. Systems are restored from verified clean backups, services are brought back online gradually, and monitoring intensifies to detect any lingering threat or reinfection attempt.</p>
+
+                  <p class="text-small"><strong>Recovery steps:</strong></p>
+                  <ul class="checklist">
+                    <li>Restore systems from verified clean backups</li>
+                    <li>Gradually bring services back online with monitoring</li>
+                    <li>Verify system integrity before full restoration</li>
+                    <li>Monitor systems closely for signs of reinfection</li>
+                    <li>Update security controls based on incident findings</li>
+                    <li>Communicate status to stakeholders</li>
+                  </ul>
+
+                  <p class="text-small">True recovery is both technical and strategic—it includes reinforcing defenses, updating policies, and improving awareness based on lessons learned.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Phase 6: Post-Incident Analysis</h4>
+                  <p class="text-small">Finally, a critical part of any response plan is <strong>reflection and improvement</strong>. Organizations conduct a post-incident review to analyze what happened, why it happened, and what must be improved to prevent recurrence.</p>
+
+                  <p class="text-small"><strong>Post-incident activities:</strong></p>
+                  <ul class="checklist">
+                    <li>Conduct comprehensive incident review meeting</li>
+                    <li>Document complete timeline and actions taken</li>
+                    <li>Identify what worked well and what failed</li>
+                    <li>Update policies, procedures, and playbooks</li>
+                    <li>Improve detection and prevention mechanisms</li>
+                    <li>Provide additional training based on lessons learned</li>
+                    <li>Share threat intelligence with relevant communities</li>
+                  </ul>
+
+                  <div class="callout info" style="margin:.75rem 0 1rem 0;">
+                    <strong>Chain of Custody:</strong> Maintaining proper documentation and chain of custody for logs and evidence ensures that organizations can take legal action if necessary and that investigations remain credible.
+                  </div>
+
+                  <p class="text-small">This maturity is the hallmark of resilient cybersecurity: not merely reacting, but continuously evolving. Organizations that treat incidents as learning opportunities become stronger with each challenge.</p>
+                </div>
+              </div>
+
+              <!-- SOC Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🏢</div>
+                  <h3 class="panel-title">Building a Security Operations Center (SOC)</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Many organizations centralize their monitoring and response capabilities in a <strong>Security Operations Center (SOC)</strong>—a dedicated team and facility for continuous network monitoring, threat detection, and incident response.</p>
+
+                  <p class="text-small"><strong>SOC responsibilities:</strong></p>
+                  <ul class="checklist">
+                    <li>24/7 monitoring of security alerts</li>
+                    <li>Threat hunting and proactive defense</li>
+                    <li>Incident response coordination</li>
+                    <li>Vulnerability management</li>
+                    <li>Security tool management and tuning</li>
+                    <li>Threat intelligence analysis</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Conclusion Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🎯</div>
+                  <h3 class="panel-title">Conclusion</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">In essence, network monitoring and incident response transform security from a passive barrier into an active, intelligent defense system. Instead of merely trying to stop attacks, organizations anticipate threats, watch for subtle signs of compromise, and react decisively when danger emerges.</p>
+
+                  <p class="text-small">This mindset acknowledges a critical truth in cybersecurity: prevention is essential, but <strong>visibility and response are what truly protect an organization</strong> when the unexpected happens. By combining powerful monitoring tools like Wireshark, Nmap, and Snort with a structured incident response framework, organizations build resilience that goes far beyond simple defenses.</p>
+                </div>
+              </div>
+            </article>
+
+            <aside class="section">
+              <h3>Learning Objectives</h3>
+              <ul class="checklist">
+                <li>Identify key network monitoring tools and their purposes</li>
+                <li>Explain how Wireshark, Nmap, and Snort support security</li>
+                <li>Understand the six phases of incident response</li>
+                <li>Apply proper containment strategies during incidents</li>
+                <li>Recognize the importance of post-incident analysis</li>
+                <li>Describe the role of a Security Operations Center</li>
+              </ul>
+
+              <h3 style="margin-top:1rem;">Key Terms</h3>
+              <ul class="checklist">
+                <li><strong>Wireshark</strong> — Packet capture and analysis tool</li>
+                <li><strong>Nmap</strong> — Network scanning and enumeration tool</li>
+                <li><strong>Snort</strong> — Open-source IDS/IPS system</li>
+                <li><strong>Incident Response</strong> — Structured approach to handling breaches</li>
+                <li><strong>Containment</strong> — Isolating threat to prevent spread</li>
+                <li><strong>Eradication</strong> — Complete removal of malicious elements</li>
+                <li><strong>Chain of Custody</strong> — Documentation of evidence handling</li>
+                <li><strong>SOC</strong> — Security Operations Center</li>
+              </ul>
+
+              <div class="callout warn" style="margin-top:1rem;">
+                <strong>Critical Principle:</strong> The speed and effectiveness of incident response often determines the difference between minor disruption and catastrophic failure.
+              </div>
+            </aside>
+          </div>
+
+          <div class="quiz-card" style="margin-top:1rem;">
+            <div>
+              <div class="quiz-title">Knowledge check</div>
+              <div class="text-muted">3 quick questions to reinforce learning.</div>
+            </div>
+            <a class="secondary-button" href="#">Start quiz</a>
+          </div>
+
+          <div class="nav-row">
+            <a id="prevLesson" class="secondary-button" href="#">Previous lesson</a>
+            <a id="nextLesson" class="secondary-button" href="#">Next lesson</a>
+          </div>
+
+          <div class="lesson-actions">
+            <button id="completeLesson" class="primary-button">Mark Complete</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../../../js/includes.js"></script>
+  <script src="../../../js/lesson-page.js"></script>
+</body>
+</html>
+

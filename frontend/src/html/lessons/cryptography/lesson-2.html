@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cryptography - Lesson 2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../css/global.css">
+  <link rel="stylesheet" href="../../../css/profile.css">
+  <link rel="stylesheet" href="../../../css/lessons.css">
+</head>
+<body class="site-background" data-module="cryptography" data-lesson="2">
+  <div class="layout-shell">
+    <main class="main-wrapper">
+      <section class="content-section content-stack">
+        <div class="page-header">
+          <h1 class="title-medium">Lesson 2</h1>
+          <a id="backToModule" href="#" class="exit-button"><img src="../../../../assets/images/Exit.png" alt="" aria-hidden="true" class="exit-icon"><span class="exit-text">Back to module</span></a>
+        </div>
+        <div class="card-panel">
+          <div class="lesson-hero">
+            <div>
+              <div class="lesson-title">Classical and Modern Encryption Algorithms</div>
+              <p class="text-small text-muted">Exploring the evolution from simple historical ciphers to powerful modern encryption systems like AES, RSA, and ECC.</p>
+            </div>
+            <div class="meta-chips">
+              <span class="chip">Level: Intermediate</span>
+              <span class="chip">Time: 20-25 min</span>
+              <span class="chip">Prereq: Lesson 1</span>
+            </div>
+          </div>
+
+          <div class="lesson-grid">
+            <!-- Introduction Panel -->
+            <div style="grid-column: 1 / -1;">
+              <div class="intro-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📖</div>
+                  <h3 class="panel-title">Introduction</h3>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">The evolution of cryptography is best understood by examining how encryption algorithms have transformed over centuries. Classical encryption began as simple, manual techniques used to hide messages in ancient civilizations, while modern encryption relies on advanced mathematics, computational complexity, and digital processing. Although modern systems are far more powerful and secure, classical algorithms remain important because they reveal the roots of cryptographic thinking and why today's techniques were created.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Content Column -->
+            <article>
+              <!-- Classical Encryption Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📜</div>
+                  <h3 class="panel-title">Classical Encryption Algorithms</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Classical encryption algorithms were primarily substitution and transposition ciphers. One of the most famous examples is the <strong>Caesar cipher</strong>, named after Julius Caesar, who used it to protect military communication. It works by shifting each letter in the alphabet by a fixed number of positions, producing a ciphertext that looks altered but still preserves the structure of the language. If the shift is three positions, for example, "HELLO" becomes "KHOOR."</p>
+
+                  <p class="text-small">This technique was clever for its time, but it is extremely weak by modern standards because the pattern is predictable. A modern attacker can break it almost instantly using brute force, simply trying all possible shifts, or using frequency analysis to identify common letters. This weakness highlights why cryptography had to evolve; languages have patterns, and predictable substitutions are easy to exploit.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/Cryptography/caesar-cipher.png" alt="Caesar Cipher" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">Example of classical cipher substitution method</p>
+                  </div>
+
+                  <p class="text-small">As cryptography progressed, more complex classical ciphers emerged, such as the <strong>Vigenère cipher</strong>, which introduced multiple shifting values rather than just one. For centuries, these ciphers were considered unbreakable, but as mathematical techniques and analytical methods improved, even these more advanced classical systems were eventually defeated. Their downfall demonstrated a deeper truth: any cipher based on predictable patterns or small keyspaces can be broken. That truth became the foundation of modern cryptography, which shifted from linguistic tricks to mathematical hardness—problems that computers cannot solve easily even with immense processing power.</p>
+                </div>
+              </div>
+
+              <!-- AES Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🔒</div>
+                  <h3 class="panel-title">Modern Symmetric Encryption: AES</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Modern encryption algorithms fall mainly into two categories: symmetric and asymmetric systems. The most important modern symmetric cipher is the <strong>Advanced Encryption Standard (AES)</strong>, which has become the global standard for securing digital data. Unlike classical ciphers that operated on letters, AES works on binary data, treating plaintext in fixed-size blocks of 128 bits. It uses complex mathematical transformations, including substitution, permutation, mixing, and key expansion. These operations occur in multiple rounds, depending on the key length, which can be 128, 192, or 256 bits.</p>
+
+                  <p class="text-small">AES is considered extraordinarily secure because its keyspace is astronomically large. Even with the fastest supercomputers, trying all possible keys through brute force would take longer than the age of the universe. This level of security is essential today, as AES protects everything from encrypted messaging apps and VPNs to financial transactions and government data.</p>
+
+                  <div class="callout info" style="margin:.75rem 0 1rem 0;">
+                    <strong>Security Note:</strong> AES with a 256-bit key provides 2<sup>256</sup> possible combinations—that's approximately 115 quattuorvigintillion possible keys.
+                  </div>
+                </div>
+              </div>
+
+              <!-- RSA and ECC Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🔐</div>
+                  <h3 class="panel-title">Modern Asymmetric Encryption: RSA and ECC</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">While symmetric algorithms like AES are fast and powerful, they require both parties to share the same secret key, which can be difficult when communicating over the internet. This challenge led to the creation of <strong>asymmetric encryption</strong>, also known as public-key cryptography.</p>
+
+                  <p class="text-small"><strong>RSA</strong>, named after Rivest, Shamir, and Adleman, is one of the first and most influential asymmetric algorithms. RSA relies on the mathematical difficulty of factoring large composite numbers. The public key is used to encrypt, while the private key is used to decrypt. RSA transformed digital communication because it allowed secure key exchange without needing to meet physically. However, RSA requires very large keys—commonly 2048 or 4096 bits—because the mathematical problem it relies on is easier than the brute-force difficulty of AES.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/Cryptography/symmetric-vs-asymmetric.png" alt="Symmetric vs Asymmetric Encryption" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">Comparison of symmetric and asymmetric encryption models</p>
+                  </div>
+
+                  <p class="text-small">To solve the need for smaller, more efficient keys, modern cryptography introduced <strong>Elliptic Curve Cryptography (ECC)</strong>. ECC is based on the properties of elliptic curves over finite fields and relies on the hardness of the Elliptic Curve Discrete Logarithm Problem. The same security offered by RSA with a 3072-bit key can be achieved with ECC using only a 256-bit key. This huge efficiency boost makes ECC ideal for smartphones, IoT devices, cryptocurrencies, and anywhere low power consumption or high speed is required. Digital signatures used in Bitcoin and other blockchains, for example, rely heavily on ECC.</p>
+                </div>
+              </div>
+
+              <!-- Evolution Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📈</div>
+                  <h3 class="panel-title">The Evolution of Cryptographic Strength</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">The contrast between classical and modern algorithms shows a profound shift in cryptographic design. Classical ciphers relied on simplicity and secrecy of method, which often failed once the method became known. Modern ciphers rely on mathematical strength and computational difficulty, openly publishing their algorithms while keeping only the keys secret. This transparency allows experts worldwide to analyze and strengthen the systems, creating standards robust enough to secure global digital infrastructure.</p>
+
+                  <p class="text-small">In summary, classical algorithms represent the foundation—simple, historical, and now easily broken—while modern encryption algorithms represent the present and future, built on complex mathematics, fast computation, and rigorous security models. Without the lessons learned from classical ciphers, the powerful and reliable systems we use today would never have existed.</p>
+                </div>
+              </div>
+            </article>
+
+            <aside class="section">
+              <h3>Learning Objectives</h3>
+              <ul class="checklist">
+                <li>Understand classical encryption methods and why they became insecure</li>
+                <li>Explain how the Caesar cipher and Vigenère cipher work</li>
+                <li>Describe the structure and security of AES encryption</li>
+                <li>Compare RSA and ECC asymmetric encryption algorithms</li>
+                <li>Recognize the shift from pattern-based to mathematics-based cryptography</li>
+                <li>Identify real-world applications of modern encryption algorithms</li>
+              </ul>
+
+              <h3 style="margin-top:1rem;">Key Terms</h3>
+              <ul class="checklist">
+                <li><strong>Caesar Cipher</strong> — Simple substitution cipher using alphabet shifting</li>
+                <li><strong>Vigenère Cipher</strong> — Classical cipher using multiple shift values</li>
+                <li><strong>AES</strong> — Advanced Encryption Standard, modern symmetric algorithm</li>
+                <li><strong>RSA</strong> — Asymmetric algorithm based on factoring large numbers</li>
+                <li><strong>ECC</strong> — Elliptic Curve Cryptography, efficient asymmetric encryption</li>
+                <li><strong>Brute Force</strong> — Trying all possible keys to break encryption</li>
+                <li><strong>Frequency Analysis</strong> — Analyzing letter patterns to break ciphers</li>
+              </ul>
+
+              <div class="callout warn" style="margin-top:1rem;">
+                <strong>Historical Lesson:</strong> Security through obscurity (hiding the method) always fails. Modern cryptography proves that transparency plus strong mathematics equals true security.
+              </div>
+            </aside>
+          </div>
+
+          <div class="quiz-card" style="margin-top:1rem;">
+            <div>
+              <div class="quiz-title">Knowledge check</div>
+              <div class="text-muted">3 quick questions to reinforce learning.</div>
+            </div>
+            <a class="secondary-button" href="#">Start quiz</a>
+          </div>
+
+          <div class="nav-row">
+            <a id="prevLesson" class="secondary-button" href="#">Previous lesson</a>
+            <a id="nextLesson" class="secondary-button" href="#">Next lesson</a>
+          </div>
+
+          <div class="lesson-actions">
+            <button id="completeLesson" class="primary-button">Mark Complete</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../../../js/includes.js"></script>
+  <script src="../../../js/lesson-page.js"></script>
+</body>
+</html>
+

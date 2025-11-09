@@ -1,0 +1,89 @@
+<header class="top-panel">
+  <!-- Hamburger for mobile -->
+  <button id="hamburgerBtn" class="hamburger-btn" aria-label="Open menu" aria-controls="mobileDrawer" aria-expanded="false">
+    <span class="bar"></span>
+    <span class="bar"></span>
+    <span class="bar"></span>
+  </button>
+  
+  <div class="level-panel">
+    <span class="label-small">LEVEL</span>
+    <span class="level-value" id="level">0</span>
+  </div>
+
+  <div class="xp-panel">
+    <span class="label-small">XP</span>
+    <span class="level-value" id="xp">0</span>
+  </div>
+
+  <div class="coins-panel">
+    <img class="coin-icon" src="../../assets/images/Coin.png" alt="Coins" />
+    <span id="coins" class="value-strong">0</span>
+  </div>
+
+  <button id="topProfileBtn" onclick="window.location.href='profile.html'" class="profile-button pixel-button">
+    <span id="topProfileName">PROFILE</span>
+    <img id="topProfileAvatar" src="https://i.ibb.co/c1g1kkh/pixel-avatar.png" class="avatar-badge" />
+  </button>
+
+  <button id="notificationBtn" class="notification-button pixel-button" title="Notifications">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+      <path d="M18 8A6 6 0 0 0 6 8c0 7-3 9-3 9h18s-3-2-3-9"></path>
+      <path d="M13.73 21a2 2 0 0 1-3.46 0"></path>
+    </svg>
+    <span id="notificationBadge" class="notification-badge" style="display:none;">0</span>
+  </button>
+
+  <div id="notificationDropdown" class="notification-dropdown">
+    <div class="notification-header">
+      <h3>Notifications</h3>
+      <button id="closeNotifications" class="close-notifications">✕</button>
+    </div>
+    <div id="notificationList" class="notification-list">
+      <!-- Notifications will be loaded here -->
+      <div class="notification-empty">No pending requests</div>
+    </div>
+  </div>
+
+  <div class="admin-options-wrapper">
+    <button id="adminOptionsBtn" class="pixel-button" title="Admin Options" style="display:none;">Options</button>
+    <div id="adminDropdown" class="admin-dropdown">
+      <a href="admin/user-management.html" class="admin-dropdown-item">
+        <span>User Management</span>
+      </a>
+      <a href="admin/website-management.html" class="admin-dropdown-item">
+        <span>Website Management</span>
+      </a>
+      <a href="admin/system-log.html" class="admin-dropdown-item">
+        <span>System Log</span>
+      </a>
+    </div>
+  </div>
+
+  <button id="logoutTopBtn" class="pixel-button" title="Logout">Logout</button>
+</header>
+
+<!-- Mobile drawer menu -->
+<div id="mobileDrawer" class="drawer-overlay" aria-hidden="true">
+  <nav class="drawer-panel" role="dialog" aria-label="Main menu">
+    <div class="drawer-head">
+      <img src="../../assets/images/Logo.png" alt="Cyber Ed" class="drawer-logo" />
+      <button id="drawerClose" class="drawer-close" aria-label="Close menu">✕</button>
+    </div>
+    <ul class="drawer-list">
+      <li><a href="cybered.html" class="drawer-link"><img src="../../assets/images/Home.png" class="drawer-icon" alt=""/> <span>Home</span></a></li>
+      <li><a href="modules.html" class="drawer-link"><img src="../../assets/images/Modules.png" class="drawer-icon" alt=""/> <span>Modules</span></a></li>
+      <li><a href="challenges.html" class="drawer-link"><img src="../../assets/images/Challenges.png" class="drawer-icon" alt=""/> <span>Challenges</span></a></li>
+      <li class="drawer-sep"></li>
+      <li><a href="profile.html" class="drawer-link"><img src="https://i.ibb.co/c1g1kkh/pixel-avatar.png" id="drawerProfileAvatar" class="drawer-icon avatar" alt=""/> <span id="drawerProfileName">Profile</span></a></li>
+      <li id="drawerAdminOptionsBtn" style="display:none;"><button class="drawer-link as-button admin-options-btn"><span>Options</span></button></li>
+      <div id="drawerAdminMenu" class="drawer-admin-menu" style="display:none;">
+        <li><a href="admin/user-management.html" class="drawer-link drawer-submenu-item"><span>User Management</span></a></li>
+        <li><a href="admin/website-management.html" class="drawer-link drawer-submenu-item"><span>Website Management</span></a></li>
+        <li><a href="admin/system-log.html" class="drawer-link drawer-submenu-item"><span>System Log</span></a></li>
+      </div>
+      <li id="drawerAdminOptions" class="drawer-admin-link" style="display:none;"><a href="admin/user-management.html" class="drawer-link"><img src="../../assets/images/Modules.png" class="drawer-icon" alt=""/> <span>User Management</span></a></li>
+      <li><button id="logoutMobileBtn" class="drawer-link as-button logout-btn"><span>Logout</span></button></li>
+    </ul>
+  </nav>
+</div>

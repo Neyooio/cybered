@@ -1,0 +1,368 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Web Security - Lesson 4</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../css/global.css">
+  <link rel="stylesheet" href="../../../css/profile.css">
+  <link rel="stylesheet" href="../../../css/lessons.css">
+</head>
+<body class="site-background" data-module="web-security" data-lesson="4">
+  <div class="layout-shell">
+    <main class="main-wrapper">
+      <section class="content-section content-stack">
+        <div class="page-header">
+          <h1 class="title-medium">Lesson 4</h1>
+          <a id="backToModule" href="#" class="exit-button"><img src="../../../../assets/images/Exit.png" alt="" aria-hidden="true" class="exit-icon"><span class="exit-text">Back to module</span></a>
+        </div>
+        <div class="card-panel">
+          <div class="lesson-hero">
+            <div>
+              <div class="lesson-title">OWASP Top 10 Risks - Part 2 (A6-A10)</div>
+              <p class="text-small text-muted">Completing the OWASP Top 10 with the remaining critical web application security risks and comprehensive defense strategies.</p>
+            </div>
+            <div class="meta-chips">
+              <span class="chip">Level: Advanced</span>
+              <span class="chip">Time: 30-35 min</span>
+              <span class="chip">Prereq: Lessons 1-3</span>
+            </div>
+          </div>
+
+          <div class="lesson-grid">
+            <!-- Introduction Panel -->
+            <div style="grid-column: 1 / -1;">
+              <div class="intro-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📖</div>
+                  <h3 class="panel-title">Introduction</h3>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">The remaining five risks in the OWASP Top 10 continue to highlight how modern web applications can be compromised when sensitive data is not properly protected, access controls are incomplete, and outdated or insecure components are used. Understanding these threats reinforces the idea that even a single weak point in a system can open the door for significant attacks.</p>
+
+                  <p class="text-small">These risks do not only apply to large companies—any system that stores information, interacts with users, or connects to third-party services can fall victim to these vulnerabilities. Developers and security teams must treat these risks not simply as technical flaws, but as <strong>business risks</strong> that can affect trust, reputation, and continuity of service.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Content Column -->
+            <article>
+              <!-- Sensitive Data Exposure Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🔐</div>
+                  <h3 class="panel-title">A6: Sensitive Data Exposure</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">One of the most serious risks is <strong>Sensitive Data Exposure</strong>. Many applications fail to properly secure information such as credit card numbers, personal identity data, passwords, and confidential business assets. If data is transmitted without encryption, stored in plain text, or inadequately protected, attackers can easily steal or manipulate it.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Types of Sensitive Data</h4>
+                  <ul class="checklist">
+                    <li><strong>Personal Information:</strong> Names, addresses, Social Security numbers</li>
+                    <li><strong>Financial Data:</strong> Credit card numbers, bank account details</li>
+                    <li><strong>Authentication Credentials:</strong> Passwords, API keys, tokens</li>
+                    <li><strong>Health Records:</strong> Medical history, diagnoses, treatments</li>
+                    <li><strong>Business Secrets:</strong> Intellectual property, trade secrets</li>
+                    <li><strong>Communications:</strong> Private emails, messages</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Common Exposure Methods</h4>
+                  <ul class="checklist">
+                    <li><strong>Unencrypted Transmission:</strong> Sending data over HTTP instead of HTTPS</li>
+                    <li><strong>Weak Encryption:</strong> Using outdated algorithms (MD5, SHA1 for passwords)</li>
+                    <li><strong>Plain Text Storage:</strong> Storing sensitive data without encryption</li>
+                    <li><strong>Insecure Backups:</strong> Unprotected backup files</li>
+                    <li><strong>Browser Caching:</strong> Sensitive data cached in browsers</li>
+                    <li><strong>Exposed API Keys:</strong> Hardcoded credentials in source code</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Protection Strategies</h4>
+                  <ul class="checklist">
+                    <li>Use HTTPS/TLS for all data transmission</li>
+                    <li>Encrypt sensitive data at rest using AES-256</li>
+                    <li>Use strong hashing for passwords (bcrypt, Argon2, PBKDF2)</li>
+                    <li>Implement proper key management</li>
+                    <li>Disable caching for sensitive pages</li>
+                    <li>Apply data minimization (don't store what you don't need)</li>
+                    <li>Use HTTP Strict Transport Security (HSTS)</li>
+                  </ul>
+
+                  <p class="text-small">Sensitive data exposure is dangerous because once leaked, personal and financial information cannot be taken back. People may suffer identity theft, financial fraud, and long-term privacy damage. For organizations, this often means legal consequences, loss of customer trust, and high recovery costs.</p>
+
+                  <div class="callout warn" style="margin:.75rem 0 1rem 0;">
+                    <strong>Regulatory Impact:</strong> Data breaches involving sensitive information can result in massive fines under regulations like GDPR, HIPAA, and PCI-DSS. Protecting data is both a security and legal obligation.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Access Control Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🚪</div>
+                  <h3 class="panel-title">A7: Missing Function-Level Access Control</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">The next major risk is <strong>Missing Function-Level Access Control</strong>, which arises when applications fail to properly enforce who is allowed to perform certain actions. Even if a site protects its main features, attackers may still access restricted functions simply by guessing or modifying URLs, using hidden API routes, or calling backend operations directly.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Attack Scenarios</h4>
+                  <p class="text-small">Common examples include:</p>
+                  <ul class="checklist">
+                    <li>Accessing admin functions by changing URL from <code>/user/profile</code> to <code>/admin/dashboard</code></li>
+                    <li>Calling API endpoints meant for administrators</li>
+                    <li>Modifying request parameters to perform privileged actions</li>
+                    <li>Exploiting missing authorization on AJAX calls</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Why This Happens</h4>
+                  <p class="text-small">This vulnerability exists when developers rely solely on user-interface controls to hide features, instead of verifying permissions at the system level. As a result, unauthorized users may:</p>
+                  <ul class="checklist">
+                    <li>Gain administrative privileges</li>
+                    <li>Change important system settings</li>
+                    <li>Access private information of other users</li>
+                    <li>Perform actions beyond their authorization level</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Proper Authorization Implementation</h4>
+                  <ul class="checklist">
+                    <li>Check permissions on every function call, not just UI elements</li>
+                    <li>Implement role-based access control (RBAC)</li>
+                    <li>Default deny access unless explicitly granted</li>
+                    <li>Verify authorization on server-side for all requests</li>
+                    <li>Test with different user roles during development</li>
+                    <li>Log and monitor privilege escalation attempts</li>
+                  </ul>
+
+                  <p class="text-small">Proper authorization checks at every system function are essential to preventing this silent but dangerous form of attack.</p>
+                </div>
+              </div>
+
+              <!-- CSRF Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🔄</div>
+                  <h3 class="panel-title">A8: Cross-Site Request Forgery (CSRF)</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Another common and powerful attack method is <strong>Cross-Site Request Forgery (CSRF)</strong>. In this scenario, the attacker tricks a logged-in user into performing an unintended action in a vulnerable application. Because the user is already authenticated, the system believes the malicious request is legitimate.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">How CSRF Works</h4>
+                  <p class="text-small">Example attack flow:</p>
+                  <ol style="margin-left: 1.5rem; line-height: 1.8;">
+                    <li>User logs into their bank account</li>
+                    <li>Without logging out, they visit a malicious website</li>
+                    <li>The malicious site contains code that sends a request to the bank</li>
+                    <li>Browser automatically includes the user's session cookie</li>
+                    <li>Bank processes the request as if the user initiated it</li>
+                  </ol>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">What Attackers Can Accomplish</h4>
+                  <ul class="checklist">
+                    <li>Transfer funds from victim's account</li>
+                    <li>Change account email or password</li>
+                    <li>Make purchases on behalf of the user</li>
+                    <li>Modify user settings and preferences</li>
+                    <li>Perform administrative actions if victim is admin</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Defense Mechanisms</h4>
+                  <ul class="checklist">
+                    <li><strong>CSRF Tokens:</strong> Include unique, unpredictable tokens in forms</li>
+                    <li><strong>SameSite Cookie Attribute:</strong> Prevent cookies from being sent with cross-site requests</li>
+                    <li><strong>Custom Headers:</strong> Require custom headers for sensitive operations</li>
+                    <li><strong>Double Submit Cookies:</strong> Send token both in cookie and request parameter</li>
+                    <li><strong>User Interaction:</strong> Require re-authentication for sensitive actions</li>
+                    <li><strong>Referer Validation:</strong> Check request origin (with caution)</li>
+                  </ul>
+
+                  <p class="text-small">CSRF demonstrates how attackers can weaponize trust—not by hacking a system directly, but by manipulating users to unknowingly trigger harmful actions.</p>
+                </div>
+              </div>
+
+              <!-- Vulnerable Components Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📦</div>
+                  <h3 class="panel-title">A9: Using Components with Known Vulnerabilities</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">The ninth OWASP risk, <strong>Using Components with Known Vulnerabilities</strong>, highlights the danger of relying on outdated libraries, plugins, frameworks, or third-party tools. Modern applications are built using many external components, and if even one of them has a known security flaw, attackers can exploit it easily—especially since these weaknesses are often publicly documented.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/WebSecurity/vulnerable-components.png" alt="Vulnerable Components" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">Using vulnerable and outdated components creates critical security risks</p>
+                  </div>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Why This Is Dangerous</h4>
+                  <ul class="checklist">
+                    <li><strong>Public Knowledge:</strong> Vulnerabilities are documented in CVE databases</li>
+                    <li><strong>Automated Exploitation:</strong> Attackers use scanners to find vulnerable versions</li>
+                    <li><strong>Supply Chain Risk:</strong> One weak dependency affects entire application</li>
+                    <li><strong>Widespread Impact:</strong> Same vulnerability affects thousands of applications</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Common Vulnerable Components</h4>
+                  <ul class="checklist">
+                    <li>JavaScript libraries (jQuery, Angular, React with known issues)</li>
+                    <li>Server frameworks (outdated versions of Spring, Django, Express)</li>
+                    <li>Content Management Systems (WordPress plugins, Drupal modules)</li>
+                    <li>Image processing libraries</li>
+                    <li>XML parsers</li>
+                    <li>Database drivers</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Mitigation Strategies</h4>
+                  <ul class="checklist">
+                    <li><strong>Inventory Management:</strong> Maintain complete list of all dependencies</li>
+                    <li><strong>Automated Scanning:</strong> Use tools like OWASP Dependency-Check, Snyk, npm audit</li>
+                    <li><strong>Regular Updates:</strong> Keep all components current with security patches</li>
+                    <li><strong>Vulnerability Monitoring:</strong> Subscribe to security advisories</li>
+                    <li><strong>Remove Unused Components:</strong> Eliminate unnecessary dependencies</li>
+                    <li><strong>Use Official Sources:</strong> Download components from trusted repositories</li>
+                    <li><strong>Version Pinning:</strong> Control when and how updates are applied</li>
+                  </ul>
+
+                  <p class="text-small">Teams that fail to track and update software components introduce risk without realizing it. This problem persists because development speed often takes priority, and many teams lack visibility into what third-party dependencies their systems use.</p>
+                </div>
+              </div>
+
+              <!-- Unvalidated Redirects Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">↗️</div>
+                  <h3 class="panel-title">A10: Unvalidated Redirects and Forwards</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Finally, <strong>Unvalidated Redirects and Forwards</strong> occur when an application allows users to be redirected to a different page without verifying the destination. Attackers can exploit this behavior to send users to malicious sites, launch phishing attacks, or bypass access controls within a system.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">How Attackers Exploit This</h4>
+                  <p class="text-small">Example vulnerable URL:</p>
+                  <pre style="background: #1a1a1a; padding: 1rem; border-radius: 0.5rem; overflow-x: auto;">
+https://trustedsite.com/redirect?url=https://malicious-site.com
+              </pre>
+
+                  <p class="text-small">Users trust the link because it starts with a legitimate domain, but they end up on an attacker's site.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Attack Scenarios</h4>
+                  <ul class="checklist">
+                    <li><strong>Phishing:</strong> Redirect to fake login pages</li>
+                    <li><strong>Malware Distribution:</strong> Send to sites with malicious downloads</li>
+                    <li><strong>Access Control Bypass:</strong> Forward to unauthorized internal pages</li>
+                    <li><strong>Open Redirect Chains:</strong> Use trusted site as intermediary</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Prevention Techniques</h4>
+                  <ul class="checklist">
+                    <li><strong>Avoid Redirects:</strong> Don't use user-controllable redirects when possible</li>
+                    <li><strong>Whitelist Validation:</strong> Only allow redirects to pre-approved destinations</li>
+                    <li><strong>Indirect References:</strong> Use mapping IDs instead of URLs</li>
+                    <li><strong>Warning Pages:</strong> Show confirmation before external redirects</li>
+                    <li><strong>URL Validation:</strong> Verify destination is internal and authorized</li>
+                  </ul>
+
+                  <p class="text-small">While this may seem like a minor issue, it is powerful because it leverages user trust in a legitimate website to carry out deception. If a trustworthy site redirects to a harmful location, users may not realize they are being targeted until it is too late.</p>
+
+                  <div class="callout info" style="margin:.75rem 0 1rem 0;">
+                    <strong>Security Principle:</strong> Together, these last five risks remind us that security involves protecting user data, enforcing proper access at every level, managing dependencies responsibly, and guarding against manipulation of users and system behavior.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Defense Strategy Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🛡️</div>
+                  <h3 class="panel-title">Comprehensive Defense Strategy</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">A single oversight in handling data, managing access, updating software, or controlling user navigation can compromise an entire platform. By understanding and addressing the complete OWASP Top 10, developers and security practitioners can build more resilient applications that truly protect users and business assets.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Holistic Security Approach</h4>
+                  <ul class="checklist">
+                    <li><strong>Secure by Design:</strong> Build security into architecture from the start</li>
+                    <li><strong>Defense in Depth:</strong> Layer multiple security controls</li>
+                    <li><strong>Continuous Monitoring:</strong> Detect and respond to threats actively</li>
+                    <li><strong>Security Testing:</strong> Regular penetration tests and code reviews</li>
+                    <li><strong>Training:</strong> Educate all team members on secure practices</li>
+                    <li><strong>Incident Response:</strong> Be prepared for when breaches occur</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- Conclusion Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🎯</div>
+                  <h3 class="panel-title">Conclusion</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">The OWASP Top 10 provides a comprehensive framework for understanding the most critical web application security risks. By mastering all ten vulnerabilities—from injection and authentication failures to sensitive data exposure and vulnerable components—security professionals gain the knowledge needed to build, test, and maintain truly secure web applications.</p>
+
+                  <p class="text-small">Remember: security is not a one-time implementation but a continuous process. The threats evolve, new vulnerabilities emerge, and attackers develop more sophisticated techniques. By staying informed, following best practices, and maintaining a security-first mindset, we can create web applications that protect users, preserve trust, and withstand the challenges of an ever-changing threat landscape.</p>
+                </div>
+              </div>
+            </article>
+
+            <aside class="section">
+              <h3>Learning Objectives</h3>
+              <ul class="checklist">
+                <li>Understand sensitive data exposure risks and protections</li>
+                <li>Explain function-level access control importance</li>
+                <li>Recognize CSRF attacks and defense mechanisms</li>
+                <li>Identify risks of vulnerable components</li>
+                <li>Understand unvalidated redirects exploitation</li>
+                <li>Apply comprehensive defense strategies</li>
+              </ul>
+
+              <h3 style="margin-top:1rem;">Key Terms</h3>
+              <ul class="checklist">
+                <li><strong>Sensitive Data Exposure</strong> — Inadequate protection of confidential data</li>
+                <li><strong>Access Control</strong> — Authorization enforcement mechanisms</li>
+                <li><strong>CSRF</strong> — Cross-Site Request Forgery attack</li>
+                <li><strong>CSRF Token</strong> — Unique token preventing CSRF</li>
+                <li><strong>CVE</strong> — Common Vulnerabilities and Exposures</li>
+                <li><strong>Dependency</strong> — External component or library</li>
+                <li><strong>Open Redirect</strong> — Unvalidated URL redirection</li>
+                <li><strong>Whitelist</strong> — Approved items list</li>
+              </ul>
+
+              <div class="callout warn" style="margin-top:1rem;">
+                <strong>Final Reminder:</strong> The OWASP Top 10 represents the foundation of web security knowledge. Master these concepts to build truly secure applications.
+              </div>
+            </aside>
+          </div>
+
+          <div class="quiz-card" style="margin-top:1rem;">
+            <div>
+              <div class="quiz-title">Knowledge check</div>
+              <div class="text-muted">3 quick questions to reinforce learning.</div>
+            </div>
+            <a class="secondary-button" href="#">Start quiz</a>
+          </div>
+
+          <div class="nav-row">
+            <a id="prevLesson" class="secondary-button" href="#">Previous lesson</a>
+            <a id="nextLesson" class="secondary-button" href="#">Next lesson</a>
+          </div>
+
+          <div class="lesson-actions">
+            <button id="completeLesson" class="primary-button">Mark Complete</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../../../js/includes.js"></script>
+  <script src="../../../js/lesson-page.js"></script>
+</body>
+</html>
+

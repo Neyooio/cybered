@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <title>Cyber Ed - Profile</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/profile.css">
+</head>
+<body class="site-background">
+  <div id="profilePageRoot" class="layout-shell">
+    <div data-include="./partials/navbar.html"></div>
+    <main class="main-wrapper">
+      <div data-include="./partials/topbar.html"></div>
+      <section class="content-section">
+        <div class="profile-container">
+          <!-- Profile Header Card -->
+          <div class="profile-header-card">
+            <div class="profile-header-content">
+              <div class="avatar-section">
+                <div class="avatar-ring-lg">
+                  <img id="profileAvatar" src="https://i.ibb.co/c1g1kkh/pixel-avatar.png" alt="Profile Avatar" />
+                </div>
+                <button id="swapAvatarBtn" type="button" class="swap-avatar-btn" aria-label="Change avatar">
+                  <img src="../../assets/images/Swap.png" alt="" aria-hidden="true" />
+                </button>
+              </div>
+              <div class="profile-info">
+                <h2 id="profileName" class="profile-username">Player</h2>
+                <div class="role-section">
+                  <div class="profile-role-badge" id="profileRole">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                      <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                      <circle cx="12" cy="7" r="4"></circle>
+                    </svg>
+                    <span class="role-text">Student</span>
+                  </div>
+                </div>
+                <div class="profile-rank-badge">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z"/>
+                  </svg>
+                  <span>Rank <span id="rank" class="rank-number">15th</span></span>
+                </div>
+              </div>
+            </div>
+            <div class="xp-section">
+              <div class="xp-header">
+                <span class="xp-icon">⚡</span>
+                <span class="xp-text">Experience Points</span>
+              </div>
+              <div class="xp-track">
+                <div id="xpProgress" class="xp-fill" style="width:12%;"></div>
+                <div id="xpLabel" class="xp-label">1200 / 10000 XP</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Stats Grid -->
+          <div class="stats-section">
+            <div class="stat-card stat-card-achievements">
+              <div class="stat-icon"><img src="../../assets/images/trophy.png" alt="Trophy" class="stat-icon-img" /></div>
+              <div class="stat-content">
+                <div class="stat-label">Achievements</div>
+                <div id="achievements" class="stat-value">0 / 20</div>
+              </div>
+            </div>
+            <div class="stat-card stat-card-goal">
+              <div class="stat-icon"><img src="../../assets/images/target.png" alt="Target" class="stat-icon-img" /></div>
+              <div class="stat-content">
+                <div class="stat-label">Next Goal</div>
+                <div id="nextGoal" class="stat-value">Reach 2000 XP</div>
+              </div>
+            </div>
+            <div class="stat-card stat-card-streak">
+              <div class="stat-icon"><img id="streakPlantImg" src="../../assets/images/Tree_Streak/tree1.png" alt="Plant" class="stat-icon-img" /></div>
+              <div class="stat-content">
+                <div class="stat-label">Plant Streak</div>
+                <div id="streakValue" class="stat-value">0 Days</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Badges Section -->
+          <div class="badges-section">
+            <div class="badges-header">
+              <h3 class="section-title">
+                <span class="title-icon">🎖️</span>
+                Badges & Achievements
+              </h3>
+            </div>
+            <div class="badges-grid">
+              <div class="badge-item badge-locked">
+                <div class="badge-icon"><img src="../../assets/images/lock.png" alt="Locked" class="badge-lock-img" /></div>
+                <div class="badge-name">First Steps</div>
+              </div>
+              <div class="badge-item badge-locked">
+                <div class="badge-icon"><img src="../../assets/images/lock.png" alt="Locked" class="badge-lock-img" /></div>
+                <div class="badge-name">Quick Learner</div>
+              </div>
+              <div class="badge-item badge-locked">
+                <div class="badge-icon"><img src="../../assets/images/lock.png" alt="Locked" class="badge-lock-img" /></div>
+                <div class="badge-name">Code Master</div>
+              </div>
+              <div class="badge-item badge-locked">
+                <div class="badge-icon"><img src="../../assets/images/lock.png" alt="Locked" class="badge-lock-img" /></div>
+                <div class="badge-name">Security Pro</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Profile Avatar Selection Overlay -->
+  <div id="profileAvatarOverlay" class="profile-avatar-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="profileAvatarTitle">
+    <div class="avatar-card">
+      <div class="avatar-card-head">
+        <h2 id="profileAvatarTitle">Select an Avatar</h2>
+  <img src="../../assets/images/Logo.png" alt="Cyber Ed Logo" class="reg-logo">
+      </div>
+      <div id="profileAvatarGrid" class="avatar-grid">
+        <button type="button" class="avatar-option" data-id="sen" data-name="Sen" data-src="../../assets/images/Sen.png">
+          <img src="../../assets/images/Sen.png" alt="Sen" />
+          <span class="avatar-name">Sen</span>
+        </button>
+        <button type="button" class="avatar-option" data-id="aldrick" data-name="Aldrick" data-src="../../assets/images/Aldrick.png">
+          <img src="../../assets/images/Aldrick.png" alt="Aldrick" />
+          <span class="avatar-name">Aldrick</span>
+        </button>
+        <button type="button" class="avatar-option" data-id="maya" data-name="Maya" data-src="../../assets/images/Maya.png">
+          <img src="../../assets/images/Maya.png" alt="Maya" />
+          <span class="avatar-name">Maya</span>
+        </button>
+        <button type="button" class="avatar-option" data-id="annette" data-name="Annette" data-src="../../assets/images/Annette.png">
+          <img src="../../assets/images/Annette.png" alt="Annette" />
+          <span class="avatar-name">Annette</span>
+        </button>
+      </div>
+      <div class="avatar-play-wrap">
+        <button id="profileAvatarSaveBtn" type="button" class="btn-avatar" disabled aria-label="Save avatar">
+          <span class="reg-play">&#9654;</span>
+        </button>
+        <small class="avatar-hint">This changes your profile avatar</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Role Request Modal -->
+  <div id="roleRequestOverlay" class="role-request-overlay hidden">
+    <div class="role-request-card">
+      <div class="role-request-header">
+        <h3>Request Faculty Role</h3>
+        <button id="closeRoleRequest" class="role-request-close" aria-label="Close">×</button>
+      </div>
+      <div class="role-request-body">
+        <p class="role-request-description">Submit a request to upgrade your role to Faculty. Please provide a detailed reason for your request.</p>
+        <form id="roleRequestForm">
+          <div class="form-group">
+            <label for="requestReason">Reason for Request</label>
+            <textarea 
+              id="requestReason" 
+              name="reason" 
+              rows="6" 
+              placeholder="Explain why you want to become a faculty member..."
+              required
+            ></textarea>
+          </div>
+          <div class="role-request-actions">
+            <button type="button" id="cancelRoleRequest" class="btn-secondary">Cancel</button>
+            <button type="submit" id="submitRoleRequest" class="btn-primary">Submit Request</button>
+          </div>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/includes.js"></script>
+  <script src="../js/profile.js"></script>
+</body>
+</html>

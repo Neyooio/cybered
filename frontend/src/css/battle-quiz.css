@@ -1,0 +1,1111 @@
+/* Battle Quiz Styles - Pokemon GBA Style */
+
+/* Battle Overlay - Fullscreen */
+.battle-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(0, 0, 0, 0.95);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  padding: clamp(10px, 2vw, 20px);
+}
+
+.battle-overlay.active {
+  opacity: 1;
+}
+
+/* Battle Container - Responsive Aspect Ratio Wrapper (16:9) */
+.battle-container {
+  position: relative;
+  width: 100%;
+  max-width: min(95vw, calc(95vh * 16 / 9));
+  margin: 0 auto;
+}
+
+/* 16:9 Aspect Ratio Box - This maintains the ratio */
+.battle-container::before {
+  content: '';
+  display: block;
+  padding-top: 56.25%; /* 9/16 = 56.25% for 16:9 ratio */
+}
+
+/* Battle Start Screen - Module Card Style */
+.battle-start-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.battle-start-card {
+  background: linear-gradient(180deg, #1d4ed8 0%, #1542c7 100%);
+  border: clamp(2px, 0.4vw, 3px) solid #fb923c;
+  border-radius: clamp(10px, 2vw, 18px);
+  padding: clamp(18px, 4vw, 24px) clamp(16px, 3.5vw, 22px) clamp(16px, 3vw, 20px);
+  max-width: 520px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+  position: relative;
+}
+
+.battle-close-btn {
+  position: absolute;
+  top: clamp(8px, 2vw, 12px);
+  right: clamp(8px, 2vw, 12px);
+  width: clamp(32px, 6vw, 40px);
+  height: clamp(32px, 6vw, 40px);
+  border-radius: 50%;
+  background: rgba(0, 0, 0, 0.25);
+  border: 2px solid rgba(0, 0, 0, 0.4);
+  color: white;
+  font-size: clamp(18px, 3.5vw, 24px);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+  font-weight: 700;
+  line-height: 1;
+}
+
+.battle-close-btn:hover {
+  background: rgba(0, 0, 0, 0.4);
+  transform: scale(1.1);
+}
+
+.battle-start-icon {
+  width: clamp(60px, 12vw, 70px);
+  height: clamp(60px, 12vw, 70px);
+  margin: 0 auto clamp(12px, 2.5vw, 16px);
+  background: linear-gradient(135deg, #3b82f6, #2563eb);
+  border-radius: clamp(10px, 2vw, 12px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 6px 18px rgba(59, 130, 246, 0.4);
+}
+
+.battle-start-icon svg {
+  width: clamp(36px, 7vw, 42px);
+  height: clamp(36px, 7vw, 42px);
+  color: white;
+}
+
+.battle-start-title {
+  font-size: clamp(20px, 4.5vw, 28px);
+  font-weight: 800;
+  color: white;
+  margin: 0 0 clamp(8px, 1.5vw, 12px) 0;
+  letter-spacing: -0.5px;
+}
+
+.battle-start-description {
+  font-size: clamp(13px, 2.5vw, 16px);
+  color: #cbd5e1;
+  margin: 0 0 clamp(14px, 2.5vw, 18px) 0;
+  line-height: 1.5;
+}
+
+.battle-start-rules {
+  background: rgba(0, 0, 0, 0.25);
+  border-radius: clamp(8px, 1.5vw, 10px);
+  padding: clamp(12px, 2.5vw, 16px);
+  margin-bottom: clamp(14px, 2.5vw, 18px);
+  text-align: left;
+}
+
+.battle-start-rules h3 {
+  font-size: clamp(14px, 2.8vw, 17px);
+  font-weight: 700;
+  color: white;
+  margin: 0 0 clamp(8px, 1.5vw, 12px) 0;
+}
+
+.battle-start-rules ul {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+  color: #e2e8f0;
+  font-size: clamp(12px, 2.3vw, 14px);
+}
+
+.battle-start-rules li {
+  padding-left: clamp(16px, 3vw, 20px);
+  margin-bottom: clamp(6px, 1.2vw, 8px);
+  position: relative;
+  line-height: 1.4;
+}
+
+.battle-start-rules li:last-child {
+  margin-bottom: 0;
+}
+
+.battle-start-rules li::before {
+  content: "•";
+  position: absolute;
+  left: 0;
+  color: #fb923c;
+  font-size: clamp(16px, 3vw, 20px);
+  line-height: 1.2;
+}
+
+.battle-start-button {
+  background: linear-gradient(180deg, #d62839, #9b111e);
+  color: white;
+  border: 2px solid #0a163f;
+  border-radius: clamp(14px, 3vw, 18px);
+  padding: clamp(12px, 2.5vw, 16px) clamp(20px, 4vw, 32px);
+  font-size: clamp(16px, 3vw, 22px);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.25), 0 12px 24px rgba(0, 0, 0, 0.25);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: clamp(6px, 1.2vw, 10px);
+  width: auto;
+  min-width: clamp(200px, 60vw, 260px);
+}
+
+.battle-start-button:hover {
+  background: linear-gradient(180deg, #e63946, #a81219);
+  transform: translateY(-2px) scale(1.02);
+}
+
+.battle-start-button:active {
+  transform: translateY(0) scale(0.98);
+}
+
+.battle-start-button .play-icon {
+  font-size: clamp(14px, 2.5vw, 18px);
+}
+
+/* Battle Arena - Game Screen (Unified Battle Card) */
+.battle-arena {
+  /* Absolute positioning to fill aspect ratio container */
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  
+  /* Visual styling */
+  border: clamp(2px, 0.3vw, 4px) solid #000;
+  border-radius: clamp(8px, 1.5vw, 20px);
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  background-color: #153fb8;
+  
+  /* Crisp pixel art rendering */
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+}
+
+/* Environment background (frosted/blurred) - Layer 0 */
+.battle-arena::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  /* Path is relative to this CSS file at frontend/src/css -> go up to frontend (../../) then into assets */
+  background-image: url('../../assets/images/environments/BTLbg3.jpg');
+  background-size: cover;
+  background-position: center;
+  filter: blur(2px) saturate(115%);
+  opacity: 0.9;
+  z-index: 0;
+  image-rendering: auto; /* Don't pixelate background */
+}
+
+/* Color/lighting overlay - Layer 1 */
+.battle-arena::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(180deg, rgba(20,50,200,0.2), rgba(10,30,140,0.35));
+  z-index: 1;
+}
+
+/* All content above background - Layer 2+ */
+.battle-arena > * {
+  position: relative;
+  z-index: 2;
+}
+
+/* Bottom Blocker - Hides lower portion during intro */
+.bottom-blocker {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  height: 40%;
+  background: #153fb8;
+  z-index: 20;
+  transition: opacity 0.4s ease-out;
+}
+
+.bottom-blocker.fade-out {
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* Battle Status Panels - Percentage-based positioning */
+.battle-status {
+  position: absolute;
+  top: 2.5%;
+  left: 2.5%;
+  right: 2.5%;
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2%;
+  z-index: 10;
+}
+
+/* Monster/Enemy Side (Right) - Scales with card */
+.enemy-panel {
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.1));
+  border: max(2px, 0.2vw) solid #fb923c;
+  border-radius: clamp(6px, 1vw, 12px);
+  padding: clamp(8px, 1.5%, 14px);
+  width: clamp(140px, 22%, 220px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  color: white;
+  backdrop-filter: blur(8px);
+}
+
+.enemy-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: clamp(4px, 1%, 8px);
+}
+
+.enemy-name {
+  font-weight: bold;
+  font-size: clamp(11px, 1.8vw, 16px);
+  color: white;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.enemy-level {
+  display: none;
+}
+
+/* Player Side (Left) - Scales with card */
+.player-panel {
+  background: linear-gradient(135deg, rgba(255,255,255,0.15), rgba(255,255,255,0.1));
+  border: max(2px, 0.2vw) solid #fb923c;
+  border-radius: clamp(6px, 1vw, 12px);
+  padding: clamp(8px, 1.5%, 14px);
+  width: clamp(140px, 22%, 220px);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+  color: white;
+  backdrop-filter: blur(8px);
+}
+
+.player-info {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: clamp(4px, 1%, 8px);
+}
+
+.player-name {
+  font-weight: bold;
+  font-size: clamp(11px, 1.8vw, 16px);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.player-level {
+  display: none;
+}
+
+/* Health Bars - Scale proportionally */
+.health-bar-container {
+  background: rgba(0,0,0,0.4);
+  border-radius: clamp(4px, 0.8vw, 8px);
+  height: clamp(14px, 2.5%, 22px);
+  overflow: hidden;
+  position: relative;
+  border: max(1px, 0.15vw) solid rgba(0,0,0,0.5);
+}
+
+.health-bar {
+  height: 100%;
+  transition: width 0.5s ease-out, background-color 0.3s;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(9px, 1.4vw, 13px);
+  font-weight: bold;
+  color: white;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+}
+
+.health-bar.high {
+  background: linear-gradient(90deg, #48bb78, #38a169);
+}
+
+.health-bar.medium {
+  background: linear-gradient(90deg, #ed8936, #dd6b20);
+}
+
+.health-bar.low {
+  background: linear-gradient(90deg, #f56565, #e53e3e);
+}
+
+.health-text {
+  font-size: 0.75rem;
+  margin-top: 0.25rem;
+  opacity: 0.9;
+}
+
+/* Battle Stage holds the two sprite slots (left=player, right=enemy) */
+.battle-stage {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 5;
+}
+
+/* Sprite slots anchor positions; the <img> scales inside */
+.sprite-slot {
+  position: absolute;
+  aspect-ratio: 1 / 1; /* keep square-ish box for consistent scaling */
+}
+
+.sprite-slot.player {
+  left: 5%;
+  bottom: 24%;
+  width: clamp(90px, 18%, 180px);
+}
+
+.sprite-slot.enemy {
+  right: 5%;
+  top: 18%;
+  width: clamp(110px, 22%, 220px);
+}
+
+.sprite-slot img {
+  width: 100%;
+  height: auto;
+  object-fit: contain;
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  filter: drop-shadow(0 1.4vw 1.6vw rgba(0,0,0,0.8));
+}
+
+/* Enemy sprite flipped at the slot level (not on img) */
+.sprite-slot.enemy {
+  transform: scaleX(-1);
+}
+
+.sprite-slot.enemy img {
+  transform: none !important; /* Ensure no transform on the image itself */
+}
+
+/* Gentle idle float without affecting anchor positions */
+.sprite-slot.player:not(.hurt) { 
+  animation: floatPlayer 2.2s ease-in-out infinite; 
+}
+.sprite-slot.enemy:not(.hurt) { 
+  animation: floatEnemy 2.5s ease-in-out infinite; 
+}
+
+/* Hurt animation using CSS transform on the slot itself */
+.sprite-slot.hurt {
+  animation: hurtShake 0.6s ease-out;
+}
+
+@keyframes hurtShake {
+  0%, 100% { transform: translate(0, 0); }
+  10% { transform: translate(-10px, -5px); }
+  20% { transform: translate(10px, 5px); }
+  30% { transform: translate(-8px, -3px); }
+  40% { transform: translate(8px, 4px); }
+  50% { transform: translate(-6px, -2px); }
+  60% { transform: translate(6px, 3px); }
+  70% { transform: translate(-4px, -1px); }
+  80% { transform: translate(4px, 2px); }
+  90% { transform: translate(-2px, -1px); }
+}
+
+/* Override for enemy slot - maintain flip during shake */
+.sprite-slot.enemy.hurt {
+  animation: hurtShakeFlipped 0.6s ease-out;
+}
+
+@keyframes hurtShakeFlipped {
+  0%, 100% { transform: scaleX(-1) translate(0, 0); }
+  10% { transform: scaleX(-1) translate(-10px, -5px); }
+  20% { transform: scaleX(-1) translate(10px, 5px); }
+  30% { transform: scaleX(-1) translate(-8px, -3px); }
+  40% { transform: scaleX(-1) translate(8px, 4px); }
+  50% { transform: scaleX(-1) translate(-6px, -2px); }
+  60% { transform: scaleX(-1) translate(6px, 3px); }
+  70% { transform: scaleX(-1) translate(-4px, -1px); }
+  80% { transform: scaleX(-1) translate(4px, 2px); }
+  90% { transform: scaleX(-1) translate(-2px, -1px); }
+}
+
+@keyframes floatPlayer {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes floatEnemy {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-8px); }
+}
+
+/* Battle Panel (Blue) - Unified panel for intro and questions */
+.battle-panel {
+  position: absolute;
+  bottom: 2.5%;
+  left: 2.5%;
+  right: 2.5%;
+  height: 35%;
+  background: linear-gradient(135deg, rgba(59, 130, 246, 0.98), rgba(37, 99, 235, 0.95));
+  border: max(2px, 0.25vw) solid #1d4ed8;
+  border-radius: clamp(8px, 1.2vw, 16px);
+  box-shadow: 0 0.8vw 2vw rgba(0,0,0,0.4), inset 0 1px 0 rgba(255,255,255,0.3);
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0;
+  overflow: hidden;
+  z-index: 15;
+}
+
+.intro-panel-content {
+  grid-column: 1 / -1;
+  text-align: center;
+  color: white;
+  padding: clamp(10px, 2%, 20px);
+  transition: opacity 0.4s ease-out;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+}
+
+.intro-panel-title {
+  font-size: clamp(14px, 2.5vw, 22px);
+  font-weight: 800;
+  margin: 0 0 clamp(6px, 1%, 10px) 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+  letter-spacing: 0.5px;
+}
+
+.intro-panel-subtitle {
+  font-size: clamp(11px, 1.8vw, 16px);
+  font-weight: 600;
+  margin: 0;
+  opacity: 0.95;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Question side inside blue panel */
+.question-side {
+  display: flex;
+  flex-direction: column;
+  border-right: max(2px, 0.25vw) solid rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.question-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin: 0;
+  padding: clamp(6px, 1.2%, 10px) clamp(8px, 1.5%, 12px);
+  border-bottom: max(1px, 0.15vw) solid rgba(255, 255, 255, 0.2);
+  background: rgba(255, 255, 255, 0.15);
+}
+
+.question-number {
+  background: linear-gradient(135deg, #fb923c, #f97316);
+  color: white;
+  padding: clamp(3px, 0.8%, 6px) clamp(6px, 1.2%, 10px);
+  border-radius: clamp(6px, 1vw, 12px);
+  font-weight: bold;
+  font-size: clamp(9px, 1.5vw, 13px);
+  box-shadow: 0 2px 6px rgba(251, 146, 60, 0.4);
+  white-space: nowrap;
+}
+
+.question-timer {
+  display: flex;
+  align-items: center;
+  gap: clamp(3px, 0.8%, 6px);
+  font-weight: bold;
+  color: white;
+  font-size: clamp(9px, 1.5vw, 13px);
+}
+
+.timer-icon {
+  font-size: clamp(10px, 1.6vw, 14px);
+}
+
+.question-text {
+  font-size: clamp(11px, 1.8vw, 15px);
+  font-weight: 600;
+  color: white;
+  line-height: 1.3;
+  padding: clamp(10px, 2%, 18px);
+  background: rgba(255, 255, 255, 0.05);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  flex: 1;
+  overflow-y: auto;
+}
+
+/* Answer side inside blue panel */
+.answer-side {
+  display: grid;
+  grid-template-rows: repeat(4, 1fr);
+  gap: 0;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+.move-button {
+  background: rgba(255, 255, 255, 0.15);
+  border: none;
+  border-bottom: max(1px, 0.15vw) solid rgba(255, 255, 255, 0.2);
+  border-radius: 0;
+  padding: clamp(8px, 1.5%, 14px) clamp(30px, 6%, 50px) clamp(8px, 1.5%, 14px) clamp(10px, 2%, 16px);
+  color: white;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  text-align: center;
+  position: relative;
+  font-size: clamp(10px, 1.7vw, 14px);
+  align-items: center;
+  justify-content: center;
+  line-height: 1.2;
+}
+
+.move-button:last-child {
+  border-bottom: none;
+}
+
+.move-button:hover:not(:disabled) {
+  transform: none;
+  box-shadow: none;
+  border-color: rgba(255, 255, 255, 0.3);
+  background: rgba(255, 255, 255, 0.25);
+}
+
+.move-button:active:not(:disabled) {
+  transform: none;
+}
+
+.move-button:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.move-button.correct {
+  background: linear-gradient(135deg, #48bb78, #38a169);
+  border-color: #2f855a;
+  animation: correctPulse 0.6s;
+  color: white;
+}
+
+.move-button.incorrect {
+  background: linear-gradient(135deg, #f56565, #e53e3e);
+  border-color: #c53030;
+  animation: incorrectShake 0.6s;
+  color: white;
+}
+
+@keyframes correctPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+
+@keyframes incorrectShake {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-10px); }
+  75% { transform: translateX(10px); }
+}
+
+.move-letter {
+  position: absolute;
+  right: clamp(8px, 1.5%, 14px);
+  background: linear-gradient(135deg, #fb923c, #f97316);
+  color: white;
+  width: clamp(20px, 3.5%, 28px);
+  height: clamp(20px, 3.5%, 28px);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(10px, 1.6vw, 14px);
+  font-weight: bold;
+  box-shadow: 0 2px 6px rgba(251, 146, 60, 0.4);
+  flex-shrink: 0;
+}
+
+/* Battle Messages */
+.battle-message {
+  display: none;
+}
+
+@keyframes slideUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+.battle-message.success {
+  display: none;
+}
+
+.battle-message.error {
+  display: none;
+}
+
+/* Victory/Defeat Screen - Matching Battle Start Card Style */
+.battle-result-card {
+  background: linear-gradient(180deg, #e8eaf0 0%, #f5f7fa 100%);
+  border: clamp(3px, 0.5vw, 4px) solid #2d3748;
+  border-radius: clamp(12px, 2vw, 20px);
+  padding: clamp(24px, 4vw, 40px) clamp(20px, 3.5vw, 32px);
+  max-width: 480px;
+  width: 90%;
+  text-align: center;
+  box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  animation: resultPopup 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes resultPopup {
+  from { 
+    opacity: 0; 
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  to { 
+    opacity: 1; 
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.result-title {
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 800;
+  margin: 0 0 clamp(8px, 1.5vw, 12px) 0;
+  letter-spacing: 1px;
+}
+
+.result-title.victory {
+  color: #48bb78;
+}
+
+.result-title.defeat {
+  color: #f56565;
+}
+
+.result-subtitle {
+  font-size: clamp(14px, 2.5vw, 18px);
+  color: #4a5568;
+  margin: 0 0 clamp(20px, 3vw, 28px) 0;
+  font-weight: 500;
+}
+
+.result-stats {
+  background: rgba(45, 55, 72, 0.08);
+  border-radius: clamp(10px, 1.8vw, 14px);
+  padding: clamp(16px, 2.8vw, 22px);
+  margin-bottom: clamp(20px, 3vw, 28px);
+  text-align: left;
+}
+
+.result-stat {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: clamp(10px, 1.8vw, 14px) 0;
+  border-bottom: 2px solid rgba(45, 55, 72, 0.1);
+}
+
+.result-stat:last-child {
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.result-stat:first-child {
+  padding-top: 0;
+}
+
+.stat-label {
+  font-weight: 700;
+  color: #4a5568;
+  font-size: clamp(12px, 2.2vw, 15px);
+  letter-spacing: 0.3px;
+}
+
+.stat-value {
+  font-weight: 800;
+  color: #2d3748;
+  font-size: clamp(14px, 2.5vw, 18px);
+}
+
+/* Battle Result Buttons - Red like Start Battle */
+.battle-result-button {
+  background: linear-gradient(180deg, #d62839, #9b111e);
+  color: white;
+  border: 2px solid #0a163f;
+  border-radius: clamp(14px, 3vw, 18px);
+  padding: clamp(12px, 2.5vw, 16px) clamp(20px, 4vw, 32px);
+  font-size: clamp(14px, 2.5vw, 18px);
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.25), 0 8px 16px rgba(0, 0, 0, 0.25);
+  width: 100%;
+  margin-bottom: clamp(10px, 1.8vw, 14px);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.battle-result-button:hover {
+  background: linear-gradient(180deg, #e63946, #a81219);
+  transform: translateY(-2px);
+  box-shadow: 0 8px 0 rgba(0, 0, 0, 0.25), 0 10px 20px rgba(0, 0, 0, 0.3);
+}
+
+.battle-result-button:active {
+  transform: translateY(0);
+  box-shadow: 0 3px 0 rgba(0, 0, 0, 0.25), 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.battle-result-button.secondary {
+  background: linear-gradient(180deg, #4a5568, #2d3748);
+  border: 2px solid #1a202c;
+  margin-bottom: 0;
+}
+
+.battle-result-button.secondary:hover {
+  background: linear-gradient(180deg, #5a6678, #3d4758);
+}
+
+/* Old battle-result styles - kept for backwards compatibility but will be replaced */
+.battle-result {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(255,255,255,0.98);
+  border: 4px solid #2d3748;
+  border-radius: 1rem;
+  padding: 2rem;
+  text-align: center;
+  z-index: 10;
+  min-width: 300px;
+  box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+  animation: resultPopup 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
+}
+
+@keyframes resultPopup {
+  from { 
+    opacity: 0; 
+    transform: translate(-50%, -50%) scale(0.5);
+  }
+  to { 
+    opacity: 1; 
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+/* Start Battle Button */
+.start-battle-btn {
+  background: linear-gradient(135deg, #667eea, #764ba2);
+  color: white;
+  font-weight: bold;
+  font-size: 1.1rem;
+  padding: 1.5rem;
+  border: none;
+  border-radius: 0.75rem;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.3s;
+  box-shadow: 0 4px 15px rgba(102,126,234,0.4);
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.start-battle-btn:hover {
+  transform: translateY(-3px);
+  box-shadow: 0 6px 20px rgba(102,126,234,0.6);
+}
+
+.start-battle-btn:active {
+  transform: translateY(-1px);
+}
+
+/* Loading State */
+.battle-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 300px;
+}
+
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(102,126,234,0.3);
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.loading-text {
+  margin-top: 1rem;
+  font-size: 1.1rem;
+  color: #4a5568;
+  font-weight: 600;
+}
+
+/* Battle Trigger Button */
+.battle-trigger-btn {
+  background: linear-gradient(180deg, #d62839, #9b111e);
+  color: white;
+  border: 2px solid #0a163f;
+  border-radius: 0.75rem;
+  padding: 0.875rem 1.75rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 0 rgba(0, 0, 0, 0.25), 0 6px 12px rgba(0, 0, 0, 0.2);
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  margin: 1rem 0;
+}
+
+.battle-trigger-btn:hover {
+  background: linear-gradient(180deg, #e63946, #a81219);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 0 rgba(0, 0, 0, 0.25), 0 8px 16px rgba(0, 0, 0, 0.3);
+}
+
+.battle-trigger-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 0 rgba(0, 0, 0, 0.25), 0 3px 8px rgba(0, 0, 0, 0.2);
+}
+
+/* ===================================
+   POKEMON-STYLE BATTLE INTRO ANIMATIONS
+   =================================== */
+
+/* Screen Transition Wipe Effect */
+.battle-transition {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: #000;
+  z-index: 100;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.battle-transition.active {
+  animation: transitionWipe 0.8s cubic-bezier(0.65, 0, 0.35, 1);
+}
+
+@keyframes transitionWipe {
+  0% {
+    opacity: 0;
+    clip-path: circle(0% at 50% 50%);
+  }
+  50% {
+    opacity: 1;
+    clip-path: circle(150% at 50% 50%);
+  }
+  100% {
+    opacity: 0;
+    clip-path: circle(0% at 50% 50%);
+  }
+}
+
+/* Background Slide-In */
+.battle-arena.intro-bg {
+  opacity: 0;
+}
+
+.battle-arena.intro-bg.animate-in {
+  animation: bgSlideIn 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes bgSlideIn {
+  0% {
+    opacity: 0;
+    transform: scale(1.3);
+    filter: blur(10px);
+  }
+  100% {
+    opacity: 1;
+    transform: scale(1);
+    filter: blur(0);
+  }
+}
+
+/* Player Sprite Entry */
+.player-sprite.intro-hidden {
+  opacity: 0;
+  transform: translateX(-100%) scale(0.8);
+  animation: none; /* Disable float animation during intro */
+}
+
+.player-sprite.animate-in {
+  animation: playerSlideIn 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+/* Re-enable float animation after intro */
+.player-sprite.intro-complete {
+  animation: floatPlayer 2s ease-in-out infinite;
+}
+
+@keyframes playerSlideIn {
+  0% {
+    opacity: 0;
+    transform: translateX(-100%) scale(0.8);
+  }
+  60% {
+    transform: translateX(5%) scale(1.05);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Enemy Sprite Entry - Dramatic Bounce */
+.enemy-sprite.intro-hidden {
+  opacity: 0;
+  transform: translateX(150%) scale(0.5);
+}
+
+.enemy-sprite.animate-in {
+  animation: enemyBounceIn 0.7s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+
+.enemy-sprite.intro-complete {
+  animation: floatEnemy 2.5s ease-in-out infinite;
+}
+
+@keyframes enemyBounceIn {
+  0% {
+    opacity: 0;
+    transform: translateX(150%) scale(0.5);
+  }
+  60% {
+    opacity: 1;
+    transform: translateX(-8%) scale(1.1);
+  }
+  80% {
+    transform: translateX(3%) scale(0.95);
+  }
+  100% {
+    opacity: 1;
+    transform: translateX(0) scale(1);
+  }
+}
+
+/* Status Panels Fade-In */
+.battle-status.intro-hidden {
+  opacity: 0;
+  transform: translateY(-30px);
+}
+
+.battle-status.animate-in {
+  animation: statusFadeIn 0.4s ease-out forwards;
+}
+
+@keyframes statusFadeIn {
+  0% {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Question Panel Slide-Up */
+.battle-panel.intro-hidden {
+  opacity: 0;
+  transform: translateY(100%);
+}
+
+.battle-panel.animate-in {
+  animation: panelSlideUp 0.5s cubic-bezier(0.22, 1, 0.36, 1) forwards;
+}
+
+@keyframes panelSlideUp {
+  0% {
+    opacity: 0;
+    transform: translateY(100%);
+  }
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Intro Panel Animations - Removed, using battle-panel now */
+
+/* Flash effect for sprite appearance */
+.sprite-flash {
+  position: relative;
+}
+
+.sprite-flash::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(255, 255, 255, 0.8);
+  opacity: 0;
+  pointer-events: none;
+  animation: flashEffect 0.3s ease-out;
+}
+
+@keyframes flashEffect {
+  0%, 100% { opacity: 0; }
+  50% { opacity: 1; }
+}

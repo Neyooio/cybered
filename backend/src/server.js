@@ -1,0 +1,73 @@
+import 'dotenv/config';
+import express from 'express';
+import mongoose from 'mongoose';
+import cors from 'cors';
+import helmet from 'helmet';
+import morgan from 'morgan';
+
+import authRouter from './routes/auth.js';
+import usersRouter from './routes/users.js';
+import roleRequestsRouter from './routes/roleRequests.js';
+import quizRouter from './routes/quiz.js';
+import path from 'path';
+import { fileURLToPath } from 'url';
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = path.dirname(__filename);
+
+const app = express();
+
+app.use(helmet());
+// CORS: allow all origins (including file:// -> Origin: null) and preflight
+const corsOptions = { origin: (origin, cb) => cb(null, true), credentials: true };
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
+app.use(express.json());
+app.use(morgan('dev'));
+
+// Serve static frontend files
+const frontendPath = path.join(__dirname, '../../frontend');
+app.use('/assets', express.static(path.join(frontendPath, 'assets')));
+app.use('/css', express.static(path.join(frontendPath, 'src/css')));
+app.use('/js', express.static(path.join(frontendPath, 'src/js')));
+app.use('/html', express.static(path.join(frontendPath, 'src/html')));
+
+// Simple root route to avoid confusion when visiting http://localhost:PORT
+app.get('/', (req, res) => {
+  res.type('text/plain').send('CyberEd API is running. Try /api/health');
+});
+
+app.get('/api/health', (req, res) => {
+  const conn = mongoose.connection;
+  res.json({
+    ok: true,
+    service: 'cybered-backend',
+    time: new Date().toISOString(),
+    db: {
+      name: conn?.name,
+      host: conn?.host,
+      readyState: conn?.readyState // 1 = connected
+    }
+  });
+});
+
+app.use('/api/auth', authRouter);
+app.use('/api/users', usersRouter);
+app.use('/api/role-requests', roleRequestsRouter);
+app.use('/api/quiz', quizRouter);
+
+const PORT = process.env.PORT || 4000;
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/CyberEdCapstone';
+
+(async () => {
+  try {
+    await mongoose.connect(MONGODB_URI, { 
+      dbName: undefined // accept database in URI
+    });
+    console.log('[db] connected');
+    app.listen(PORT, () => console.log(`[server] listening on http://localhost:${PORT}`));
+  } catch (err) {
+    console.error('[db] connection error', err);
+    process.exit(1);
+  }
+})();

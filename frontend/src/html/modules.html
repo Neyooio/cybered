@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cyber Ed - Modules</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/modules.css">
+</head>
+<body class="site-background">
+  <div class="layout-shell">
+    <div data-include="./partials/navbar.html"></div>
+    <main class="main-wrapper">
+      <div data-include="./partials/topbar.html"></div>
+      <section class="content-section content-stack">
+        <div class="modules-header">
+          <h1 class="title-medium" style="letter-spacing:.025em">Modules</h1>
+          <div class="modules-search-container">
+            <input type="text" id="moduleSearch" class="modules-search-input" placeholder="Search modules..." />
+            <span class="search-icon">🔍</span>
+          </div>
+        </div>
+        <div id="modulesGrid" class="modules-grid"></div>
+      </section>
+    </main>
+  </div>
+  <script src="../js/includes.js"></script>
+  <script src="../js/modules.js"></script>
+</body>
+</html>

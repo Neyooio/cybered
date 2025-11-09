@@ -1,0 +1,257 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Network Defense - Lesson 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../css/global.css">
+  <link rel="stylesheet" href="../../../css/profile.css">
+  <link rel="stylesheet" href="../../../css/lessons.css">
+</head>
+<body class="site-background" data-module="network-defense" data-lesson="1">
+  <div class="layout-shell">
+    <main class="main-wrapper">
+      <section class="content-section content-stack">
+        <div class="page-header">
+          <h1 class="title-medium">Lesson 1</h1>
+          <a id="backToModule" href="#" class="exit-button"><img src="../../../../assets/images/Exit.png" alt="" aria-hidden="true" class="exit-icon"><span class="exit-text">Back to module</span></a>
+        </div>
+        <div class="card-panel">
+          <div class="lesson-hero">
+            <div>
+              <div class="lesson-title">The OSI Model: Foundation of Network Communication</div>
+              <p class="text-small text-muted">Understanding the seven-layer framework that structures network communication and why each layer is critical for security.</p>
+            </div>
+            <div class="meta-chips">
+              <span class="chip">Level: Beginner</span>
+              <span class="chip">Time: 20-25 min</span>
+              <span class="chip">Prereq: None</span>
+            </div>
+          </div>
+
+          <div class="lesson-grid">
+            <!-- Introduction Panel -->
+            <div style="grid-column: 1 / -1;">
+              <div class="intro-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📖</div>
+                  <h3 class="panel-title">Introduction to Network Defense</h3>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Network Defense is a vital component of cybersecurity focused on protecting computer networks from unauthorized access, misuse, disruption, and cyberattacks. As organizations rely heavily on interconnected systems and online communication, securing network infrastructures has become more critical than ever.</p>
+
+                  <p class="text-small">This module provides students with a foundational understanding of how data travels across a network, the threats that endanger network security, and the tools and techniques used to safeguard digital environments. By mastering these concepts, learners gain the knowledge necessary to detect, prevent, and respond to cyber threats in both academic and real-world cybersecurity environments.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Content Column -->
+            <article>
+              <!-- OSI Model Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🌐</div>
+                  <h3 class="panel-title">What is the OSI Model?</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">The <strong>OSI Model</strong>, or Open Systems Interconnection Model, is a conceptual framework that explains how data travels across a network. Think of it as a layered blueprint that breaks communication into seven stages, starting from the physical signals moving through wires up to the actual applications you interact with, like your web browser or email.</p>
+
+                  <p class="text-small">When a device sends data, it begins at the top layer, where applications format and prepare information, then works its way down through the layers. Each layer adds its own specific instructions and structure to ensure the data moves correctly, safely, and efficiently. Once transmitted over the physical medium—whether cables, radio waves, or fiber—the data then climbs back up the layers on the receiving device, reversing the process until it reaches the user in a readable form.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/NetworkDefense/osi-model.png" alt="OSI 7 Layers Model" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">The OSI Model's seven layers of network communication</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Seven Layers Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📊</div>
+                  <h3 class="panel-title">The Seven Layers Explained</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <h4 style="margin-top: 0.5rem; font-size: 0.95rem; font-weight: 700;">Layer 7: Application Layer</h4>
+                  <p class="text-small">At the top is the <strong>Application layer</strong>, where users and programs interact with network services such as emails, web browsing, and file transfers. This is the layer you directly experience when using applications like Chrome, Outlook, or messaging apps.</p>
+
+                  <ul class="checklist">
+                    <li><strong>Examples:</strong> HTTP, HTTPS, FTP, SMTP, DNS</li>
+                    <li><strong>Security Concerns:</strong> Application vulnerabilities, phishing, malicious downloads</li>
+                    <li><strong>Defense Tools:</strong> Application firewalls, web filters, email security</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Layer 6: Presentation Layer</h4>
+                  <p class="text-small">Beneath that, the <strong>Presentation layer</strong> handles formatting, encryption, and compression, so devices understand each other's data even if they run different systems. This layer ensures data is in a usable format and can secure it through encryption.</p>
+
+                  <ul class="checklist">
+                    <li><strong>Functions:</strong> Data encryption/decryption, compression, format translation</li>
+                    <li><strong>Examples:</strong> SSL/TLS encryption, JPEG, GIF, MPEG</li>
+                    <li><strong>Security Role:</strong> Ensures confidentiality through encryption</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Layer 5: Session Layer</h4>
+                  <p class="text-small">The <strong>Session layer</strong> manages and maintains the communication sessions between devices, like keeping your connection stable during a video call or maintaining login sessions on websites.</p>
+
+                  <ul class="checklist">
+                    <li><strong>Functions:</strong> Session establishment, maintenance, termination</li>
+                    <li><strong>Examples:</strong> NetBIOS, RPC, authentication tokens</li>
+                    <li><strong>Security Concerns:</strong> Session hijacking, token theft</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Layer 4: Transport Layer</h4>
+                  <p class="text-small">Moving deeper, the <strong>Transport layer</strong> ensures reliable data delivery through protocols such as <strong>TCP</strong> or fast delivery through <strong>UDP</strong>, deciding whether to guarantee every packet arrives or prioritize speed instead.</p>
+
+                  <ul class="checklist">
+                    <li><strong>TCP:</strong> Reliable, ordered, connection-oriented (e.g., web browsing, email)</li>
+                    <li><strong>UDP:</strong> Fast, connectionless, no delivery guarantee (e.g., streaming, gaming)</li>
+                    <li><strong>Security:</strong> Port scanning detection, segmentation, firewalling</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Layer 3: Network Layer</h4>
+                  <p class="text-small">The <strong>Network layer</strong> handles logical addressing and routing, deciding which path the data should take across networks, using <strong>IP addresses</strong> as guides.</p>
+
+                  <ul class="checklist">
+                    <li><strong>Protocol:</strong> Internet Protocol (IP), ICMP, routing protocols</li>
+                    <li><strong>Function:</strong> Packet forwarding, routing decisions, IP addressing</li>
+                    <li><strong>Security:</strong> IP filtering, router access controls, VPNs</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Layer 2: Data Link Layer</h4>
+                  <p class="text-small">The <strong>Data Link layer</strong> takes charge of physical addressing through <strong>MAC addresses</strong> and ensures data frames move smoothly across a local network segment.</p>
+
+                  <ul class="checklist">
+                    <li><strong>Components:</strong> Ethernet, switches, MAC addresses, ARP</li>
+                    <li><strong>Function:</strong> Frame delivery, error detection, local addressing</li>
+                    <li><strong>Vulnerabilities:</strong> ARP spoofing, MAC flooding, switch attacks</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Layer 1: Physical Layer</h4>
+                  <p class="text-small">Finally, the <strong>Physical layer</strong> is responsible for converting the data into electrical or radio signals and delivering it across cables or wireless transmissions as raw bits.</p>
+
+                  <ul class="checklist">
+                    <li><strong>Components:</strong> Cables, wireless signals, network cards, hubs</li>
+                    <li><strong>Function:</strong> Bit transmission, signal encoding</li>
+                    <li><strong>Security:</strong> Physical access control, cable security, wireless encryption</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- OSI Security Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🛡️</div>
+                  <h3 class="panel-title">Why the OSI Model Matters for Security</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">This layered approach matters deeply in network defense because <strong>security controls often target specific layers</strong>. Understanding where threats occur and where defenses should be applied is crucial for effective protection:</p>
+
+                  <ul class="checklist">
+                    <li><strong>Firewalls</strong> typically monitor traffic at the Network and Transport layers by filtering based on IP addresses and ports</li>
+                    <li><strong>Application firewalls</strong> work at the Application layer to inspect the content of web traffic</li>
+                    <li><strong>Encryption</strong> operates at the Presentation layer to protect data confidentiality</li>
+                    <li><strong>Switches and VLANs</strong> provide segmentation at the Data Link layer</li>
+                    <li><strong>Physical security</strong> protects the Physical layer from unauthorized access</li>
+                  </ul>
+
+                  <div class="callout info" style="margin:.75rem 0 1rem 0;">
+                    <strong>Security Principle:</strong> By understanding the OSI Model, security professionals can pinpoint where vulnerabilities exist and apply defenses at the correct stage, ensuring each layer contributes to a secure and reliable communication process.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Encapsulation Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📦</div>
+                  <h3 class="panel-title">Data Encapsulation Process</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">As data moves down the OSI layers, each layer adds its own header information—a process called <strong>encapsulation</strong>:</p>
+
+                  <ul class="checklist">
+                    <li><strong>Application/Presentation/Session:</strong> Data</li>
+                    <li><strong>Transport Layer:</strong> Segments (TCP) or Datagrams (UDP)</li>
+                    <li><strong>Network Layer:</strong> Packets (with IP headers)</li>
+                    <li><strong>Data Link Layer:</strong> Frames (with MAC addresses)</li>
+                    <li><strong>Physical Layer:</strong> Bits (transmitted as signals)</li>
+                  </ul>
+
+                  <p class="text-small">On the receiving end, the process reverses—<strong>de-encapsulation</strong>—with each layer removing its header and passing the data up to the next layer until the application receives the original message.</p>
+                </div>
+              </div>
+
+              <!-- Conclusion Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🎯</div>
+                  <h3 class="panel-title">Conclusion</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">The OSI Model provides a universal language for understanding network communication and security. By breaking down complex network interactions into seven distinct layers, it helps cybersecurity professionals identify vulnerabilities, implement appropriate defenses, and troubleshoot issues systematically. Mastering the OSI Model is fundamental to understanding how modern networks operate and how to protect them effectively.</p>
+                </div>
+              </div>
+            </article>
+
+            <aside class="section">
+              <h3>Learning Objectives</h3>
+              <ul class="checklist">
+                <li>Explain the purpose of the OSI Model in network communication</li>
+                <li>Identify and describe all seven layers of the OSI Model</li>
+                <li>Understand the function of each layer in data transmission</li>
+                <li>Recognize how security controls map to different OSI layers</li>
+                <li>Explain the encapsulation and de-encapsulation process</li>
+                <li>Apply OSI knowledge to network security concepts</li>
+              </ul>
+
+              <h3 style="margin-top:1rem;">Key Terms</h3>
+              <ul class="checklist">
+                <li><strong>OSI Model</strong> — Open Systems Interconnection reference model</li>
+                <li><strong>Encapsulation</strong> — Adding layer-specific headers to data</li>
+                <li><strong>TCP</strong> — Transmission Control Protocol (reliable)</li>
+                <li><strong>UDP</strong> — User Datagram Protocol (fast)</li>
+                <li><strong>IP Address</strong> — Logical network address</li>
+                <li><strong>MAC Address</strong> — Physical hardware address</li>
+                <li><strong>Packet</strong> — Data unit at Network layer</li>
+                <li><strong>Frame</strong> — Data unit at Data Link layer</li>
+              </ul>
+
+              <div class="callout warn" style="margin-top:1rem;">
+                <strong>Remember:</strong> Each OSI layer provides specific security opportunities and vulnerabilities. Understanding all layers is essential for comprehensive network defense.
+              </div>
+            </aside>
+          </div>
+
+          <div class="quiz-card" style="margin-top:1rem;">
+            <div>
+              <div class="quiz-title">Knowledge check</div>
+              <div class="text-muted">3 quick questions to reinforce learning.</div>
+            </div>
+            <a class="secondary-button" href="#">Start quiz</a>
+          </div>
+
+          <div class="nav-row">
+            <a id="prevLesson" class="secondary-button" href="#">Previous lesson</a>
+            <a id="nextLesson" class="secondary-button" href="#">Next lesson</a>
+          </div>
+
+          <div class="lesson-actions">
+            <button id="completeLesson" class="primary-button">Mark Complete</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../../../js/includes.js"></script>
+  <script src="../../../js/lesson-page.js"></script>
+</body>
+</html>
+

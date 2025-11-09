@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cryptography - Lesson 4</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../css/global.css">
+  <link rel="stylesheet" href="../../../css/profile.css">
+  <link rel="stylesheet" href="../../../css/lessons.css">
+</head>
+<body class="site-background" data-module="cryptography" data-lesson="4">
+  <div class="layout-shell">
+    <main class="main-wrapper">
+      <section class="content-section content-stack">
+        <div class="page-header">
+          <h1 class="title-medium">Lesson 4</h1>
+          <a id="backToModule" href="#" class="exit-button"><img src="../../../../assets/images/Exit.png" alt="" aria-hidden="true" class="exit-icon"><span class="exit-text">Back to module</span></a>
+        </div>
+        <div class="card-panel">
+          <div class="lesson-hero">
+            <div>
+              <div class="lesson-title">Cryptography in Real-World Applications</div>
+              <p class="text-small text-muted">Exploring how cryptography secures web traffic, blockchain systems, passwords, and everyday digital communications.</p>
+            </div>
+            <div class="meta-chips">
+              <span class="chip">Level: Intermediate</span>
+              <span class="chip">Time: 25-30 min</span>
+              <span class="chip">Prereq: Lessons 1-3</span>
+            </div>
+          </div>
+
+          <div class="lesson-grid">
+            <!-- Introduction Panel -->
+            <div style="grid-column: 1 / -1;">
+              <div class="intro-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📖</div>
+                  <h3 class="panel-title">Introduction</h3>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Cryptography is no longer a theoretical discipline practiced only by mathematicians or intelligence agencies. It has become the invisible infrastructure that protects nearly every digital action people perform—from sending a message, making a bank transaction, logging into an account, or even simply connecting to a Wi-Fi network. In a world where information moves freely and instantly across borders, cryptography acts as the silent guardian, ensuring that privacy, identity, trust, and security are preserved regardless of how open the internet may seem. Without cryptography, the modern digital world would collapse into chaos, because every message, every account, and every system would be exposed.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/Cryptography/security-goals.png" alt="Security Goals" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">Security goals: Confidentiality, Integrity, Availability with Authentication and Non-repudiation</p>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Content Column -->
+            <article>
+              <!-- HTTPS/TLS Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🌐</div>
+                  <h3 class="panel-title">Securing Web Traffic: HTTPS and TLS</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">One of the clearest examples of cryptography's importance is found in securing web traffic. When you see "https://" in your browser, that seemingly simple letter "s" signals that cryptography is actively protecting your connection. Behind the scenes, protocols known as <strong>SSL</strong> and <strong>TLS</strong> establish a secure channel between your device and the website you are visiting. This process ensures that no one between you and the server—not your internet provider, not hackers, not governments monitoring traffic—can read or alter your data.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/Cryptography/tls-handshake.png" alt="TLS Handshake" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">The TLS handshake process securing web communications</p>
+                  </div>
+
+                  <p class="text-small">The <strong>TLS handshake</strong>, a remarkable cryptographic dance, uses asymmetric encryption to exchange a secret key, then switches to symmetric encryption like AES to protect all communication. This hybrid approach provides both strong security and fast performance. Every time you log in to your bank account, submit a form, or enter your credit card details, cryptography guarantees that your information reaches the correct destination safely and unchanged.</p>
+
+                  <div class="callout info" style="margin:.75rem 0 1rem 0;">
+                    <strong>How TLS Works:</strong> The handshake uses RSA or ECC for key exchange (asymmetric), then switches to AES for data encryption (symmetric). This combines the security of public-key cryptography with the speed of symmetric encryption.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Blockchain Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">⛓️</div>
+                  <h3 class="panel-title">Blockchain Technology: Trust Without Authority</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Another powerful real-world application is <strong>blockchain technology</strong>. While often associated with cryptocurrencies, the blockchain is fundamentally a cryptographic system designed to achieve two goals: to prevent tampering, and to prove ownership or authenticity without relying on a central authority.</p>
+
+                  <p class="text-small">At the core of every blockchain is <strong>hashing</strong>. Each block contains not only its own data, but also the hash of the previous block, forming an unbreakable chain. If anyone attempts to modify a single transaction—even changing one character—the hash changes, and the chain breaks instantly. This property creates <strong>immutability</strong>, a key feature that makes blockchain trustworthy.</p>
+
+                  <p class="text-small"><strong>Digital signatures</strong> further strengthen the system by ensuring that only the legitimate private key holder can authorize a transaction. No bank or administrator is needed to confirm ownership; cryptography itself becomes the authority. Whether used for cryptocurrencies, digital identities, supply chain tracking, or secure voting systems, blockchain relies entirely on cryptographic principles to maintain trust in a decentralized world.</p>
+                </div>
+              </div>
+
+              <!-- Password Protection Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🔑</div>
+                  <h3 class="panel-title">Password Protection: Hashing with Salting</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Cryptography also plays a critical role in protecting stored data. Sensitive information such as passwords, personal records, government data, and private files cannot simply be stored as plaintext. If databases are hacked, plaintext data would give attackers immediate access to everything.</p>
+
+                  <p class="text-small">To prevent this, systems use <strong>hashing with salting</strong> to store passwords securely. When someone creates a password, it is transformed into a hash, and a random <strong>salt</strong> is added to prevent attackers from using precomputed tables (rainbow tables) to reverse-engineer the hash. Even if attackers steal the entire database, they still cannot reconstruct the passwords due to the one-way nature of hashing.</p>
+
+                  <ul class="checklist">
+                    <li><strong>Password hashing prevents:</strong> Direct password theft from databases</li>
+                    <li><strong>Salting prevents:</strong> Rainbow table attacks and hash lookup</li>
+                    <li><strong>Common algorithms:</strong> bcrypt, Argon2, PBKDF2</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Full-Disk Encryption</h4>
+                  <p class="text-small">For files and drives, <strong>full-disk encryption</strong> systems like BitLocker and FileVault rely on symmetric encryption, usually AES, to lock all stored information. The encryption happens automatically at the hardware or operating system level. If the device is lost or stolen, the data remains useless because the decryption key is not accessible. This approach transforms physical theft from a catastrophic event into a minor inconvenience.</p>
+                </div>
+              </div>
+
+              <!-- Everyday Applications Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📱</div>
+                  <h3 class="panel-title">Everyday Cryptographic Applications</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Beyond these major applications, cryptography quietly powers countless everyday technologies:</p>
+
+                  <ul class="checklist">
+                    <li><strong>Secure Messaging:</strong> Apps like WhatsApp and Signal use end-to-end encryption so that only the sender and recipient can read messages—not even the company hosting the service.</li>
+                    <li><strong>Virtual Private Networks (VPNs):</strong> Use cryptography to secure data across untrusted networks, hiding your online activity from ISPs and network monitors.</li>
+                    <li><strong>Digital Certificates:</strong> Authenticate identities on the internet, allowing you to know that a website is real and not a fraudulent clone.</li>
+                    <li><strong>Mobile Payments:</strong> Apple Pay, Google Pay, and similar services use cryptography to protect transaction data.</li>
+                    <li><strong>Biometric Authentication:</strong> Unlocking smartphones with fingerprints or face recognition involves cryptographic secure storage.</li>
+                    <li><strong>Cloud Backups:</strong> Syncing data to cloud services involves encryption to protect files in transit and at rest.</li>
+                    <li><strong>Software Updates:</strong> Verifying that updates are authentic and haven't been tampered with uses digital signatures.</li>
+                  </ul>
+
+                  <div class="callout info" style="margin:.75rem 0 1rem 0;">
+                    <strong>Impact Scale:</strong> Every second, billions of cryptographic operations occur globally—encrypting web traffic, verifying signatures, hashing passwords, and securing communications. Modern life depends on cryptography functioning correctly and invisibly.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Conclusion Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🎯</div>
+                  <h3 class="panel-title">The Universal Language of Digital Security</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Cryptography has become a universal language—an invisible shield woven into every layer of modern digital life. It maintains privacy, protects identities, verifies authenticity, and ensures that information can move freely without becoming vulnerable. The real power of cryptography lies not only in its mathematics but in its reliability. People use cryptographic systems billions of times per day without ever seeing them, yet their trust in digital technology depends entirely on the strength of these hidden defenses.</p>
+
+                  <p class="text-small">The modern world functions because cryptography ensures that even in an environment full of risks, communication remains safe, systems remain trustworthy, and data remains secure. From the moment you wake up and check your phone to the last online transaction before bed, cryptography protects every digital interaction. It is the foundation upon which trust, privacy, and security are built in the digital age.</p>
+
+                  <p class="text-small">As cyber threats continue to evolve, the role of cryptography becomes even more critical. Understanding how these systems work—not just theoretically but in practical, real-world contexts—is essential for anyone working in cybersecurity, software development, or IT infrastructure. Cryptography is not just about mathematics and algorithms; it's about enabling trust in a connected world where physical boundaries no longer limit communication or commerce.</p>
+                </div>
+              </div>
+            </article>
+
+            <aside class="section">
+              <h3>Learning Objectives</h3>
+              <ul class="checklist">
+                <li>Explain how HTTPS/TLS secures web traffic using hybrid encryption</li>
+                <li>Describe how blockchain uses cryptography for immutability and trust</li>
+                <li>Understand password hashing with salting for secure storage</li>
+                <li>Identify the role of full-disk encryption in protecting devices</li>
+                <li>Recognize everyday applications of cryptography in digital life</li>
+                <li>Appreciate the critical importance of cryptography in modern society</li>
+              </ul>
+
+              <h3 style="margin-top:1rem;">Key Terms</h3>
+              <ul class="checklist">
+                <li><strong>HTTPS/TLS</strong> — Secure web communication protocol</li>
+                <li><strong>TLS Handshake</strong> — Process of establishing secure connection</li>
+                <li><strong>Blockchain</strong> — Distributed ledger using cryptographic hashing</li>
+                <li><strong>Immutability</strong> — Property of being unchangeable once recorded</li>
+                <li><strong>Salt</strong> — Random data added to passwords before hashing</li>
+                <li><strong>Full-Disk Encryption</strong> — Encrypting entire storage device</li>
+                <li><strong>End-to-End Encryption</strong> — Only sender and recipient can decrypt</li>
+                <li><strong>VPN</strong> — Virtual Private Network securing internet traffic</li>
+                <li><strong>Digital Certificate</strong> — Cryptographically signed identity verification</li>
+              </ul>
+
+              <div class="callout warn" style="margin-top:1rem;">
+                <strong>Security Reality:</strong> Nearly every secure digital interaction you have today relies on cryptography working correctly. A failure in these systems would have catastrophic global consequences.
+              </div>
+            </aside>
+          </div>
+
+          <div class="quiz-card" style="margin-top:1rem;">
+            <div>
+              <div class="quiz-title">Knowledge check</div>
+              <div class="text-muted">3 quick questions to reinforce learning.</div>
+            </div>
+            <a class="secondary-button" href="#">Start quiz</a>
+          </div>
+
+          <div class="nav-row">
+            <a id="prevLesson" class="secondary-button" href="#">Previous lesson</a>
+            <a id="nextLesson" class="secondary-button" href="#">Next lesson</a>
+          </div>
+
+          <div class="lesson-actions">
+            <button id="completeLesson" class="primary-button">Mark Complete</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../../../js/includes.js"></script>
+  <script src="../../../js/lesson-page.js"></script>
+</body>
+</html>
+

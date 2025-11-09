@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Cryptography - Lesson 1</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../css/global.css">
+  <link rel="stylesheet" href="../../../css/profile.css">
+  <link rel="stylesheet" href="../../../css/lessons.css">
+  <link rel="stylesheet" href="../../../css/battle-quiz.css">
+</head>
+<body class="site-background" data-module="cryptography" data-lesson="1">
+  <div class="layout-shell">
+    <main class="main-wrapper">
+      <section class="content-section content-stack">
+        <div class="page-header">
+          <h1 class="title-medium">Lesson 1</h1>
+          <a id="backToModule" href="#" class="exit-button"><img src="../../../../assets/images/Exit.png" alt="" aria-hidden="true" class="exit-icon"><span class="exit-text">Back to module</span></a>
+        </div>
+        <div class="card-panel">
+          <div class="lesson-hero">
+            <div>
+              <div class="lesson-title">Fundamentals of Cryptography</div>
+              <p class="text-small text-muted">Understanding the core principles of secure communication through encryption, decryption, and cryptographic keys.</p>
+            </div>
+            <div class="meta-chips">
+              <span class="chip">Level: Beginner</span>
+              <span class="chip">Time: 15-20 min</span>
+              <span class="chip">Prereq: None</span>
+            </div>
+          </div>
+
+          <div class="lesson-grid">
+            <!-- Introduction Panel -->
+            <div style="grid-column: 1 / -1;">
+              <div class="intro-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📖</div>
+                  <h3 class="panel-title">Introduction</h3>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Cryptography begins with a simple goal: to allow two parties to communicate securely even if someone else is listening. But behind that simple idea lies a complex mix of mathematics, logic, computer science, and security principles that ensure information stays private, authentic, and unaltered. At its core, cryptography is the science of transforming readable data into something meaningless to anyone except the intended recipient. This transformation is not random; it is governed by precise mathematical rules known as algorithms, which rely on secret values called keys. Without these keys, no attacker—no matter how skilled—should be able to uncover the original message.</p>
+
+                  <div class="callout info" style="margin:.75rem 0 1rem 0;">
+                    <strong>Key Insight:</strong> The strength of modern cryptography lies not in hiding the algorithm, but in protecting the secret key.
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Content Column -->
+            <article>
+              <!-- Core Concepts Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🔑</div>
+                  <h3 class="panel-title">Core Concepts</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small"><strong>Plaintext and Ciphertext:</strong> Every cryptographic system starts with plaintext, which is the original message exactly as it is meant to be read. This could be a password, a bank transaction, a personal message, or even a whole file. When plaintext is encrypted, it becomes ciphertext, a scrambled form that appears random and unreadable. Ciphertext should reveal nothing about the original message, even if an attacker studies it carefully.</p>
+
+                  <p class="text-small"><strong>Keys:</strong> The ability to scramble and unscramble data relies entirely on the key, a unique piece of information that dictates how encryption and decryption are performed. If the key is wrong—or missing—the ciphertext remains meaningless.</p>
+
+                  <p class="text-small"><strong>Encryption and Decryption:</strong> The process of transforming plaintext into ciphertext is called encryption, while reversing it back to readable form is called decryption. Both processes depend on an algorithm, which is a specific mathematical procedure that explains exactly how to mix the plaintext and the key together.</p>
+                </div>
+              </div>
+
+              <!-- Symmetric vs Asymmetric Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🔐</div>
+                  <h3 class="panel-title">Symmetric vs Asymmetric Encryption</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small"><strong>Symmetric Encryption:</strong> Uses the same key to encrypt and decrypt. It is extremely fast, efficient, and ideal for encrypting large amounts of data. However, it faces a major challenge: the key must be shared between the communicating parties, and sharing that key securely can be difficult. If the key is intercepted while being transmitted, security is instantly compromised.</p>
+
+                  <p class="text-small"><strong>Asymmetric Encryption:</strong> Solves the key-sharing problem by introducing a pair of keys: a public key, which can be shared with anyone, and a private key, which must be kept secret. The public key encrypts messages, but it cannot decrypt them; only the matching private key can. This brilliant structure allows secure communication without needing to share a secret key beforehand. Anyone can send you an encrypted message, but only you can read it. This system also supports digital signatures, which allow you to prove a message genuinely came from you.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/Cryptography/asymmetric-encryption.png" alt="Asymmetric Encryption" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">Asymmetric key algorithm showing sender and recipient using separate public/private keys</p>
+                  </div>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/Cryptography/symmetric-encryption.png" alt="Symmetric Encryption" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">Visual representation of encryption and decryption process</p>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Foundation of Trust Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🛡️</div>
+                  <h3 class="panel-title">The Foundation of Trust</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Together, these concepts—plaintext, ciphertext, keys, algorithms, symmetric and asymmetric encryption—form the true foundation of cryptography. Before any modern system like HTTPS, digital wallets, blockchains, VPNs, or secure messaging apps can function, this basic framework must exist. Cryptography is not just about hiding information; it is about creating trust in a digital world where people communicate, store information, and perform transactions without ever physically meeting. It ensures that messages stay private, identities are real, and data cannot be changed without detection. It is, in many ways, the invisible shield that protects nearly everything we do online.</p>
+                </div>
+              </div>
+            </article>
+
+            <aside class="section">
+              <h3>Learning Objectives</h3>
+              <ul class="checklist">
+                <li>Understand the core concepts of plaintext, ciphertext, and keys</li>
+                <li>Explain the difference between encryption and decryption</li>
+                <li>Distinguish between symmetric and asymmetric encryption</li>
+                <li>Recognize the role of algorithms in cryptographic systems</li>
+                <li>Understand why modern cryptography relies on key secrecy rather than algorithm secrecy</li>
+              </ul>
+
+              <h3 style="margin-top:1rem;">Key Terms</h3>
+              <ul class="checklist">
+                <li><strong>Plaintext</strong> — Original, readable message before encryption</li>
+                <li><strong>Ciphertext</strong> — Encrypted, unreadable form of the message</li>
+                <li><strong>Key</strong> — Secret value used to encrypt and decrypt data</li>
+                <li><strong>Algorithm</strong> — Mathematical procedure for encryption/decryption</li>
+                <li><strong>Symmetric Encryption</strong> — Same key for both encryption and decryption</li>
+                <li><strong>Asymmetric Encryption</strong> — Different keys (public/private) for encryption and decryption</li>
+              </ul>
+
+              <div class="callout warn" style="margin-top:1rem;">
+                <strong>Important:</strong> Even the strongest algorithm becomes useless if the key is weak, easily guessed, or improperly shared.
+              </div>
+
+              <!-- Battle Quiz Trigger Button -->
+              <button class="battle-trigger-btn" onclick="battleQuiz.openOverlay()" style="margin-top: 1.5rem;">
+                <span style="font-size: 1.125rem;">▶</span> Start Battle Quiz
+              </button>
+            </aside>
+          </div>
+
+          <!-- Full Screen Battle Quiz Overlay -->
+          <div class="battle-overlay" id="battleOverlay">
+            <div class="battle-container" id="battleContainer">
+              <!-- Battle content will be loaded here by JavaScript -->
+            </div>
+          </div>
+
+          <div class="lesson-actions">
+            <button id="completeLesson" class="primary-button">Mark Complete</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../../../js/includes.js"></script>
+  <script src="../../../js/lesson-page.js"></script>
+  <script src="../../../js/battle-quiz.js"></script>
+</body>
+</html>
+

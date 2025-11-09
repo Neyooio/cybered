@@ -1,0 +1,191 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cyber Ed - Registration</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <link rel="icon" type="image/png" href="../../assets/images/Logo.png" />
+  <link rel="stylesheet" href="../css/register-form.css" />
+ 
+</head>
+<body class="site-background">
+  
+  <div class="bg-gradient" aria-hidden="true"></div>
+
+  <div class="bg-skyline" aria-hidden="true"></div>
+
+  <!--  Sign Up/Login card  -->
+  <div id="signupBlurWrapper" class="blur-lg pointer-events-none">
+    <div id="registerFormContainer">
+      
+      <form id="registerForm" class="reg-form" novalidate>
+     
+        <div class="reg-header">
+          <span class="reg-title" id="formTitle">Sign Up</span>
+          <img src="../../assets/images/Logo.png" alt="Cyber Ed Logo" class="reg-logo">
+        </div>
+
+        <!-- Sign Up fields -->
+        <div class="reg-fields" id="signupFields">
+          <div class="reg-input-group">
+            <input id="regUsername" type="text" placeholder="Username" required>
+          </div>
+          <div class="reg-input-group">
+            <input id="regEmail" type="email" placeholder="Email" required>
+          </div>
+          <div class="reg-input-group">
+            <input id="regPhone" type="text" placeholder="Mobile Number" required>
+          </div>
+          <div class="reg-input-group reg-password-group">
+            <input id="regPassword" type="password" placeholder="Password" required>
+            <span class="reg-eye eye-closed" id="toggleRegPassword" title="Show/Hide Password"></span>
+          </div>
+          <!-- Compact password hint shown on focus/click -->
+          <div class="pw-hint" id="pwHint" role="status" aria-live="polite" aria-atomic="true" style="display:none;">
+            Use at least 8 characters with uppercase, lowercase, number, and symbol.
+          </div>
+          <!-- Password helper: strength meter + requirements -->
+          <div class="pw-helper" id="pwHelper">
+            <div class="pw-meter" aria-hidden="true">
+              <div class="pw-meter-fill" id="pwMeterFill"></div>
+            </div>
+            <ul class="pw-checklist" id="pwChecklist" aria-live="polite">
+              <li data-req="len">At least 8 characters</li>
+              <li data-req="lower">Lowercase letter</li>
+              <li data-req="upper">Uppercase letter</li>
+              <li data-req="num">Number</li>
+              <li data-req="sym">Symbol (!@#$%^&amp;*)</li>
+            </ul>
+          </div>
+        </div>
+
+        <!-- Login fields  -->
+        <div class="reg-fields hidden" id="loginFields">
+          <div class="reg-input-group">
+            <input id="loginEmail" type="email" placeholder="Email">
+          </div>
+          <div class="reg-input-group reg-password-group">
+            <input id="loginPassword" type="password" placeholder="Password">
+            <span class="reg-eye eye-closed" id="toggleLoginPassword" title="Show/Hide Password"></span>
+          </div>
+        </div>
+
+        <!-- Social icons  -->
+        <div class="reg-social">
+          <span class="reg-social-text">Or Sign up using</span>
+          <div class="reg-social-icons">
+            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/microsoft.svg" alt="Microsoft" title="Microsoft">
+            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/facebook.svg" alt="Facebook" title="Facebook">
+            <img src="https://cdn.jsdelivr.net/gh/simple-icons/simple-icons/icons/google.svg" alt="Google" title="Google">
+          </div>
+        </div>
+
+        <!-- Play button  -->
+        <button type="submit" class="btn-primary reg-submit" aria-label="Continue">
+          <span class="reg-play">&#9654;</span>
+        </button>
+
+        <!-- Toggle between Signup/Login -->
+        <div class="reg-footer">
+          <span id="toggleText">Already have an account?</span>
+          <a href="#" id="toggleFormBtn">Login</a>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!--  Dialogue Overlay -->
+  <div id="introOverlay" class="intro-overlay">
+    
+    <div class="intro-backdrop"></div>
+
+    <!-- Dialogue bubble -->
+    <div id="dialogueBox" class="dialogue-box" onclick="advanceDialogue()">
+      <div class="dialogue-inner">
+        <div class="dialogue-avatar">
+          <img src="../../assets/images/Cipher.png" alt="Cipher" class="dialogue-avatar-img" />
+          <div class="dialogue-name">Cipher</div>
+        </div>
+        <div class="dialogue-body">
+          <p id="dialogueText" class="dialogue-text">
+            Hello, Welcome to <span class="text-red-500 font-bold">Cyber Ed</span>, your<br>
+            Cybersecurity e-learning buddy.
+          </p>
+          <div class="dialogue-continue">
+            Tap the screen to continue <span class="dot"></span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!--  Avatar Selection -->
+  <div id="avatarOverlay" class="avatar-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="avatarTitle">
+    <div class="avatar-card">
+      
+      <div class="avatar-card-head">
+        <h2 id="avatarTitle">Select an Avatar</h2>
+        <img src="../../assets/images/Logo.png" alt="Cyber Ed Logo" class="reg-logo">
+      </div>
+
+      <div id="avatarGrid" class="avatar-grid">
+        
+        <button type="button" class="avatar-option" data-id="sen" data-name="Sen" data-src="../../assets/images/Sen.png">
+          <img src="../../assets/images/Sen.png" alt="Sen" />
+          <span class="avatar-name">Sen</span>
+        </button>
+
+        <button type="button" class="avatar-option" data-id="aldrick" data-name="Aldrick" data-src="../../assets/images/Aldrick.png">
+          <img src="../../assets/images/Aldrick.png" alt="Aldrick" />
+          <span class="avatar-name">Aldrick</span>
+        </button>
+
+        <button type="button" class="avatar-option" data-id="maya" data-name="Maya" data-src="../../assets/images/Maya.png">
+          <img src="../../assets/images/Maya.png" alt="Maya" />
+          <span class="avatar-name">Maya</span>
+        </button>
+
+        <button type="button" class="avatar-option" data-id="annette" data-name="Annette" data-src="../../assets/images/Annette.png">
+          <img src="../../assets/images/Annette.png" alt="Annette" />
+          <span class="avatar-name">Annette</span>
+        </button>
+      </div>
+
+      <div class="avatar-play-wrap">
+        <button id="avatarPlayBtn" type="button" class="btn-avatar" disabled aria-label="Continue to Home">
+          <span class="reg-play">&#9654;</span>
+        </button>
+        <small class="avatar-hint">You can change your avatar in the profile tab</small>
+      </div>
+    </div>
+  </div>
+
+  <!-- Confirmation dialogue  -->
+  <div id="confirmOverlay" class="confirm-overlay hidden" role="dialog" aria-modal="true" aria-labelledby="confirmText">
+    <div class="dialogue-box">
+      <div class="dialogue-inner">
+        <div class="dialogue-avatar">
+          <img src="../../assets/images/Cipher.png" alt="Cipher" class="dialogue-avatar-img" />
+          <div class="dialogue-name">Cipher</div>
+        </div>
+        <div class="dialogue-body" style="width:100%;">
+          
+          <p id="confirmText" class="dialogue-text">
+            Are you sure you want to select <span id="confirmAvatarName"></span> as your avatar?
+          </p>
+
+          <div class="confirm-actions">
+            <button id="confirmYesBtn" type="button" class="confirm-btn yes">Yes</button>
+            <button id="confirmNoBtn" type="button" class="confirm-btn no">No</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+ 
+  <script src="../js/register-form.js"></script>
+  <!-- Notification container -->
+  <div id="notify" class="notify" role="alert" aria-live="polite" aria-atomic="true" style="display:none;"></div>
+</body>
+</html>

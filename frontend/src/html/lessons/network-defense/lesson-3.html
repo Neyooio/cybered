@@ -1,0 +1,307 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Network Defense - Lesson 3</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../../css/global.css">
+  <link rel="stylesheet" href="../../../css/profile.css">
+  <link rel="stylesheet" href="../../../css/lessons.css">
+</head>
+<body class="site-background" data-module="network-defense" data-lesson="3">
+  <div class="layout-shell">
+    <main class="main-wrapper">
+      <section class="content-section content-stack">
+        <div class="page-header">
+          <h1 class="title-medium">Lesson 3</h1>
+          <a id="backToModule" href="#" class="exit-button"><img src="../../../../assets/images/Exit.png" alt="" aria-hidden="true" class="exit-icon"><span class="exit-text">Back to module</span></a>
+        </div>
+        <div class="card-panel">
+          <div class="lesson-hero">
+            <div>
+              <div class="lesson-title">Firewalls, IDS, and IPS: Network Defense Essentials</div>
+              <p class="text-small text-muted">Understanding the core technologies that filter, monitor, and actively defend network infrastructure against cyber threats.</p>
+            </div>
+            <div class="meta-chips">
+              <span class="chip">Level: Intermediate</span>
+              <span class="chip">Time: 25-30 min</span>
+              <span class="chip">Prereq: Lessons 1-2</span>
+            </div>
+          </div>
+
+          <div class="lesson-grid">
+            <!-- Introduction Panel -->
+            <div style="grid-column: 1 / -1;">
+              <div class="intro-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">📖</div>
+                  <h3 class="panel-title">Introduction</h3>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">To understand modern network security, you must first grasp the three core technologies that stand as digital guardians at the edge of the network and within it: <strong>firewalls</strong>, <strong>intrusion detection systems (IDS)</strong>, and <strong>intrusion prevention systems (IPS)</strong>. Together, they form a layered defense that filters, monitors, and reacts to suspicious activity, each playing a different but complementary role.</p>
+
+                  <p class="text-small">Without them, networks would be constantly exposed to malicious traffic, automated scanners, and attackers attempting to slip inside undetected.</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- Main Content Column -->
+            <article>
+              <!-- Firewalls Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🔥</div>
+                  <h3 class="panel-title">Firewalls: The First Line of Defense</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">The <strong>firewall</strong> is the first and most fundamental line of defense. Think of it as a gatekeeper positioned between trusted internal systems and the outside world, examining every packet of data trying to enter or leave. It makes decisions based on predefined rules—allowing legitimate communication while rejecting anything unauthorized.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/NetworkDefense/firewall-diagram.png" alt="Firewall Network Diagram" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">Different types of firewalls protecting network perimeters</p>
+                  </div>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Evolution of Firewall Technology</h4>
+                  <p class="text-small">Early firewalls simply checked the source and destination IP addresses and port numbers, but modern ones are far more advanced:</p>
+
+                  <ul class="checklist">
+                    <li><strong>Packet Filtering Firewalls:</strong> Basic filtering based on IP, port, protocol</li>
+                    <li><strong>Stateful Firewalls:</strong> Track ongoing conversations between devices, ensuring only returning traffic from legitimate requests is allowed back inside</li>
+                    <li><strong>Application-Layer Firewalls:</strong> Deeply analyze web requests, block malicious behavior like SQL injection, and enforce strict control over what applications can communicate</li>
+                    <li><strong>Next-Generation Firewalls (NGFW):</strong> Combine traditional filtering with IPS, application awareness, and threat intelligence</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Firewall Functions</h4>
+                  <p class="text-small">Modern firewalls serve multiple critical functions:</p>
+
+                  <ul class="checklist">
+                    <li><strong>Traffic Filtering:</strong> Block unauthorized access based on rules</li>
+                    <li><strong>Network Address Translation (NAT):</strong> Hide internal IP addresses</li>
+                    <li><strong>Port Security:</strong> Control which services are accessible</li>
+                    <li><strong>VPN Support:</strong> Secure remote access to networks</li>
+                    <li><strong>Logging and Auditing:</strong> Record all traffic for analysis</li>
+                    <li><strong>Content Filtering:</strong> Block malicious or inappropriate content</li>
+                  </ul>
+
+                  <p class="text-small">In short, firewalls serve as the main perimeter shield, filtering traffic at multiple layers to reduce risk before threats even enter the network.</p>
+                </div>
+              </div>
+
+              <!-- IDS Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">👁️</div>
+                  <h3 class="panel-title">Intrusion Detection Systems (IDS): The Network Watchers</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">If firewalls are the guards at the door, <strong>intrusion detection systems are the surveillance cameras and alarm systems</strong> inside the building. An IDS does not block traffic—it watches, analyzes, and alerts.</p>
+
+                  <p class="text-small">It studies patterns in traffic and system behavior, searching for signs of attacks, unusual activity, or violations of security policies.</p>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">Types of IDS Detection</h4>
+                  <p class="text-small">IDS tools work using two primary detection methods:</p>
+
+                  <ul class="checklist">
+                    <li><strong>Signature-Based Detection:</strong> Compares network traffic against known attack signatures, much like how antivirus software recognizes malicious files</li>
+                    <li><strong>Anomaly-Based Detection:</strong> Learns what "normal" traffic looks like and flags deviations that might signal attacks like data exfiltration or lateral movement</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">IDS Value and Limitations</h4>
+                  <p class="text-small">Although an IDS cannot stop an attack directly, it provides <strong>critical visibility</strong>. It tells security teams:</p>
+
+                  <ul class="checklist">
+                    <li>Where suspicious activity is happening</li>
+                    <li>What type of attack is being attempted</li>
+                    <li>Which systems are being targeted</li>
+                    <li>When attacks occurred (timeline reconstruction)</li>
+                  </ul>
+
+                  <p class="text-small">This information enables teams to respond quickly and effectively. However, IDS generates alerts that require human review, which can lead to:</p>
+
+                  <ul class="checklist">
+                    <li><strong>False Positives:</strong> Legitimate activity flagged as suspicious</li>
+                    <li><strong>Alert Fatigue:</strong> Too many alerts overwhelming security teams</li>
+                    <li><strong>No Active Defense:</strong> Relies on manual intervention</li>
+                  </ul>
+                </div>
+              </div>
+
+              <!-- IPS Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🛡️</div>
+                  <h3 class="panel-title">Intrusion Prevention Systems (IPS): Active Defense</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">An <strong>intrusion prevention system</strong> takes the monitoring ability of IDS and combines it with active defense. Instead of simply alerting administrators, an IPS sits <strong>in-line with traffic</strong> and can immediately block malicious behavior the moment it is detected.</p>
+
+                  <div style="text-align: center; margin: 1.5rem 0;">
+                    <img src="../../../../assets/images/Module_images/NetworkDefense/ids-vs-ips.png" alt="IDS vs IPS" style="max-width: 100%; height: auto; border-radius: 0.5rem;">
+                    <p class="text-small text-muted" style="margin-top: 0.5rem;">Key differences between IDS and IPS deployment and functionality</p>
+                  </div>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">IPS Capabilities</h4>
+                  <p class="text-small">IPS solutions provide real-time threat prevention by:</p>
+
+                  <ul class="checklist">
+                    <li>Examining packet contents for malicious patterns</li>
+                    <li>Detecting and blocking exploit attempts</li>
+                    <li>Stopping suspicious connections immediately</li>
+                    <li>Terminating harmful sessions before they impact systems</li>
+                    <li>Automatically updating rules based on threat intelligence</li>
+                  </ul>
+
+                  <h4 style="margin-top: 1rem; font-size: 0.95rem; font-weight: 700;">IPS Challenges</h4>
+                  <p class="text-small">This means IPS must operate with <strong>precision and low latency</strong>:</p>
+
+                  <ul class="checklist">
+                    <li><strong>Too Slow:</strong> Legitimate traffic is disrupted</li>
+                    <li><strong>Too Aggressive:</strong> Normal operations might be incorrectly blocked</li>
+                    <li><strong>Tuning Required:</strong> Must balance security with performance</li>
+                  </ul>
+
+                  <p class="text-small">In many networks today, firewalls and IPS capabilities are combined into what we call <strong>next-generation firewalls</strong>, which integrate filtering, monitoring, and real-time response in one platform.</p>
+                </div>
+              </div>
+
+              <!-- Comparison Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">⚖️</div>
+                  <h3 class="panel-title">Comparing IDS and IPS</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Understanding when to use each technology is crucial:</p>
+
+                  <table style="width: 100%; border-collapse: collapse; margin: 1rem 0;">
+                    <thead>
+                      <tr style="border-bottom: 2px solid #444;">
+                        <th style="text-align: left; padding: 0.5rem;">Aspect</th>
+                        <th style="text-align: left; padding: 0.5rem;">IDS</th>
+                        <th style="text-align: left; padding: 0.5rem;">IPS</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr style="border-bottom: 1px solid #333;">
+                        <td style="padding: 0.5rem;"><strong>Deployment</strong></td>
+                        <td style="padding: 0.5rem;">Out-of-band (passive)</td>
+                        <td style="padding: 0.5rem;">In-line (active)</td>
+                      </tr>
+                      <tr style="border-bottom: 1px solid #333;">
+                        <td style="padding: 0.5rem;"><strong>Action</strong></td>
+                        <td style="padding: 0.5rem;">Detect and alert</td>
+                        <td style="padding: 0.5rem;">Detect and block</td>
+                      </tr>
+                      <tr style="border-bottom: 1px solid #333;">
+                        <td style="padding: 0.5rem;"><strong>Response Time</strong></td>
+                        <td style="padding: 0.5rem;">Manual intervention required</td>
+                        <td style="padding: 0.5rem;">Automatic and immediate</td>
+                      </tr>
+                      <tr style="border-bottom: 1px solid #333;">
+                        <td style="padding: 0.5rem;"><strong>Risk</strong></td>
+                        <td style="padding: 0.5rem;">No impact on traffic flow</td>
+                        <td style="padding: 0.5rem;">Can disrupt if misconfigured</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div class="callout info" style="margin:.75rem 0 1rem 0;">
+                    <strong>Best Practice:</strong> Many organizations deploy both IDS and IPS together—using IDS for comprehensive monitoring and forensics, while IPS provides automated defense against known threats.
+                  </div>
+                </div>
+              </div>
+
+              <!-- Coordinated Defense Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🔗</div>
+                  <h3 class="panel-title">Coordinated Defense System</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Ultimately, these three technologies operate as a <strong>coordinated defense system</strong>:</p>
+
+                  <ul class="checklist">
+                    <li><strong>The firewall</strong> decides what can enter</li>
+                    <li><strong>The IDS</strong> watches for anything suspicious that gets through or happens internally</li>
+                    <li><strong>The IPS</strong> acts instantly to stop malicious activity when necessary</li>
+                  </ul>
+
+                  <p class="text-small">Together, they build a secure barrier and monitoring environment, ensuring that even if attackers test the gates or breach the perimeter, they are quickly detected, contained, and denied the ability to cause damage.</p>
+                </div>
+              </div>
+
+              <!-- Conclusion Panel -->
+              <div class="topic-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🎯</div>
+                  <h3 class="panel-title">Conclusion</h3>
+                  <div class="panel-toggle"></div>
+                </div>
+                <div class="panel-content">
+                  <p class="text-small">Understanding firewalls, IDS, and IPS is fundamental to network defense. These technologies work together to create multiple layers of protection, ensuring that networks remain secure through filtering, monitoring, and active threat prevention. By deploying these systems strategically and maintaining them properly, organizations can significantly reduce their exposure to network-based attacks.</p>
+                </div>
+              </div>
+            </article>
+
+            <aside class="section">
+              <h3>Learning Objectives</h3>
+              <ul class="checklist">
+                <li>Explain the role and function of firewalls in network defense</li>
+                <li>Differentiate between stateful and stateless firewalls</li>
+                <li>Understand how IDS provides network visibility</li>
+                <li>Describe IPS active defense capabilities</li>
+                <li>Compare signature-based and anomaly-based detection</li>
+                <li>Recognize how these technologies work together</li>
+              </ul>
+
+              <h3 style="margin-top:1rem;">Key Terms</h3>
+              <ul class="checklist">
+                <li><strong>Firewall</strong> — Network traffic filtering system</li>
+                <li><strong>Stateful Inspection</strong> — Tracking connection states</li>
+                <li><strong>IDS</strong> — Intrusion Detection System</li>
+                <li><strong>IPS</strong> — Intrusion Prevention System</li>
+                <li><strong>Signature-Based Detection</strong> — Matching known attack patterns</li>
+                <li><strong>Anomaly Detection</strong> — Identifying unusual behavior</li>
+                <li><strong>NGFW</strong> — Next-Generation Firewall</li>
+                <li><strong>In-Line Deployment</strong> — Positioned in traffic path</li>
+              </ul>
+
+              <div class="callout warn" style="margin-top:1rem;">
+                <strong>Configuration Warning:</strong> IPS systems must be carefully tuned to avoid blocking legitimate traffic. Always test rules before deploying in production.
+              </div>
+            </aside>
+          </div>
+
+          <div class="quiz-card" style="margin-top:1rem;">
+            <div>
+              <div class="quiz-title">Knowledge check</div>
+              <div class="text-muted">3 quick questions to reinforce learning.</div>
+            </div>
+            <a class="secondary-button" href="#">Start quiz</a>
+          </div>
+
+          <div class="nav-row">
+            <a id="prevLesson" class="secondary-button" href="#">Previous lesson</a>
+            <a id="nextLesson" class="secondary-button" href="#">Next lesson</a>
+          </div>
+
+          <div class="lesson-actions">
+            <button id="completeLesson" class="primary-button">Mark Complete</button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  <script src="../../../js/includes.js"></script>
+  <script src="../../../js/lesson-page.js"></script>
+</body>
+</html>
+
