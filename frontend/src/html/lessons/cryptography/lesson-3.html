@@ -33,6 +33,26 @@
           </div>
 
           <div class="lesson-grid">
+            <!-- Learning Objectives Panel - Now at Top -->
+            <div style="grid-column: 1 / -1;">
+              <div class="intro-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🎯</div>
+                  <h3 class="panel-title">Learning Objectives</h3>
+                </div>
+                <div class="panel-content">
+                  <ul class="checklist">
+                    <li>Understand the purpose and properties of hash functions</li>
+                    <li>Explain why hashing is one-way and collision-resistant</li>
+                    <li>Describe how digital signatures combine hashing and asymmetric encryption</li>
+                    <li>Identify the three security properties provided by digital signatures</li>
+                    <li>Recognize real-world applications of hashing and digital signatures</li>
+                    <li>Explain the difference between encryption and hashing</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
             <!-- Introduction Panel -->
             <div style="grid-column: 1 / -1;">
               <div class="intro-panel">
@@ -148,34 +168,31 @@
                 </div>
               </div>
             </article>
+          </div>
 
-            <aside class="section">
-              <h3>Learning Objectives</h3>
-              <ul class="checklist">
-                <li>Understand the purpose and properties of hash functions</li>
-                <li>Explain why hashing is one-way and collision-resistant</li>
-                <li>Describe how digital signatures combine hashing and asymmetric encryption</li>
-                <li>Identify the three security properties provided by digital signatures</li>
-                <li>Recognize real-world applications of hashing and digital signatures</li>
-                <li>Explain the difference between encryption and hashing</li>
-              </ul>
-
-              <h3 style="margin-top:1rem;">Key Terms</h3>
-              <ul class="checklist">
-                <li><strong>Hash Function</strong> — One-way transformation creating fixed-length digest</li>
-                <li><strong>Digest/Fingerprint</strong> — Output of a hash function</li>
-                <li><strong>Collision Resistance</strong> — Property preventing two inputs from having same hash</li>
-                <li><strong>SHA-256</strong> — Secure Hash Algorithm producing 256-bit digests</li>
-                <li><strong>Digital Signature</strong> — Encrypted hash proving authenticity and integrity</li>
-                <li><strong>Integrity</strong> — Assurance that data has not been altered</li>
-                <li><strong>Authentication</strong> — Verification of sender's identity</li>
-                <li><strong>Non-Repudiation</strong> — Proof that sender cannot deny sending message</li>
-              </ul>
-
-              <div class="callout warn" style="margin-top:1rem;">
-                <strong>Critical Distinction:</strong> Encryption provides confidentiality (hiding content), while hashing provides integrity (detecting changes). Both are essential but serve different purposes.
+          <!-- Key Terms Panel - Now at Bottom -->
+          <div style="grid-column: 1 / -1; margin-top: 1rem;">
+            <div class="intro-panel">
+              <div class="panel-header">
+                <div class="panel-icon">📚</div>
+                <h3 class="panel-title">Key Terms</h3>
               </div>
-            </aside>
+              <div class="panel-content">
+                <ul class="checklist">
+                  <li><strong>Hash Function</strong> — One-way transformation creating fixed-length digest</li>
+                  <li><strong>Digest/Fingerprint</strong> — Output of a hash function</li>
+                  <li><strong>Collision Resistance</strong> — Property preventing two inputs from having same hash</li>
+                  <li><strong>SHA-256</strong> — Secure Hash Algorithm producing 256-bit digests</li>
+                  <li><strong>Digital Signature</strong> — Encrypted hash proving authenticity and integrity</li>
+                  <li><strong>Integrity</strong> — Assurance that data has not been altered</li>
+                  <li><strong>Authentication</strong> — Verification of sender's identity</li>
+                  <li><strong>Non-Repudiation</strong> — Proof that sender cannot deny sending message</li>
+                </ul>
+                <div class="callout warn" style="margin-top:1rem;">
+                  <strong>Critical Distinction:</strong> Encryption provides confidentiality (hiding content), while hashing provides integrity (detecting changes). Both are essential but serve different purposes.
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="quiz-card" style="margin-top:1rem;">

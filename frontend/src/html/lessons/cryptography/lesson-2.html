@@ -33,6 +33,26 @@
           </div>
 
           <div class="lesson-grid">
+            <!-- Learning Objectives Panel - Now at Top -->
+            <div style="grid-column: 1 / -1;">
+              <div class="intro-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🎯</div>
+                  <h3 class="panel-title">Learning Objectives</h3>
+                </div>
+                <div class="panel-content">
+                  <ul class="checklist">
+                    <li>Understand classical encryption methods and why they became insecure</li>
+                    <li>Explain how the Caesar cipher and Vigenère cipher work</li>
+                    <li>Describe the structure and security of AES encryption</li>
+                    <li>Compare RSA and ECC asymmetric encryption algorithms</li>
+                    <li>Recognize the shift from pattern-based to mathematics-based cryptography</li>
+                    <li>Identify real-world applications of modern encryption algorithms</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
             <!-- Introduction Panel -->
             <div style="grid-column: 1 / -1;">
               <div class="intro-panel">
@@ -122,33 +142,30 @@
                 </div>
               </div>
             </article>
+          </div>
 
-            <aside class="section">
-              <h3>Learning Objectives</h3>
-              <ul class="checklist">
-                <li>Understand classical encryption methods and why they became insecure</li>
-                <li>Explain how the Caesar cipher and Vigenère cipher work</li>
-                <li>Describe the structure and security of AES encryption</li>
-                <li>Compare RSA and ECC asymmetric encryption algorithms</li>
-                <li>Recognize the shift from pattern-based to mathematics-based cryptography</li>
-                <li>Identify real-world applications of modern encryption algorithms</li>
-              </ul>
-
-              <h3 style="margin-top:1rem;">Key Terms</h3>
-              <ul class="checklist">
-                <li><strong>Caesar Cipher</strong> — Simple substitution cipher using alphabet shifting</li>
-                <li><strong>Vigenère Cipher</strong> — Classical cipher using multiple shift values</li>
-                <li><strong>AES</strong> — Advanced Encryption Standard, modern symmetric algorithm</li>
-                <li><strong>RSA</strong> — Asymmetric algorithm based on factoring large numbers</li>
-                <li><strong>ECC</strong> — Elliptic Curve Cryptography, efficient asymmetric encryption</li>
-                <li><strong>Brute Force</strong> — Trying all possible keys to break encryption</li>
-                <li><strong>Frequency Analysis</strong> — Analyzing letter patterns to break ciphers</li>
-              </ul>
-
-              <div class="callout warn" style="margin-top:1rem;">
-                <strong>Historical Lesson:</strong> Security through obscurity (hiding the method) always fails. Modern cryptography proves that transparency plus strong mathematics equals true security.
+          <!-- Key Terms Panel - Now at Bottom -->
+          <div style="grid-column: 1 / -1; margin-top: 1rem;">
+            <div class="intro-panel">
+              <div class="panel-header">
+                <div class="panel-icon">📚</div>
+                <h3 class="panel-title">Key Terms</h3>
               </div>
-            </aside>
+              <div class="panel-content">
+                <ul class="checklist">
+                  <li><strong>Caesar Cipher</strong> — Simple substitution cipher using alphabet shifting</li>
+                  <li><strong>Vigenère Cipher</strong> — Classical cipher using multiple shift values</li>
+                  <li><strong>AES</strong> — Advanced Encryption Standard, modern symmetric algorithm</li>
+                  <li><strong>RSA</strong> — Asymmetric algorithm based on factoring large numbers</li>
+                  <li><strong>ECC</strong> — Elliptic Curve Cryptography, efficient asymmetric encryption</li>
+                  <li><strong>Brute Force</strong> — Trying all possible keys to break encryption</li>
+                  <li><strong>Frequency Analysis</strong> — Analyzing letter patterns to break ciphers</li>
+                </ul>
+                <div class="callout warn" style="margin-top:1rem;">
+                  <strong>Historical Lesson:</strong> Security through obscurity (hiding the method) always fails. Modern cryptography proves that transparency plus strong mathematics equals true security.
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="quiz-card" style="margin-top:1rem;">

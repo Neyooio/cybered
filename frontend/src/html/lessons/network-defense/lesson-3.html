@@ -33,6 +33,26 @@
           </div>
 
           <div class="lesson-grid">
+            <!-- Learning Objectives Panel - Now at Top -->
+            <div style="grid-column: 1 / -1;">
+              <div class="intro-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🎯</div>
+                  <h3 class="panel-title">Learning Objectives</h3>
+                </div>
+                <div class="panel-content">
+                  <ul class="checklist">
+                    <li>Explain the role and function of firewalls in network defense</li>
+                    <li>Differentiate between stateful and stateless firewalls</li>
+                    <li>Understand how IDS provides network visibility</li>
+                    <li>Describe IPS active defense capabilities</li>
+                    <li>Compare signature-based and anomaly-based detection</li>
+                    <li>Recognize how these technologies work together</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
             <!-- Introduction Panel -->
             <div style="grid-column: 1 / -1;">
               <div class="intro-panel">
@@ -250,34 +270,31 @@
                 </div>
               </div>
             </article>
+          </div>
 
-            <aside class="section">
-              <h3>Learning Objectives</h3>
-              <ul class="checklist">
-                <li>Explain the role and function of firewalls in network defense</li>
-                <li>Differentiate between stateful and stateless firewalls</li>
-                <li>Understand how IDS provides network visibility</li>
-                <li>Describe IPS active defense capabilities</li>
-                <li>Compare signature-based and anomaly-based detection</li>
-                <li>Recognize how these technologies work together</li>
-              </ul>
-
-              <h3 style="margin-top:1rem;">Key Terms</h3>
-              <ul class="checklist">
-                <li><strong>Firewall</strong> — Network traffic filtering system</li>
-                <li><strong>Stateful Inspection</strong> — Tracking connection states</li>
-                <li><strong>IDS</strong> — Intrusion Detection System</li>
-                <li><strong>IPS</strong> — Intrusion Prevention System</li>
-                <li><strong>Signature-Based Detection</strong> — Matching known attack patterns</li>
-                <li><strong>Anomaly Detection</strong> — Identifying unusual behavior</li>
-                <li><strong>NGFW</strong> — Next-Generation Firewall</li>
-                <li><strong>In-Line Deployment</strong> — Positioned in traffic path</li>
-              </ul>
-
-              <div class="callout warn" style="margin-top:1rem;">
-                <strong>Configuration Warning:</strong> IPS systems must be carefully tuned to avoid blocking legitimate traffic. Always test rules before deploying in production.
+          <!-- Key Terms Panel - Now at Bottom -->
+          <div style="grid-column: 1 / -1; margin-top: 1rem;">
+            <div class="intro-panel">
+              <div class="panel-header">
+                <div class="panel-icon">📚</div>
+                <h3 class="panel-title">Key Terms</h3>
               </div>
-            </aside>
+              <div class="panel-content">
+                <ul class="checklist">
+                  <li><strong>Firewall</strong> — Network traffic filtering system</li>
+                  <li><strong>Stateful Inspection</strong> — Tracking connection states</li>
+                  <li><strong>IDS</strong> — Intrusion Detection System</li>
+                  <li><strong>IPS</strong> — Intrusion Prevention System</li>
+                  <li><strong>Signature-Based Detection</strong> — Matching known attack patterns</li>
+                  <li><strong>Anomaly Detection</strong> — Identifying unusual behavior</li>
+                  <li><strong>NGFW</strong> — Next-Generation Firewall</li>
+                  <li><strong>In-Line Deployment</strong> — Positioned in traffic path</li>
+                </ul>
+                <div class="callout warn" style="margin-top:1rem;">
+                  <strong>Configuration Warning:</strong> IPS systems must be carefully tuned to avoid blocking legitimate traffic. Always test rules before deploying in production.
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="quiz-card" style="margin-top:1rem;">
