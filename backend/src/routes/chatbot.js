@@ -9,7 +9,7 @@ const groq = new Groq({
 });
 
 // System context about CyberEd modules
-const SYSTEM_CONTEXT = `You are CyberBot, an intelligent cybersecurity learning assistant for CyberEd - an educational platform teaching cybersecurity concepts.
+const SYSTEM_CONTEXT = `You are Cipher, an intelligent cybersecurity learning assistant for CyberEd - an educational platform teaching cybersecurity concepts.
 
 You help students understand four main modules:
 
