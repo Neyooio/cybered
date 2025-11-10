@@ -10,6 +10,7 @@
   <link rel="stylesheet" href="../../../css/global.css">
   <link rel="stylesheet" href="../../../css/profile.css">
   <link rel="stylesheet" href="../../../css/lessons.css">
+  <link rel="stylesheet" href="../../../css/battle-quiz.css">
 </head>
 <body class="site-background" data-module="web-security" data-lesson="4">
   <div class="layout-shell">
@@ -358,6 +359,18 @@ https://trustedsite.com/redirect?url=https://malicious-site.com
             </div>
           </div>
 
+          <!-- Battle Quiz Trigger Button -->
+          <button class="battle-trigger-btn" onclick="battleQuiz.openOverlay()" style="margin-top: 1.5rem;">
+            <span style="font-size: 1.125rem;">⚔️</span> Start Battle Quiz
+          </button>
+
+          <!-- Full Screen Battle Quiz Overlay -->
+          <div class="battle-overlay" id="battleOverlay">
+            <div class="battle-container" id="battleContainer">
+              <!-- Battle content will be loaded here by JavaScript -->
+            </div>
+          </div>
+
           <div class="lesson-actions">
             <button id="completeLesson" class="primary-button">Mark Complete</button>
           </div>
@@ -367,6 +380,7 @@ https://trustedsite.com/redirect?url=https://malicious-site.com
   </div>
   <script src="../../../js/includes.js"></script>
   <script src="../../../js/lesson-page.js"></script>
+  <script src="../../../js/battle-quiz.js"></script>
 </body>
 </html>
 
