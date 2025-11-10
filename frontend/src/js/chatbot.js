@@ -34,12 +34,10 @@ class CyberBot {
                 <div class="chatbot-header">
                     <div class="chatbot-header-content">
                         <div class="chatbot-avatar">
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                            </svg>
+                            <img src="../../assets/images/Cipher.png" alt="Cipher" />
                         </div>
                         <div class="chatbot-header-text">
-                            <h3>CyberBot</h3>
+                            <h3>Cipher</h3>
                             <p>Your Cybersecurity Assistant</p>
                         </div>
                     </div>
@@ -53,7 +51,7 @@ class CyberBot {
                 <!-- Messages -->
                 <div class="chatbot-messages" id="chatbot-messages">
                     <div class="welcome-message">
-                        <h4>👋 Hello, I'm CyberBot!</h4>
+                        <h4>👋 Hello, I'm Cipher!</h4>
                         <p>I can help you understand concepts from Cryptography, Malware Defense, Network Defense, and Web Security. Ask me anything!</p>
                     </div>
                 </div>
@@ -168,15 +166,13 @@ class CyberBot {
         const messageDiv = document.createElement('div');
         messageDiv.className = `message ${sender}`;
         
-        const avatarIcon = sender === 'bot' 
-            ? '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />'
-            : '<path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />';
+        const avatarContent = sender === 'bot' 
+            ? '<img src="../../assets/images/Cipher.png" alt="Cipher" />'
+            : '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" /></svg>';
         
         messageDiv.innerHTML = `
             <div class="message-avatar">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    ${avatarIcon}
-                </svg>
+                ${avatarContent}
             </div>
             <div class="message-content">
                 <p>${this.escapeHtml(text)}</p>
@@ -196,9 +192,7 @@ class CyberBot {
         typingDiv.id = 'typing-indicator';
         typingDiv.innerHTML = `
             <div class="message-avatar">
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z" />
-                </svg>
+                <img src="../../assets/images/Cipher.png" alt="Cipher" />
             </div>
             <div class="message-content">
                 <div class="typing-indicator">
