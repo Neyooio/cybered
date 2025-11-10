@@ -67,7 +67,10 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/CyberE
       dbName: undefined // accept database in URI
     });
     console.log('[db] connected');
-    app.listen(PORT, () => console.log(`[server] listening on http://localhost:${PORT}`));
+    app.listen(PORT, '0.0.0.0', () => {
+      console.log(`[server] listening on http://localhost:${PORT}`);
+      console.log(`[server] accessible from network at http://<your-ip>:${PORT}`);
+    });
   } catch (err) {
     console.error('[db] connection error', err);
     process.exit(1);

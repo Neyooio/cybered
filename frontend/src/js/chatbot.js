@@ -3,9 +3,11 @@
  * Free Groq-powered assistant for CyberEd students
  */
 
+import { API_BASE_URL } from './config.js';
+
 class CyberBot {
     constructor() {
-        this.API_URL = 'http://localhost:4000/api/chatbot';
+        this.API_URL = `${API_BASE_URL}/api/chatbot`;
         this.conversationHistory = [];
         this.isOpen = false;
         this.isTyping = false;
