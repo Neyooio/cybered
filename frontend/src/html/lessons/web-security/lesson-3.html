@@ -33,6 +33,26 @@
           </div>
 
           <div class="lesson-grid">
+            <!-- Learning Objectives Panel - Now at Top -->
+            <div style="grid-column: 1 / -1;">
+              <div class="intro-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🎯</div>
+                  <h3 class="panel-title">Learning Objectives</h3>
+                </div>
+                <div class="panel-content">
+                  <ul class="checklist">
+                    <li>Understand the OWASP Top 10 framework and its importance</li>
+                    <li>Explain injection attacks and SQL injection specifically</li>
+                    <li>Identify authentication and session management vulnerabilities</li>
+                    <li>Recognize XSS attacks and their impact</li>
+                    <li>Understand insecure direct object references</li>
+                    <li>Identify common security misconfigurations</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
             <!-- Introduction Panel -->
             <div style="grid-column: 1 / -1;">
               <div class="intro-panel">
@@ -294,34 +314,31 @@ https://example.com/account?id=12346
                 </div>
               </div>
             </article>
+          </div>
 
-            <aside class="section">
-              <h3>Learning Objectives</h3>
-              <ul class="checklist">
-                <li>Understand the OWASP Top 10 framework and its importance</li>
-                <li>Explain injection attacks and SQL injection specifically</li>
-                <li>Identify authentication and session management vulnerabilities</li>
-                <li>Recognize XSS attacks and their impact</li>
-                <li>Understand insecure direct object references</li>
-                <li>Identify common security misconfigurations</li>
-              </ul>
-
-              <h3 style="margin-top:1rem;">Key Terms</h3>
-              <ul class="checklist">
-                <li><strong>OWASP</strong> — Open Web Application Security Project</li>
-                <li><strong>Injection</strong> — Inserting malicious code into queries</li>
-                <li><strong>SQL Injection</strong> — Database query manipulation</li>
-                <li><strong>Session Hijacking</strong> — Stealing active user sessions</li>
-                <li><strong>XSS</strong> — Cross-Site Scripting attack</li>
-                <li><strong>IDOR</strong> — Insecure Direct Object Reference</li>
-                <li><strong>Security Misconfiguration</strong> — Improper system setup</li>
-                <li><strong>CSP</strong> — Content Security Policy</li>
-              </ul>
-
-              <div class="callout warn" style="margin-top:1rem;">
-                <strong>Defense Priority:</strong> These five risks represent the most common and impactful vulnerabilities. Focus defensive efforts here for maximum security improvement.
+          <!-- Key Terms Panel - Now at Bottom -->
+          <div style="margin-top: 1rem;">
+            <div class="intro-panel">
+              <div class="panel-header">
+                <div class="panel-icon">📚</div>
+                <h3 class="panel-title">Key Terms</h3>
               </div>
-            </aside>
+              <div class="panel-content">
+                <ul class="checklist">
+                  <li><strong>OWASP</strong> — Open Web Application Security Project</li>
+                  <li><strong>Injection</strong> — Inserting malicious code into queries</li>
+                  <li><strong>SQL Injection</strong> — Database query manipulation</li>
+                  <li><strong>Session Hijacking</strong> — Stealing active user sessions</li>
+                  <li><strong>XSS</strong> — Cross-Site Scripting attack</li>
+                  <li><strong>IDOR</strong> — Insecure Direct Object Reference</li>
+                  <li><strong>Security Misconfiguration</strong> — Improper system setup</li>
+                  <li><strong>CSP</strong> — Content Security Policy</li>
+                </ul>
+                <div class="callout warn" style="margin-top:1rem;">
+                  <strong>Defense Priority:</strong> These five risks represent the most common and impactful vulnerabilities. Focus defensive efforts here for maximum security improvement.
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="quiz-card" style="margin-top:1rem;">

@@ -33,6 +33,26 @@
           </div>
 
           <div class="lesson-grid">
+            <!-- Learning Objectives Panel - Now at Top -->
+            <div style="grid-column: 1 / -1;">
+              <div class="intro-panel">
+                <div class="panel-header">
+                  <div class="panel-icon">🎯</div>
+                  <h3 class="panel-title">Learning Objectives</h3>
+                </div>
+                <div class="panel-content">
+                  <ul class="checklist">
+                    <li>Understand sensitive data exposure risks and protections</li>
+                    <li>Explain function-level access control importance</li>
+                    <li>Recognize CSRF attacks and defense mechanisms</li>
+                    <li>Identify risks of vulnerable components</li>
+                    <li>Understand unvalidated redirects exploitation</li>
+                    <li>Apply comprehensive defense strategies</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+
             <!-- Introduction Panel -->
             <div style="grid-column: 1 / -1;">
               <div class="intro-panel">
@@ -311,34 +331,31 @@ https://trustedsite.com/redirect?url=https://malicious-site.com
                 </div>
               </div>
             </article>
+          </div>
 
-            <aside class="section">
-              <h3>Learning Objectives</h3>
-              <ul class="checklist">
-                <li>Understand sensitive data exposure risks and protections</li>
-                <li>Explain function-level access control importance</li>
-                <li>Recognize CSRF attacks and defense mechanisms</li>
-                <li>Identify risks of vulnerable components</li>
-                <li>Understand unvalidated redirects exploitation</li>
-                <li>Apply comprehensive defense strategies</li>
-              </ul>
-
-              <h3 style="margin-top:1rem;">Key Terms</h3>
-              <ul class="checklist">
-                <li><strong>Sensitive Data Exposure</strong> — Inadequate protection of confidential data</li>
-                <li><strong>Access Control</strong> — Authorization enforcement mechanisms</li>
-                <li><strong>CSRF</strong> — Cross-Site Request Forgery attack</li>
-                <li><strong>CSRF Token</strong> — Unique token preventing CSRF</li>
-                <li><strong>CVE</strong> — Common Vulnerabilities and Exposures</li>
-                <li><strong>Dependency</strong> — External component or library</li>
-                <li><strong>Open Redirect</strong> — Unvalidated URL redirection</li>
-                <li><strong>Whitelist</strong> — Approved items list</li>
-              </ul>
-
-              <div class="callout warn" style="margin-top:1rem;">
-                <strong>Final Reminder:</strong> The OWASP Top 10 represents the foundation of web security knowledge. Master these concepts to build truly secure applications.
+          <!-- Key Terms Panel - Now at Bottom -->
+          <div style="margin-top: 1rem;">
+            <div class="intro-panel">
+              <div class="panel-header">
+                <div class="panel-icon">📚</div>
+                <h3 class="panel-title">Key Terms</h3>
               </div>
-            </aside>
+              <div class="panel-content">
+                <ul class="checklist">
+                  <li><strong>Sensitive Data Exposure</strong> — Inadequate protection of confidential data</li>
+                  <li><strong>Access Control</strong> — Authorization enforcement mechanisms</li>
+                  <li><strong>CSRF</strong> — Cross-Site Request Forgery attack</li>
+                  <li><strong>CSRF Token</strong> — Unique token preventing CSRF</li>
+                  <li><strong>CVE</strong> — Common Vulnerabilities and Exposures</li>
+                  <li><strong>Dependency</strong> — External component or library</li>
+                  <li><strong>Open Redirect</strong> — Unvalidated URL redirection</li>
+                  <li><strong>Whitelist</strong> — Approved items list</li>
+                </ul>
+                <div class="callout warn" style="margin-top:1rem;">
+                  <strong>Final Reminder:</strong> The OWASP Top 10 represents the foundation of web security knowledge. Master these concepts to build truly secure applications.
+                </div>
+              </div>
+            </div>
           </div>
 
           <div class="quiz-card" style="margin-top:1rem;">
