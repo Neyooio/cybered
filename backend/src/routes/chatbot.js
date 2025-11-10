@@ -91,7 +91,7 @@ router.post('/ask', async (req, res) => {
         // Call Groq API
         const completion = await groq.chat.completions.create({
             messages: messages,
-            model: 'llama-3.1-70b-versatile', // Fast and capable model
+            model: 'llama-3.3-70b-versatile', // Updated to current supported model
             temperature: 0.7,
             max_tokens: 500, // Keep responses concise
             top_p: 1,
@@ -144,7 +144,7 @@ router.get('/health', async (req, res) => {
         res.json({
             available: true,
             message: 'Chatbot service is ready',
-            model: 'llama-3.1-70b-versatile'
+            model: 'llama-3.3-70b-versatile'
         });
     } catch (error) {
         res.status(500).json({
