@@ -344,7 +344,7 @@ https://example.com/account?id=12346
 
           <!-- Battle Quiz Trigger Button -->
           <button class="battle-trigger-btn" onclick="battleQuiz.openOverlay()" style="margin-top: 1.5rem;">
-            <span style="font-size: 1.125rem;">⚔️</span> Start Battle Quiz
+            <span style="font-size: 1.125rem;">▶</span> Start Battle Quiz
           </button>
 
           <!-- Full Screen Battle Quiz Overlay -->
@@ -361,8 +361,31 @@ https://example.com/account?id=12346
       </section>
     </main>
   </div>
+  
+  <!-- Back to Top Button -->
+  <button class="back-to-top" id="backToTop" aria-label="Back to top">↑</button>
+  
   <script src="../../../js/includes.js"></script>
   <script src="../../../js/lesson-page.js"></script>
   <script src="../../../js/battle-quiz.js"></script>
+  <script>
+    // Back to Top Button
+    const backToTopBtn = document.getElementById('backToTop');
+    
+    window.addEventListener('scroll', () => {
+      if (window.scrollY > 300) {
+        backToTopBtn.classList.add('visible');
+      } else {
+        backToTopBtn.classList.remove('visible');
+      }
+    });
+    
+    backToTopBtn.addEventListener('click', () => {
+      window.scrollTo({
+        top: 0,
+        behavior: 'smooth'
+      });
+    });
+  </script>
 </body>
 </html>

@@ -108,7 +108,7 @@ class BattleQuiz {
     
     // Show loading screen
     container.innerHTML = `
-      <div class="battle-arena">
+      <div class="battle-arena ${this.module}">
         <div class="battle-loading">
           <div class="loading-spinner"></div>
           <div class="loading-text">Loading battle...</div>
@@ -132,7 +132,7 @@ class BattleQuiz {
     } catch (error) {
       console.error('Error starting battle:', error);
       container.innerHTML = `
-        <div class="battle-arena">
+        <div class="battle-arena ${this.module}">
           <div class="battle-message error">
             Failed to load quiz. Please try again.
           </div>
@@ -147,7 +147,7 @@ class BattleQuiz {
   renderBattle(container) {
     container.innerHTML = `
       <div class="battle-transition" id="battleTransition"></div>
-      <div class="battle-arena intro-bg">
+      <div class="battle-arena intro-bg ${this.module}">
         <!-- Bottom Blocker - Hides lower portion during intro -->
         <div class="bottom-blocker" id="bottomBlocker"></div>
         
@@ -436,7 +436,7 @@ class BattleQuiz {
     
     const container = document.getElementById('battleContainer');
     container.innerHTML = `
-      <div class="battle-arena">
+      <div class="battle-arena ${this.module}">
         <div class="battle-result-card">
           <h2 class="result-title victory">VICTORY</h2>
           <p class="result-subtitle">You defeated ${this.monster.name}!</p>
@@ -479,7 +479,7 @@ class BattleQuiz {
     
     const container = document.getElementById('battleContainer');
     container.innerHTML = `
-      <div class="battle-arena">
+      <div class="battle-arena ${this.module}">
         <div class="battle-result-card">
           <h2 class="result-title defeat">DEFEATED</h2>
           <p class="result-subtitle">${this.monster.name} won this battle...</p>

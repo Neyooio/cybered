@@ -228,6 +228,23 @@
   image-rendering: auto; /* Don't pixelate background */
 }
 
+/* Module-specific environments */
+.battle-arena.cryptography::before {
+  background-image: url('../../assets/images/environments/BTLbg.jpg');
+}
+
+.battle-arena.web-security::before {
+  background-image: url('../../assets/images/environments/BTLbg2.jpg');
+}
+
+.battle-arena.network-defense::before {
+  background-image: url('../../assets/images/environments/BTLbg5.jpg');
+}
+
+.battle-arena.malware-defense::before {
+  background-image: url('../../assets/images/environments/BTLEbg4.jpg');
+}
+
 /* Color/lighting overlay - Layer 1 */
 .battle-arena::after {
   content: '';
@@ -399,7 +416,7 @@
 .sprite-slot.enemy {
   right: 5%;
   top: 18%;
-  width: clamp(110px, 22%, 220px);
+  width: clamp(85px, 17%, 170px);
 }
 
 .sprite-slot img {
