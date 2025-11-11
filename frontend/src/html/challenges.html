@@ -28,6 +28,45 @@
       </section>
     </main>
   </div>
+
+  <!-- Game Overlay (Friv/Y8 Style) -->
+  <div class="game-overlay" id="gameOverlay">
+    <div class="game-container">
+      <div class="game-header">
+        <div class="game-header-left">
+          <h2 class="game-title" id="gameTitle">Loading Game...</h2>
+          <span class="game-difficulty-badge" id="gameDifficulty">Easy</span>
+        </div>
+        <button class="game-close-btn" id="closeGameBtn" title="Close Game">&times;</button>
+      </div>
+      
+      <div class="game-iframe-wrapper">
+        <div class="game-loading" id="gameLoading">
+          <div class="loading-spinner"></div>
+          <div class="loading-text">Loading Game...</div>
+          <div class="loading-subtext">Initializing Unity WebGL</div>
+        </div>
+        <iframe 
+          id="gameIframe" 
+          class="game-iframe" 
+          allow="accelerometer; gyroscope; fullscreen" 
+          allowfullscreen
+        ></iframe>
+      </div>
+      
+      <div class="game-footer">
+        <div class="game-info">
+          <span>⌨️ Use keyboard/mouse to play</span>
+          <span>🎮 Follow in-game instructions</span>
+        </div>
+        <div class="game-controls">
+          <button class="game-control-btn" id="restartGameBtn">🔄 Restart</button>
+          <button class="game-control-btn fullscreen" id="fullscreenBtn">⛶ Fullscreen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
   <script src="../js/includes.js"></script>
 
   <script src="../js/challenges.js"></script>

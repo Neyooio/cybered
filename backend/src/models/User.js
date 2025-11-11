@@ -11,6 +11,18 @@ const userSchema = new mongoose.Schema({
   avatarSrc: { type: String },
   avatarName: { type: String },
   avatar: { type: String },
+  // XP System
+  experience: { type: Number, default: 0 },
+  level: { type: Number, default: 1 },
+  // Challenge Completions
+  challengeProgress: [{
+    challengeId: { type: String, required: true },
+    completed: { type: Boolean, default: false },
+    bestScore: { type: Number, default: 0 },
+    attempts: { type: Number, default: 0 },
+    lastPlayed: { type: Date },
+    completedAt: { type: Date }
+  }]
 }, { timestamps: true });
 
 userSchema.set('toJSON', {
