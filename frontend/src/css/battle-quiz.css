@@ -1,5 +1,20 @@
 /* Battle Quiz Styles - Pokemon GBA Style */
 
+/* Prevent scrolling when battle is active */
+body.battle-active {
+  overflow: hidden !important;
+  position: fixed;
+  width: 100%;
+  height: 100vh;
+}
+
+/* Hide and disable back-to-top button during battle */
+body.battle-active .back-to-top {
+  display: none !important;
+  pointer-events: none !important;
+  z-index: -1 !important;
+}
+
 /* Battle Overlay - Fullscreen */
 .battle-overlay {
   position: fixed;
@@ -361,18 +376,32 @@
   overflow: hidden;
   position: relative;
   border: max(1px, 0.15vw) solid rgba(0,0,0,0.5);
-}
-
-.health-bar {
-  height: 100%;
-  transition: width 0.5s ease-out, background-color 0.3s;
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+.health-bar {
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  transition: width 0.5s ease-out, background-color 0.3s;
+  border-radius: clamp(4px, 0.8vw, 8px);
+}
+
+.health-bar span {
+  display: none;
+}
+
+.health-bar-container > span {
+  position: relative;
+  z-index: 1;
   font-size: clamp(9px, 1.4vw, 13px);
   font-weight: bold;
   color: white;
   text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
+  pointer-events: none;
 }
 
 .health-bar.high {
@@ -706,15 +735,17 @@
   background: linear-gradient(180deg, #e8eaf0 0%, #f5f7fa 100%);
   border: clamp(3px, 0.5vw, 4px) solid #2d3748;
   border-radius: clamp(12px, 2vw, 20px);
-  padding: clamp(24px, 4vw, 40px) clamp(20px, 3.5vw, 32px);
-  max-width: 480px;
-  width: 90%;
+  padding: clamp(18px, 3.2vw, 32px) clamp(16px, 2.8vw, 26px);
+  max-width: 400px;
+  width: 70%;
+  max-height: 90vh;
+  overflow-y: auto;
   text-align: center;
   box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
   position: absolute;
   top: 50%;
   left: 50%;
-  transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%) scale(0.85);
   animation: resultPopup 0.5s cubic-bezier(0.68, -0.55, 0.265, 1.55);
 }
 
@@ -725,14 +756,14 @@
   }
   to { 
     opacity: 1; 
-    transform: translate(-50%, -50%) scale(1);
+    transform: translate(-50%, -50%) scale(0.85);
   }
 }
 
 .result-title {
-  font-size: clamp(28px, 5vw, 42px);
+  font-size: clamp(22px, 4vw, 32px);
   font-weight: 800;
-  margin: 0 0 clamp(8px, 1.5vw, 12px) 0;
+  margin: 0 0 clamp(6px, 1.2vw, 10px) 0;
   letter-spacing: 1px;
 }
 
@@ -745,17 +776,17 @@
 }
 
 .result-subtitle {
-  font-size: clamp(14px, 2.5vw, 18px);
+  font-size: clamp(11px, 2vw, 14px);
   color: #4a5568;
-  margin: 0 0 clamp(20px, 3vw, 28px) 0;
+  margin: 0 0 clamp(16px, 2.5vw, 22px) 0;
   font-weight: 500;
 }
 
 .result-stats {
   background: rgba(45, 55, 72, 0.08);
-  border-radius: clamp(10px, 1.8vw, 14px);
-  padding: clamp(16px, 2.8vw, 22px);
-  margin-bottom: clamp(20px, 3vw, 28px);
+  border-radius: clamp(8px, 1.5vw, 12px);
+  padding: clamp(12px, 2.2vw, 18px);
+  margin-bottom: clamp(16px, 2.5vw, 22px);
   text-align: left;
 }
 
@@ -763,7 +794,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: clamp(10px, 1.8vw, 14px) 0;
+  padding: clamp(8px, 1.5vw, 12px) 0;
   border-bottom: 2px solid rgba(45, 55, 72, 0.1);
 }
 
@@ -779,14 +810,14 @@
 .stat-label {
   font-weight: 700;
   color: #4a5568;
-  font-size: clamp(12px, 2.2vw, 15px);
+  font-size: clamp(10px, 1.8vw, 12px);
   letter-spacing: 0.3px;
 }
 
 .stat-value {
   font-weight: 800;
   color: #2d3748;
-  font-size: clamp(14px, 2.5vw, 18px);
+  font-size: clamp(11px, 2vw, 14px);
 }
 
 /* Battle Result Buttons - Red like Start Battle */
@@ -794,15 +825,15 @@
   background: linear-gradient(180deg, #d62839, #9b111e);
   color: white;
   border: 2px solid #0a163f;
-  border-radius: clamp(14px, 3vw, 18px);
-  padding: clamp(12px, 2.5vw, 16px) clamp(20px, 4vw, 32px);
-  font-size: clamp(14px, 2.5vw, 18px);
+  border-radius: clamp(12px, 2.5vw, 16px);
+  padding: clamp(10px, 2vw, 14px) clamp(16px, 3.5vw, 28px);
+  font-size: clamp(12px, 2vw, 15px);
   font-weight: 700;
   cursor: pointer;
   transition: all 0.2s ease;
   box-shadow: 0 6px 0 rgba(0, 0, 0, 0.25), 0 8px 16px rgba(0, 0, 0, 0.25);
   width: 100%;
-  margin-bottom: clamp(10px, 1.8vw, 14px);
+  margin-bottom: clamp(8px, 1.5vw, 12px);
   text-transform: uppercase;
   letter-spacing: 0.5px;
 }
@@ -1125,4 +1156,224 @@
 @keyframes flashEffect {
   0%, 100% { opacity: 0; }
   50% { opacity: 1; }
+}
+
+/* ==================== MOBILE RESPONSIVE STYLES ==================== */
+
+/* Mobile Portrait - Switch to vertical layout */
+@media (max-width: 768px) and (orientation: portrait) {
+  /* Make overlay take full screen */
+  .battle-overlay {
+    padding: 0;
+    align-items: stretch;
+  }
+  
+  /* Remove aspect ratio constraint on mobile */
+  .battle-container {
+    max-width: 100vw;
+    width: 100vw;
+    height: 100vh;
+    max-height: 100vh;
+  }
+  
+  /* Remove aspect ratio padding */
+  .battle-container::before {
+    display: none;
+  }
+  
+  /* Make arena fill the screen */
+  .battle-arena {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    border-radius: 0;
+    border: none;
+  }
+  
+  /* Adjust battle panel for mobile - move up to cover character legs */
+  .battle-panel {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    width: 100%;
+    height: 58vh; /* Taller panel */
+    max-height: 58vh;
+    border-radius: 20px 20px 0 0;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Question side on mobile - larger area for question */
+  .question-side {
+    flex: .7; /* Takes most of the space */
+    border-right: none;
+    border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+    height: auto;
+    display: flex;
+    flex-direction: column;
+  }
+  
+  /* Question header - center the counter at top */
+  .question-header {
+    padding: clamp(8px, 2vw, 10px) clamp(10px, 2.5vw, 12px) !important;
+    justify-content: center !important;
+    flex-direction: column;
+    gap: clamp(4px, 1vw, 6px);
+    align-items: center;
+  }
+  
+  .question-number {
+    font-size: clamp(10px, 2.4vw, 12px) !important;
+    padding: clamp(4px, 1vw, 5px) clamp(8px, 2vw, 10px) !important;
+    order: -1; /* Move to top */
+  }
+  
+  .question-timer {
+    font-size: clamp(9px, 2.2vw, 11px) !important;
+  }
+  
+  /* Answer side on mobile - smaller 2x2 grid */
+  .answer-side {
+    flex: .1 auto;
+    height: 29%; /* Fixed smaller height for answers */
+    display: grid;
+    grid-template-columns: 1fr 1fr; /* 2 columns */
+    grid-template-rows: 1fr 1fr; /* 2 rows */
+    gap: 0;
+  }
+  
+  /* Answer buttons in 2x2 grid - smaller */
+  .move-button {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    font-size: clamp(10px, 2.5vw, 12px) !important;
+    padding: clamp(6px, 1.5vw, 8px) clamp(8px, 2vw, 10px) !important;
+    line-height: 1.2;
+    text-align: left;
+    display: flex;
+    align-items: center;
+    justify-content: flex-start;
+    word-wrap: break-word;
+    overflow-wrap: break-word;
+    hyphens: auto;
+  }
+  
+  /* Remove last-child border since we have grid now */
+  .move-button:last-child {
+    border-bottom: 1px solid rgba(255, 255, 255, 0.2);
+  }
+  
+  /* Adjust sprites for mobile - player bottom = panel top */
+  .sprite-slot.player {
+    left: 5% !important;
+    bottom: 55vh !important; /* Bottom of character = top of panel (100vh - 58vh = 42vh) */
+    width: clamp(110px, 28vw, 160px) !important;
+  }
+  
+  .sprite-slot.enemy {
+    right: 8% !important;
+    top: 12vh !important;
+    width: clamp(120px, 30vw, 170px) !important;
+  }
+  
+  /* Adjust HP bars */
+  .player-hud {
+    right: 2vw !important;
+    top: 8vh !important;
+    width: clamp(180px, 45vw, 250px) !important;
+  }
+  
+  .enemy-hud {
+    left: 2vw !important;
+    top: 2vh !important;
+    width: clamp(180px, 45vw, 250px) !important;
+  }
+  
+  /* Make question text more readable on mobile */
+  .question-text {
+    font-size: clamp(13px, 3.2vw, 15px) !important;
+    line-height: 1.35 !important;
+    padding: clamp(10px, 2.5vw, 14px) !important;
+    overflow-y: auto;
+  }
+  
+  /* Smaller question header elements - removed as now defined above */
+  
+  .timer-icon {
+    font-size: clamp(10px, 2.4vw, 12px) !important;
+  }
+  
+  /* Close button positioning */
+  .battle-close-btn {
+    top: max(env(safe-area-inset-top), 12px);
+    right: 12px;
+    width: 40px;
+    height: 40px;
+    font-size: 24px;
+    z-index: 9999;
+  }
+  
+  /* Battle start card for mobile */
+  .battle-start-card {
+    width: 90vw;
+    max-width: none;
+    padding: 20px;
+  }
+  
+  /* Answer button letter badge - smaller on mobile */
+  .move-letter {
+    font-size: clamp(10px, 2.4vw, 12px) !important;
+    width: clamp(18px, 4.5vw, 22px) !important;
+    height: clamp(18px, 4.5vw, 22px) !important;
+    min-width: 18px;
+    flex-shrink: 0;
+    margin-right: clamp(5px, 1.2vw, 6px) !important;
+    position: static !important; /* Override absolute positioning on mobile */
+  }
+}
+
+/* Mobile Landscape - Keep 16:9 but optimize */
+@media (max-width: 932px) and (orientation: landscape) {
+  .battle-overlay {
+    padding: 5px;
+  }
+  
+  .battle-container {
+    max-width: 98vw;
+    max-height: 98vh;
+  }
+  
+  .battle-panel {
+    max-height: 38vh;
+    padding: 10px 14px;
+  }
+  
+  .question-text {
+    font-size: clamp(12px, 2.5vw, 14px) !important;
+    line-height: 1.3 !important;
+  }
+  
+  .answer-btn {
+    padding: 8px 12px !important;
+    font-size: clamp(11px, 2.2vw, 13px) !important;
+    min-height: 36px;
+  }
+  
+  .player-sprite, .enemy-sprite {
+    width: clamp(100px, 18vw, 140px) !important;
+    height: clamp(100px, 18vw, 140px) !important;
+  }
+}
+
+/* Tablets Portrait */
+@media (min-width: 769px) and (max-width: 1024px) and (orientation: portrait) {
+  .battle-container {
+    max-width: 90vw;
+  }
+  
+  .battle-panel {
+    max-height: 40vh;
+  }
 }

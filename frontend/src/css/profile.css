@@ -127,6 +127,7 @@
 }
 
 .profile-username {
+  font-family: 'Press Start 2P', monospace;
   font-size: 2.5rem;
   font-weight: 800;
   color: #ffffff;
@@ -233,6 +234,7 @@
 }
 
 .role-text {
+  font-family: 'Press Start 2P', monospace;
   font-weight: 700;
 }
 

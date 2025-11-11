@@ -1,4 +1,6 @@
 // Battle Quiz System - Pokemon GBA Style
+import { API_BASE_URL } from './config.js';
+
 class BattleQuiz {
   constructor(module, lessonNumber) {
     this.module = module;
@@ -32,6 +34,9 @@ class BattleQuiz {
       return;
     }
     
+    // Prevent scrolling and hide back-to-top button
+    document.body.classList.add('battle-active');
+    
     // Show overlay
     overlay.style.display = 'flex';
     setTimeout(() => overlay.classList.add('active'), 10);
@@ -50,6 +55,9 @@ class BattleQuiz {
   closeOverlay() {
     const overlay = document.getElementById('battleOverlay');
     if (!overlay) return;
+    
+    // Re-enable scrolling and show back-to-top button
+    document.body.classList.remove('battle-active');
     
     // Stop battle music
     this.stopBattleMusic();
@@ -117,7 +125,7 @@ class BattleQuiz {
     `;
     
     try {
-      const response = await fetch(`http://localhost:4000/api/quiz/battle/start/${this.module}/${this.lessonNumber}`);
+      const response = await fetch(`${API_BASE_URL}/api/quiz/battle/start/${this.module}/${this.lessonNumber}`);
       
       if (!response.ok) throw new Error('Failed to load quiz');
       
@@ -185,9 +193,8 @@ class BattleQuiz {
               <span class="player-level">Lvl 1</span>
             </div>
             <div class="health-bar-container">
-              <div class="health-bar high" id="playerHealthBar" style="width: 100%;">
-                <span id="playerHealthText">${this.playerHealth} / ${this.maxHealth}</span>
-              </div>
+              <div class="health-bar high" id="playerHealthBar" style="width: 100%;"></div>
+              <span id="playerHealthText">${this.playerHealth} / ${this.maxHealth}</span>
             </div>
           </div>
           
@@ -197,9 +204,8 @@ class BattleQuiz {
               <span class="enemy-level">Lvl ${this.monster.level}</span>
             </div>
             <div class="health-bar-container">
-              <div class="health-bar high" id="monsterHealthBar" style="width: 100%;">
-                <span id="monsterHealthText">${this.monsterHealth} / ${this.maxHealth}</span>
-              </div>
+              <div class="health-bar high" id="monsterHealthBar" style="width: 100%;"></div>
+              <span id="monsterHealthText">${this.monsterHealth} / ${this.maxHealth}</span>
             </div>
           </div>
         </div>
@@ -718,6 +724,8 @@ document.addEventListener('DOMContentLoaded', () => {
     
     if (module && lessonNumber) {
       battleQuiz = new BattleQuiz(module, lessonNumber);
+      // Make it globally accessible for onclick handlers
+      window.battleQuiz = battleQuiz;
     }
   }
 });

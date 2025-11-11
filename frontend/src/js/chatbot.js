@@ -18,11 +18,43 @@ class CyberBot {
     init() {
         this.injectHTML();
         this.attachEventListeners();
+        this.setupDrawerListener();
         this.checkHealth();
     }
 
     injectHTML() {
+        // Check if user is faculty or admin
+        const userRole = localStorage.getItem('authRole');
+        const isFacultyOrAdmin = userRole === 'faculty' || userRole === 'admin';
+        
+        // Check current page
+        const currentPath = window.location.pathname.toLowerCase();
+        const isHomepage = currentPath.includes('cybered.html') || currentPath.endsWith('/');
+        const isLessonPage = currentPath.includes('/lessons/');
+        const isFacultySpacePage = currentPath.includes('faculty-space.html');
+        const isModulesPage = currentPath.includes('modules.html');
+        
+        // Check if mobile (window width <= 768px)
+        const isMobile = window.innerWidth <= 768;
+        
+        // Show plus button for all users on modules page (faculty creates, students join)
+        // But hide on mobile since there's already a + button in the topbar
+        const showPlusButton = isModulesPage && !isMobile;
+        
+        // Hide chatbot on faculty space page
+        const showChatbot = !isFacultySpacePage;
+        
         const html = `
+            ${showPlusButton ? `
+            <!-- Space Action Button (Create for Faculty, Join for Students) -->
+            <button class="faculty-add-toggle" id="faculty-add-toggle" aria-label="Space Options">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+            </button>
+            ` : ''}
+            
+            ${showChatbot ? `
             <!-- Chatbot Toggle Button -->
             <button class="chatbot-toggle" id="chatbot-toggle" aria-label="Open CyberBot">
                 <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -74,6 +106,7 @@ class CyberBot {
                     </button>
                 </div>
             </div>
+            ` : ''}
         `;
 
         document.body.insertAdjacentHTML('beforeend', html);
@@ -84,16 +117,90 @@ class CyberBot {
         const close = document.getElementById('chatbot-close');
         const send = document.getElementById('chatbot-send');
         const input = document.getElementById('chatbot-input');
+        const facultyToggle = document.getElementById('faculty-add-toggle');
 
-        toggle.addEventListener('click', () => this.toggleChat());
-        close.addEventListener('click', () => this.toggleChat());
-        send.addEventListener('click', () => this.sendMessage());
+        if (toggle) toggle.addEventListener('click', () => this.toggleChat());
+        if (close) close.addEventListener('click', () => this.toggleChat());
+        if (send) send.addEventListener('click', () => this.sendMessage());
+        if (input) {
+            input.addEventListener('keypress', (e) => {
+                if (e.key === 'Enter' && !this.isTyping) {
+                    this.sendMessage();
+                }
+            });
+        }
         
-        input.addEventListener('keypress', (e) => {
-            if (e.key === 'Enter' && !this.isTyping) {
-                this.sendMessage();
+        // Faculty button handler
+        if (facultyToggle) {
+            facultyToggle.addEventListener('click', () => this.showSpaceOptions());
+        }
+        
+        // Hide chatbot when hamburger menu opens
+        this.setupDrawerListener();
+    }
+    
+    setupDrawerListener() {
+        // Wait for drawer to be available in DOM
+        const waitForDrawer = () => {
+            const drawer = document.getElementById('mobileDrawer');
+            const chatbotToggle = document.getElementById('chatbot-toggle');
+            const chatbotContainer = document.getElementById('chatbot-container');
+            const facultyToggle = document.getElementById('faculty-add-toggle');
+            
+            if (!drawer) {
+                // Retry after a short delay if drawer not found
+                setTimeout(waitForDrawer, 100);
+                return;
             }
-        });
+            
+            // Use MutationObserver to watch for aria-hidden attribute changes
+            const observer = new MutationObserver((mutations) => {
+                mutations.forEach((mutation) => {
+                    if (mutation.type === 'attributes' && mutation.attributeName === 'aria-hidden') {
+                        const isDrawerOpen = drawer.getAttribute('aria-hidden') === 'false';
+                        
+                        console.log('Drawer state changed:', isDrawerOpen ? 'OPEN' : 'CLOSED');
+                        
+                        // Hide/show chatbot elements when drawer opens/closes
+                        if (chatbotToggle) {
+                            chatbotToggle.style.display = isDrawerOpen ? 'none' : 'flex';
+                        }
+                        if (chatbotContainer && this.isOpen) {
+                            chatbotContainer.style.display = isDrawerOpen ? 'none' : 'flex';
+                        }
+                        if (facultyToggle) {
+                            facultyToggle.style.display = isDrawerOpen ? 'none' : 'flex';
+                        }
+                    }
+                });
+            });
+            
+            observer.observe(drawer, { attributes: true });
+            console.log('Drawer listener set up successfully');
+        };
+        
+        waitForDrawer();
+    }
+    
+    showSpaceOptions() {
+        const userRole = localStorage.getItem('authRole');
+        const isFacultyOrAdmin = userRole === 'faculty' || userRole === 'admin';
+        
+        if (isFacultyOrAdmin) {
+            // Faculty/Admin: Open create space modal
+            if (window.facultyModuleCreator) {
+                window.facultyModuleCreator.openModal();
+            } else {
+                alert('Faculty Options:\n\n• Add Quiz Questions\n• Manage Content\n• View Analytics\n\n(Coming soon!)');
+            }
+        } else {
+            // Students: Open join space modal
+            if (window.studentSpaceJoiner) {
+                window.studentSpaceJoiner.openModal();
+            } else {
+                alert('Join Space feature loading...');
+            }
+        }
     }
 
     toggleChat() {

@@ -22,7 +22,7 @@
 .hero-stack{ display:flex; flex-direction:column; align-items:center; justify-content:center; gap:.5rem; min-height: 12rem; }
 .hero-icon{ width:7rem; height:7rem; border-radius:.75rem; display:flex; align-items:center; justify-content:center; background: rgba(0,0,0,.15); border:2px solid var(--indigo-400); }
 .hero-icon img{ width:5.5rem; height:5.5rem; object-fit:contain; display:block; }
-.hero-title{ font-size: clamp(1rem, 2.5vw, 1.25rem); }
+.hero-title{ font-family: 'Press Start 2P', monospace; font-size: clamp(1rem, 2.5vw, 1.25rem); }
 .hero-title{ font-weight:700; text-align:center; margin-top:.25rem; }
 .hero-desc{ text-align:center; margin-top:.35rem; max-width:36rem; }
 .hero-progress{ height:.9rem; background: rgba(15,23,42,.65); border-radius:999px; overflow:hidden; width:70%; margin:.6rem auto 0; box-shadow: inset 0 1px 1px rgba(0,0,0,.35); }

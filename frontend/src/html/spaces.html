@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Spaces - Cyber Ed</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/modules.css">
+  <link rel="stylesheet" href="../css/chatbot.css">
+  <link rel="stylesheet" href="../css/faculty-module-modal.css">
+</head>
+<body class="site-background">
+  <div class="layout-shell">
+    <div data-include="./partials/navbar.html"></div>
+    <main class="main-wrapper">
+      <div data-include="./partials/topbar.html"></div>
+      <section class="content-section content-stack" style="padding-top: 1rem;">
+        <div class="modules-header" style="margin-bottom: 1.5rem;">
+          <div class="modules-header-title-wrapper" style="gap: 1rem;">
+            <h1 class="title-medium" style="letter-spacing:.025em; margin: 0;">Spaces</h1>
+            <p class="subtitle" style="margin: 0; opacity: 0.8; flex: 1;">Your collaborative learning CyberSpaces</p>
+          </div>
+        </div>
+
+        <!-- Spaces Grid -->
+        <div id="spacesGrid" class="modules-grid">
+          <!-- Spaces will be loaded here dynamically -->
+        </div>
+
+        <!-- Empty State -->
+        <div id="emptyState" class="empty-state" style="display:none;">
+          <div class="empty-state-content">
+            <svg width="120" height="120" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5">
+              <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/>
+            </svg>
+            <h2 id="emptyStateTitle">No Spaces Available</h2>
+            <p id="emptyStateMessage">Get started by creating or joining a space</p>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Floating Add Button (Desktop) -->
+  <button class="faculty-add-toggle" id="faculty-add-toggle" aria-label="Create/Join Space" style="display:none;">
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+    </svg>
+  </button>
+
+  <script src="../js/includes.js"></script>
+  <script src="../js/config.js"></script>
+  <script src="../js/spaces-page.js"></script>
+  <script src="../js/faculty-module-creator.js" type="module"></script>
+  <script src="../js/student-space-joiner.js" type="module"></script>
+</body>
+</html>

@@ -1,0 +1,270 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cyber Ed - Faculty Space</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/faculty-space.css">
+  <link rel="stylesheet" href="../css/faculty-space-settings.css">
+  <link rel="stylesheet" href="../css/chatbot.css">
+</head>
+<body class="site-background">
+  <div class="layout-shell">
+    <div data-include="./partials/navbar.html"></div>
+    <main class="main-wrapper">
+      <div data-include="./partials/topbar.html"></div>
+      <section class="content-section content-stack">
+        <!-- Space Header -->
+        <div class="space-header" id="spaceHeader">
+          <div class="space-header-top">
+            <h1 class="space-title" id="spaceTitle">Loading...</h1>
+          </div>
+          
+          <div class="space-info">
+            <p class="space-description" id="spaceDescription"></p>
+            <div class="space-meta">
+              <div class="space-code-display">
+                <span class="space-code-label">Space Code:</span>
+                <span class="space-code" id="spaceCode">------</span>
+                <button class="copy-code-btn" id="copyCodeBtn" title="Copy code">
+                  <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                  </svg>
+                </button>
+              </div>
+              <div class="space-students">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
+                </svg>
+                <span id="studentCount">0</span> Students
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Tabs Navigation -->
+        <div class="space-tabs">
+          <button class="space-tab active" data-tab="modules">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+            Modules
+          </button>
+          <button class="space-tab" data-tab="announcements">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+            </svg>
+            Announcements
+          </button>
+          <button class="space-tab" data-tab="students">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+            </svg>
+            Students
+          </button>
+          <button class="space-tab" data-tab="settings">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+            </svg>
+            Settings
+          </button>
+        </div>
+
+        <!-- Tab Contents -->
+        <div class="space-content">
+          <!-- Modules Tab -->
+          <div class="tab-panel active" id="modulesPanel">
+            <div class="panel-header">
+              <h2>Modules</h2>
+              <button class="add-btn" id="addModuleBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                Add Module
+              </button>
+            </div>
+            <div class="modules-list" id="modulesList">
+              <div class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+                </svg>
+                <p>No modules yet</p>
+                <p class="empty-state-hint">Create your first module to get started</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Announcements Tab -->
+          <div class="tab-panel" id="announcementsPanel">
+            <div class="panel-header">
+              <h2>Announcements</h2>
+              <button class="add-btn" id="addAnnouncementBtn">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+                </svg>
+                New Announcement
+              </button>
+            </div>
+            <div class="announcements-list" id="announcementsList">
+              <div class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+                </svg>
+                <p>No announcements yet</p>
+                <p class="empty-state-hint">Share updates with your students</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Students Tab -->
+          <div class="tab-panel" id="studentsPanel">
+            <div class="panel-header">
+              <h2>Enrolled Students</h2>
+            </div>
+            <div class="students-list" id="studentsList">
+              <div class="empty-state">
+                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+                </svg>
+                <p>No students enrolled yet</p>
+                <p class="empty-state-hint">Share your space code to get students enrolled</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Settings Tab -->
+          <div class="tab-panel" id="settingsPanel">
+            <div id="settingsModalContent">
+              <!-- Settings content will be loaded here -->
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+  
+  <!-- Settings Modal -->
+  <div class="settings-modal-overlay" id="settingsModalOverlay">
+    <div class="settings-modal">
+      <div class="settings-modal-header">
+        <h3 class="settings-modal-title">
+          <svg fill="currentColor" viewBox="0 0 20 20">
+            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" clip-rule="evenodd"/>
+          </svg>
+          Space Settings
+        </h3>
+      </div>
+      
+      <div class="settings-modal-content" id="settingsModalContent">
+        <!-- Space Info Section -->
+        <div class="settings-section">
+          <h4 class="settings-section-title">
+            <svg fill="currentColor" viewBox="0 0 20 20">
+              <path d="M13.586 3.586a2 2 0 112.828 2.828l-.793.793-2.828-2.828.793-.793zM11.379 5.793L3 14.172V17h2.828l8.38-8.379-2.83-2.828z"/>
+            </svg>
+            Space Information
+          </h4>
+          
+          <div class="settings-form-group">
+            <label class="settings-label">Space Name</label>
+            <input type="text" class="settings-input" id="settingsSpaceName" placeholder="Enter space name" maxlength="100">
+          </div>
+          
+          <div class="settings-form-group">
+            <label class="settings-label">Description</label>
+            <textarea class="settings-textarea" id="settingsSpaceDescription" placeholder="Enter space description" maxlength="500"></textarea>
+          </div>
+        </div>
+        
+        <!-- Theme Section -->
+        <div class="settings-section">
+          <h4 class="settings-section-title">
+            <svg fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M4 2a2 2 0 00-2 2v11a3 3 0 106 0V4a2 2 0 00-2-2H4zm1 14a1 1 0 100-2 1 1 0 000 2zm5-1.757l4.9-4.9a2 2 0 000-2.828L13.485 5.1a2 2 0 00-2.828 0L10 5.757v8.486zM16 18H9.071l6-6H16a2 2 0 012 2v2a2 2 0 01-2 2z" clip-rule="evenodd"/>
+            </svg>
+            Theme Color
+          </h4>
+          
+          <div class="theme-colors" id="themeColors">
+            <div class="theme-color-option" data-color="#1d4ed8" style="background: linear-gradient(135deg, #1d4ed8 0%, #1e40af 100%);"></div>
+            <div class="theme-color-option" data-color="#7c3aed" style="background: linear-gradient(135deg, #7c3aed 0%, #6d28d9 100%);"></div>
+            <div class="theme-color-option" data-color="#db2777" style="background: linear-gradient(135deg, #db2777 0%, #be185d 100%);"></div>
+            <div class="theme-color-option" data-color="#dc2626" style="background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);"></div>
+            <div class="theme-color-option" data-color="#14b8a6" style="background: linear-gradient(135deg, #14b8a6 0%, #0d9488 100%);"></div>
+            <div class="theme-color-option" data-color="#16a34a" style="background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);"></div>
+            <div class="theme-color-option" data-color="#0891b2" style="background: linear-gradient(135deg, #0891b2 0%, #0e7490 100%);"></div>
+            <div class="theme-color-option" data-color="#475569" style="background: linear-gradient(135deg, #475569 0%, #334155 100%);"></div>
+          </div>
+        </div>
+        
+        <!-- Enrolled Students Section -->
+        <div class="settings-section">
+          <h4 class="settings-section-title">
+            <svg fill="currentColor" viewBox="0 0 20 20">
+              <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+            </svg>
+            Manage Students (<span id="settingsStudentCount">0</span>)
+          </h4>
+          
+          <div class="enrolled-students-list" id="settingsStudentsList">
+            <p style="color: rgba(255, 255, 255, 0.6); text-align: center;">No students enrolled</p>
+          </div>
+        </div>
+        
+        <!-- Danger Zone -->
+        <div class="settings-section danger-zone">
+          <h4 class="settings-section-title">
+            <svg fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M8.257 3.099c.765-1.36 2.722-1.36 3.486 0l5.58 9.92c.75 1.334-.213 2.98-1.742 2.98H4.42c-1.53 0-2.493-1.646-1.743-2.98l5.58-9.92zM11 13a1 1 0 11-2 0 1 1 0 012 0zm-1-8a1 1 0 00-1 1v3a1 1 0 002 0V6a1 1 0 00-1-1z" clip-rule="evenodd"/>
+            </svg>
+            Danger Zone
+          </h4>
+          
+          <div class="delete-warning">
+            ⚠️ <strong>Warning:</strong> Deleting this space will permanently remove all modules, lessons, quizzes, and enrolled students. This action cannot be undone. You must enter your password to confirm.
+          </div>
+          
+          <div class="settings-form-group">
+            <label class="settings-label">Enter Your Password to Confirm</label>
+            <input type="password" class="settings-input" id="deletePasswordInput" placeholder="Enter your password">
+          </div>
+          
+          <button class="delete-space-btn" id="deleteSpaceBtn">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+            </svg>
+            Delete Space Permanently
+          </button>
+        </div>
+        
+        <!-- Save/Cancel Actions -->
+        <div class="settings-actions">
+          <button class="settings-btn settings-btn-secondary" id="settingsCancelBtn">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+            </svg>
+            Cancel
+          </button>
+          <button class="settings-btn settings-btn-primary" id="settingsSaveBtn">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"/>
+            </svg>
+            Save Changes
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+  
+  <script src="../js/includes.js"></script>
+
+  <script src="../js/faculty-space.js" type="module"></script>
+  <script src="../js/chatbot.js" type="module"></script>
+</body>
+</html>

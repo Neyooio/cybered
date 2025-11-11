@@ -10,6 +10,7 @@ import usersRouter from './routes/users.js';
 import roleRequestsRouter from './routes/roleRequests.js';
 import quizRouter from './routes/quiz.js';
 import chatbotRouter from './routes/chatbot.js';
+import facultyModulesRouter from './routes/facultyModules.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 
@@ -57,6 +58,7 @@ app.use('/api/users', usersRouter);
 app.use('/api/role-requests', roleRequestsRouter);
 app.use('/api/quiz', quizRouter);
 app.use('/api/chatbot', chatbotRouter);
+app.use('/api/faculty-modules', facultyModulesRouter);
 
 const PORT = process.env.PORT || 4000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/CyberEdCapstone';

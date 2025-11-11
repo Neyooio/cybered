@@ -1,0 +1,516 @@
+/* Faculty Space Management Styles */
+
+/* Space Header */
+.space-header {
+  background: linear-gradient(135deg, var(--space-primary, rgba(30, 58, 138, 0.9)) 0%, var(--space-primary-dark, rgba(30, 64, 175, 0.9)) 100%);
+  border: 3px solid #000;
+  border-radius: 16px;
+  padding: 2rem;
+  margin-bottom: 2rem;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+  transition: background 0.3s ease;
+}
+
+.space-header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.space-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: clamp(1.2rem, 2vw, 1.8rem);
+  margin: 0;
+  color: #ffffff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.space-actions {
+  display: flex;
+  gap: 0.75rem;
+}
+
+.space-action-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 1rem;
+  background: rgba(15, 23, 42, 0.5);
+  border: 2px solid rgba(249, 115, 22, 0.4);
+  border-radius: 8px;
+  color: #ffffff;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.space-action-btn:hover {
+  background: rgba(249, 115, 22, 0.2);
+  border-color: #f97316;
+}
+
+.space-action-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
+.space-info {
+  text-align: left;
+}
+
+.space-description {
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 1rem;
+  line-height: 1.6;
+  margin: 0 0 1.5rem 0;
+}
+
+.space-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  align-items: center;
+}
+
+.space-code-display {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid #000;
+  border-radius: 10px;
+}
+
+.space-code-label {
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.85rem;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.space-code {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.1rem;
+  color: #000000;
+  letter-spacing: 0.15em;
+}
+
+.copy-code-btn {
+  background: transparent;
+  border: none;
+  color: #000000;
+  padding: 0.25rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+}
+
+.copy-code-btn:hover {
+  color: #334155;
+  transform: scale(1.1);
+}
+
+.copy-code-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.space-students {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid #000;
+  border-radius: 10px;
+  color: #ffffff;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.space-students svg {
+  width: 20px;
+  height: 20px;
+  color: #000000;
+}
+
+/* Tabs */
+.space-tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 2rem;
+  border-bottom: 3px solid #000;
+  overflow-x: auto;
+}
+
+/* Custom scrollbar for space tabs */
+.space-tabs::-webkit-scrollbar {
+  height: 8px;
+}
+
+.space-tabs::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 4px;
+}
+
+.space-tabs::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #f97316 0%, #fb923c 100%);
+  border-radius: 4px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.space-tabs::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #fb923c 0%, #fdba74 100%);
+}
+
+.space-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 1rem 1.5rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 2px solid rgba(249, 115, 22, 0.3);
+  border-bottom: none;
+  border-radius: 12px 12px 0 0;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+}
+
+.space-tab:hover {
+  background: rgba(30, 58, 138, 0.4);
+  color: #ffffff;
+}
+
+.space-tab.active {
+  background: linear-gradient(135deg, var(--space-primary, #1e3a8a) 0%, var(--space-primary-dark, #1e40af) 100%);
+  border-color: #f97316;
+  color: #ffffff;
+  box-shadow: 0 -4px 12px rgba(249, 115, 22, 0.3);
+  transition: all 0.3s ease;
+}
+
+.space-tab svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Tab Panels */
+.space-content {
+  min-height: 400px;
+}
+
+.tab-panel {
+  display: none;
+}
+
+.tab-panel.active {
+  display: block;
+  animation: fadeIn 0.3s ease;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.panel-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+}
+
+.panel-header h2 {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.2rem;
+  color: #ffffff;
+}
+
+.add-btn {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.5rem;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  border: 2px solid #000;
+  border-radius: 10px;
+  color: #ffffff;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+}
+
+.add-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(249, 115, 22, 0.6);
+}
+
+.add-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Empty States */
+.empty-state {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  padding: 4rem 2rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 2px dashed rgba(249, 115, 22, 0.3);
+  border-radius: 16px;
+  text-align: center;
+}
+
+.empty-state svg {
+  width: 64px;
+  height: 64px;
+  color: rgba(249, 115, 22, 0.6);
+  margin-bottom: 1rem;
+}
+
+.empty-state p {
+  color: #ffffff;
+  font-size: 1.1rem;
+  margin-bottom: 0.5rem;
+}
+
+.empty-state-hint {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.9rem !important;
+}
+
+/* Module Cards */
+.modules-list,
+.announcements-list,
+.students-list {
+  display: grid;
+  gap: 1.5rem;
+}
+
+.module-card {
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.8) 0%, rgba(30, 64, 175, 0.8) 100%);
+  border: 3px solid #000;
+  border-radius: 16px;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  transition: all 0.3s ease;
+  cursor: pointer;
+}
+
+.module-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 8px 24px rgba(249, 115, 22, 0.3);
+  border-color: #f97316;
+}
+
+.module-info {
+  flex: 1;
+}
+
+.module-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1rem;
+  color: #ffffff;
+  margin-bottom: 0.5rem;
+}
+
+.module-description {
+  color: rgba(255, 255, 255, 0.8);
+  font-size: 0.9rem;
+  line-height: 1.5;
+}
+
+.module-stats {
+  display: flex;
+  gap: 1rem;
+  margin-top: 0.75rem;
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.7);
+}
+
+.module-actions {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.module-action {
+  padding: 0.5rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 2px solid rgba(249, 115, 22, 0.3);
+  border-radius: 8px;
+  color: #f97316;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.module-action:hover {
+  background: rgba(249, 115, 22, 0.2);
+  border-color: #f97316;
+}
+
+.module-action svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Announcement Cards */
+.announcement-card {
+  background: linear-gradient(135deg, rgba(30, 58, 138, 0.8) 0%, rgba(30, 64, 175, 0.8) 100%);
+  border: 3px solid #000;
+  border-left: 6px solid #f97316;
+  border-radius: 12px;
+  padding: 1.5rem;
+}
+
+.announcement-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 1rem;
+}
+
+.announcement-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.95rem;
+  color: #ffffff;
+}
+
+.announcement-date {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.announcement-content {
+  color: rgba(255, 255, 255, 0.9);
+  line-height: 1.6;
+  font-size: 0.95rem;
+}
+
+/* Student Cards */
+.student-card {
+  background: rgba(15, 23, 42, 0.8);
+  border: 2px solid rgba(249, 115, 22, 0.3);
+  border-radius: 12px;
+  padding: 1rem 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.student-info {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+}
+
+.student-avatar {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.2rem;
+  color: #ffffff;
+  border: 2px solid #f97316;
+}
+
+.student-avatar-img {
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  border: 2px solid #f97316;
+  object-fit: cover;
+}
+
+.student-details h3 {
+  color: #ffffff;
+  font-size: 1rem;
+  margin-bottom: 0.25rem;
+}
+
+.student-details p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.85rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .space-header {
+    padding: 1.5rem;
+  }
+
+  .space-header-top {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .space-title {
+    font-size: 1.1rem;
+  }
+
+  .space-meta {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .space-tabs {
+    gap: 0.25rem;
+  }
+
+  .space-tab {
+    padding: 0.75rem 1rem;
+    font-size: 0.85rem;
+  }
+
+  .space-tab svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .panel-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .add-btn {
+    width: 100%;
+    justify-content: center;
+  }
+
+  .module-card {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+  }
+
+  .module-actions {
+    width: 100%;
+    justify-content: flex-end;
+  }
+}

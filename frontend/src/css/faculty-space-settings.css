@@ -1,0 +1,514 @@
+/* Faculty Space Settings Modal */
+.settings-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  display: none;
+  justify-content: center;
+  align-items: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+
+.settings-modal-overlay.active {
+  display: flex;
+}
+
+.settings-modal {
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.95) 0%, rgba(30, 58, 138, 0.95) 100%);
+  border: 3px solid #000;
+  border-radius: 20px;
+  width: 90%;
+  max-width: 700px;
+  max-height: 85vh;
+  overflow: hidden;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: modalSlideIn 0.3s ease;
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.settings-modal-header {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  border-bottom: 3px solid #000;
+  padding: 1.5rem;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.settings-modal-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.2rem;
+  color: #ffffff;
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.settings-modal-title svg {
+  width: 24px;
+  height: 24px;
+  color: #f97316;
+}
+
+.settings-close-btn {
+  background: rgba(239, 68, 68, 0.2);
+  border: 2px solid rgba(239, 68, 68, 0.4);
+  border-radius: 8px;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.settings-close-btn:hover {
+  background: rgba(239, 68, 68, 0.4);
+  border-color: #ef4444;
+}
+
+.settings-close-btn svg {
+  width: 20px;
+  height: 20px;
+  color: #ffffff;
+}
+
+.settings-modal-content {
+  padding: 2rem;
+  overflow-y: auto;
+  max-height: calc(85vh - 100px);
+}
+
+.settings-modal-content::-webkit-scrollbar {
+  width: 10px;
+}
+
+.settings-modal-content::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.4);
+  border-radius: 5px;
+}
+
+.settings-modal-content::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #f97316 0%, #ea580c 100%);
+  border-radius: 5px;
+}
+
+.settings-modal-content::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #fb923c 0%, #f97316 100%);
+}
+
+.settings-section {
+  background: rgba(15, 23, 42, 0.6);
+  border: 2px solid rgba(249, 115, 22, 0.3);
+  border-radius: 12px;
+  padding: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.settings-section:last-child {
+  margin-bottom: 0;
+}
+
+.settings-section-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.9rem;
+  color: #f97316;
+  margin: 0 0 1rem 0;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.settings-section-title svg {
+  width: 18px;
+  height: 18px;
+}
+
+.settings-form-group {
+  margin-bottom: 1rem;
+}
+
+.settings-form-group:last-child {
+  margin-bottom: 0;
+}
+
+.settings-label {
+  display: block;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.9rem;
+  margin-bottom: 0.5rem;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.settings-input,
+.settings-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(249, 115, 22, 0.4);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.settings-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.settings-input:focus,
+.settings-textarea:focus {
+  border-color: #f97316;
+  background: rgba(0, 0, 0, 0.5);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+}
+
+.settings-input::placeholder,
+.settings-textarea::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+/* Theme Color Selector */
+.theme-colors,
+.theme-color-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.theme-color-option {
+  border-radius: 8px;
+  border: 3px solid #000;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+/* Mobile: Square layout with just color swatch */
+@media (max-width: 768px) {
+  .theme-color-option {
+    height: 50px;
+  }
+  
+  .theme-color-swatch {
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+  }
+  
+  .theme-color-name {
+    display: none;
+  }
+}
+
+/* Desktop: Horizontal stretch with color name inside */
+@media (min-width: 769px) {
+  .theme-color-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .theme-color-option {
+    height: 50px;
+    padding: 0.75rem 1rem;
+  }
+  
+  .theme-color-swatch {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 5px;
+  }
+  
+  .theme-color-name {
+    font-family: 'Share Tech Mono', monospace;
+    color: #ffffff;
+    font-size: 0.95rem;
+    font-weight: 600;
+    position: relative;
+    z-index: 1;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+  }
+}
+
+.theme-color-option:hover {
+  transform: scale(1.03);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.theme-color-option.selected {
+  border-color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.6);
+}
+
+.theme-color-option.selected::after {
+  content: '✓';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #ffffff;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.8);
+  pointer-events: none;
+  z-index: 2;
+  display: none;
+}
+
+/* Hide checkmark on desktop when name is shown */
+@media (min-width: 769px) {
+  .theme-color-option.selected::after {
+    display: none;
+  }
+}
+
+/* Enrolled Students List */
+.enrolled-students-list {
+  max-height: 200px;
+  overflow-y: auto;
+  margin-top: 1rem;
+}
+
+.enrolled-student-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.75rem;
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid rgba(249, 115, 22, 0.2);
+  border-radius: 8px;
+  margin-bottom: 0.5rem;
+}
+
+.enrolled-student-info {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+}
+
+.enrolled-student-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Press Start 2P', monospace;
+  font-size: 0.85rem;
+  color: #ffffff;
+  border: 2px solid #f97316;
+}
+
+.enrolled-student-avatar-img {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: 2px solid #f97316;
+  object-fit: cover;
+}
+
+.enrolled-student-details h4 {
+  color: #ffffff;
+  font-size: 0.9rem;
+  margin: 0 0 0.25rem 0;
+}
+
+.enrolled-student-details p {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  margin: 0;
+}
+
+.kick-student-btn {
+  padding: 0.5rem 1rem;
+  background: rgba(239, 68, 68, 0.2);
+  border: 2px solid rgba(239, 68, 68, 0.4);
+  border-radius: 6px;
+  color: #ef4444;
+  font-size: 0.85rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.kick-student-btn:hover {
+  background: rgba(239, 68, 68, 0.4);
+  border-color: #ef4444;
+  color: #ffffff;
+}
+
+/* Action Buttons */
+.settings-actions {
+  display: flex;
+  gap: 1rem;
+  margin: 2rem 0;
+  padding-top: 2rem;
+  border-top: 2px solid rgba(249, 115, 22, 0.2);
+}
+
+.settings-cancel-btn {
+  flex: 1;
+  padding: 0.875rem 2rem;
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  border: 2px solid #000;
+  border-radius: 10px;
+  color: #ffffff;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(100, 116, 139, 0.4);
+}
+
+.settings-cancel-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(100, 116, 139, 0.6);
+  background: linear-gradient(135deg, #475569 0%, #334155 100%);
+}
+
+.settings-cancel-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.settings-save-btn {
+  flex: 1;
+  padding: 0.875rem 2rem;
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: 2px solid #000;
+  border-radius: 10px;
+  color: #ffffff;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+}
+
+.settings-save-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(16, 185, 129, 0.6);
+  background: linear-gradient(135deg, #059669 0%, #047857 100%);
+}
+
+.settings-save-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+/* Danger Zone */
+.settings-danger-zone {
+  border-color: #000;
+  background: rgba(127, 29, 29, 0.15);
+  margin-top: 2rem;
+}
+
+.settings-danger-zone .settings-section-title {
+  color: #f87171;
+}
+
+.settings-delete-btn {
+  width: 100%;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #dc2626 0%, #b91c1c 100%);
+  border: 2px solid #000;
+  border-radius: 10px;
+  color: #ffffff;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(220, 38, 38, 0.4);
+}
+
+.settings-delete-btn:hover {
+  background: linear-gradient(135deg, #b91c1c 0%, #991b1b 100%);
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(220, 38, 38, 0.6);
+}
+
+.settings-delete-btn svg {
+  width: 20px;
+  height: 20px;
+}
+
+.delete-warning {
+  background: rgba(239, 68, 68, 0.1);
+  border: 2px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+  color: rgba(255, 255, 255, 0.9);
+  font-size: 0.85rem;
+  line-height: 1.5;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .settings-modal {
+    width: 95%;
+    max-height: 90vh;
+  }
+
+  .settings-modal-header {
+    padding: 1rem;
+  }
+
+  .settings-modal-title {
+    font-size: 0.9rem;
+  }
+
+  .settings-modal-content {
+    padding: 1.5rem;
+  }
+
+  .theme-colors {
+    grid-template-columns: repeat(4, 1fr);
+  }
+
+  .settings-actions {
+    flex-direction: column;
+  }
+}

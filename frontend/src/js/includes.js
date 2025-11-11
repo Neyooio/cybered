@@ -1,22 +1,75 @@
-document.addEventListener('DOMContentLoaded', async () => {
+const INCLUDES_VERSION = '2025-11-11-v4-DEBUG';
+console.info('[includes.js] Script loaded and executing - VERSION:', INCLUDES_VERSION);
+
+// Run immediately if DOM is already ready, or wait for DOMContentLoaded
+const initIncludes = async () => {
+  console.info('[init] ===== Starting initialization =====');
   const p = (location.pathname || '').replace(/\\/g,'/').toLowerCase();
   const isAdmin = p.includes('/src/html/admin/');
   
+  console.debug('[init] Loading includes...');
   const includes = document.querySelectorAll('[data-include]');
+  console.debug('[init] Found', includes.length, 'elements with data-include attribute');
+  
   await Promise.all(Array.from(includes).map(async host => {
     const url = host.getAttribute('data-include');
+    const cacheBust = `${url}?v=${Date.now()}`;
+    console.debug('[init] Fetching include:', cacheBust);
     try {
-      const res = await fetch(url);
+      const res = await fetch(cacheBust, { cache: 'no-store' });
+      if (!res.ok) {
+        console.error('[init] Include fetch failed:', url, 'Status:', res.status);
+        return;
+      }
       let html = await res.text();
+      console.log('[init] ✅ Received HTML length:', html.length, 'for', url);
       
       // If we're in admin folder, fix asset paths in the HTML before inserting
       if (isAdmin && html.includes('../../assets/')) {
         html = html.replace(/\.\.\/\.\.\/assets\//g, '../../../assets/');
       }
       
-      host.outerHTML = html;
-    } catch (e) { console.error('Include failed:', url, e); }
+      // Create a temp container to parse the HTML
+      const temp = document.createElement('div');
+      temp.innerHTML = html;
+      
+      // Debug: log what we're about to insert
+      console.log('[init] 🔍 Parsed HTML into', temp.children.length, 'child element(s)');
+      if (url.includes('topbar')) {
+        console.log('[init] 📌 TOPBAR CHILDREN:', Array.from(temp.children).map(c => ({
+          tag: c.tagName,
+          id: c.id,
+          classes: c.className,
+          hasDrawer: c.querySelector('#mobileDrawer') ? 'YES' : 'NO'
+        })));
+        // Check if mobileDrawer exists in the HTML
+        const drawerInHTML = html.includes('id="mobileDrawer"');
+        console.log('[init] 🎯 Does topbar.html contain mobileDrawer?', drawerInHTML);
+      }
+      
+      // Insert all children from the temp container
+      const parent = host.parentNode;
+      const children = Array.from(temp.children);
+      children.forEach(child => {
+        parent.insertBefore(child, host);
+      });
+      
+      // Remove the original placeholder
+      host.remove();
+      
+      console.debug('[init] ✓ Loaded include:', url, '- Inserted', children.length, 'element(s)');
+      
+      // Verify topbar insertion
+      if (url.includes('topbar')) {
+        setTimeout(() => {
+          console.debug('[init] Post-insert check: #mobileDrawer exists?', !!document.getElementById('mobileDrawer'));
+        }, 50);
+      }
+    } catch (e) { 
+      console.error('[init] Include failed:', url, e); 
+    }
   }));
+  console.info('[init] ===== All includes loaded =====');
 
   resetModuleProgressOnReload();
   setActiveNav();
@@ -24,12 +77,27 @@ document.addEventListener('DOMContentLoaded', async () => {
   fixAssetPaths && fixAssetPaths();
   forceUpdateAvatar && forceUpdateAvatar();
   
+  // Show/hide space dropdown based on page
+  checkSpaceDropdownVisibility();
+  
+  // Quick diagnostic after includes - with delay to ensure DOM is settled
+  setTimeout(() => {
+    try{
+      const hbDiag = !!document.getElementById('hamburgerBtn');
+      const drDiag = !!document.getElementById('mobileDrawer');
+      console.debug('[init] post-includes existence: hamburgerBtn?', hbDiag, 'mobileDrawer?', drDiag);
+    }catch(err){ console.error('[init] diagnostic error', err); }
+  }, 50);
+  
   // Wait a bit for DOM to settle, then check admin role and setup dropdown
   setTimeout(() => {
     checkAdminRole && checkAdminRole();
     setupAdminDropdown();
+    setupMobileDrawer(); // Setup hamburger menu drawer
+    setupSpaceButtons(); // Setup space navigation buttons
     updateNotificationBadge();
     setupNotificationDropdown();
+    setupSpaceDropdowns(); // Setup space dropdowns after DOM is fully loaded
     // Ensure avatar is set again after all includes are loaded
     restoreProfileBasics && restoreProfileBasics();
     forceUpdateAvatar && forceUpdateAvatar();
@@ -42,9 +110,16 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   // Ensure logout confirmation modal exists and is wired up
   setupLogoutConfirmation();
-  // Setup mobile hamburger drawer
-  setupMobileDrawer();
-});
+};
+
+// Run immediately if DOM is already loaded, otherwise wait
+if (document.readyState === 'loading') {
+  console.info('[includes.js] Waiting for DOMContentLoaded...');
+  document.addEventListener('DOMContentLoaded', initIncludes);
+} else {
+  console.info('[includes.js] DOM already loaded, running immediately');
+  initIncludes();
+}
 
 function setActiveNav() {
   const file = (location.pathname.split('/').pop() || '').toLowerCase();
@@ -216,6 +291,12 @@ function checkAdminRole() {
         drawerAdminMenu.style.display = 'block';
       }
       
+      // Show Space button in sidebar for admin
+      const spaceNavBtn = document.getElementById('spaceNavBtn');
+      if (spaceNavBtn) {
+        spaceNavBtn.style.display = '';
+      }
+      
       // Fix links if on admin page
       if (isAdmin) {
         const adminDropdown = document.getElementById('adminDropdown');
@@ -246,6 +327,35 @@ function checkAdminRole() {
     }
   } catch (e) {
     console.error('checkAdminRole error:', e);
+  }
+}
+
+// Setup Space navigation buttons for all users
+function setupSpaceButtons() {
+  try {
+    const spaceNavBtn = document.getElementById('spaceNavBtn');
+    const drawerSpaceBtn = document.getElementById('drawerSpaceBtn');
+    
+    if (spaceNavBtn) {
+      // Add click handler to navigate to spaces page
+      spaceNavBtn.addEventListener('click', (e) => {
+        e.preventDefault();
+        window.location.href = 'spaces.html';
+      });
+    }
+    
+    // Show and handle drawer space button
+    if (drawerSpaceBtn) {
+      const drawerSpaceLink = document.getElementById('drawerSpaceLink');
+      if (drawerSpaceLink) {
+        drawerSpaceLink.addEventListener('click', (e) => {
+          e.preventDefault();
+          window.location.href = 'spaces.html';
+        });
+      }
+    }
+  } catch (e) {
+    console.error('setupSpaceButtons error:', e);
   }
 }
 
@@ -297,20 +407,20 @@ function setupAdminDropdown() {
     const drawerAdminMenu = document.getElementById('drawerAdminMenu');
     
     if (drawerAdminOptionsBtn && drawerAdminMenu) {
-      const btn = drawerAdminOptionsBtn.querySelector('.admin-options-btn');
-      if (btn) {
+      const toggleLink = document.getElementById('drawerAdminToggle');
+      if (toggleLink) {
         // Remove existing listeners by cloning
-        const newMobileBtn = btn.cloneNode(true);
-        btn.parentNode.replaceChild(newMobileBtn, btn);
+        const newToggle = toggleLink.cloneNode(true);
+        toggleLink.parentNode.replaceChild(newToggle, toggleLink);
         
-        newMobileBtn.addEventListener('click', (e) => {
+        newToggle.addEventListener('click', (e) => {
           e.preventDefault();
           e.stopPropagation();
           drawerAdminMenu.classList.toggle('expanded');
           
-          // Update button text
+          // Update arrow direction
           const isExpanded = drawerAdminMenu.classList.contains('expanded');
-          newMobileBtn.querySelector('span').textContent = isExpanded ? 'Options ▼' : 'Options ▶';
+          newToggle.querySelector('span').textContent = isExpanded ? 'Options ▼' : 'Options ▶';
         });
       }
     }
@@ -402,10 +512,20 @@ function fixAssetPaths(){
       return './register-form.html';
     }catch{ return './register-form.html'; }
   }
+  
+  // Top bar logout button
   document.addEventListener('click', (e) => {
     const btn = e.target.closest && e.target.closest('#logoutTopBtn');
     if (!btn) return;
     // Open confirmation dialog instead of immediate logout
+    e.preventDefault();
+    openLogoutConfirmation(logoutRedirectPath);
+  });
+  
+  // Sidebar logout button
+  document.addEventListener('click', (e) => {
+    const btn = e.target.closest && e.target.closest('#logoutSidebarBtn');
+    if (!btn) return;
     e.preventDefault();
     openLogoutConfirmation(logoutRedirectPath);
   });
@@ -475,6 +595,108 @@ function setupLogoutConfirmation(){
   });
 }
 
+// Setup Mobile Drawer (Hamburger Menu)
+function setupMobileDrawer() {
+  const hamburger = document.getElementById('hamburgerBtn');
+  const overlay = document.getElementById('drawerOverlay');
+  const panel = document.getElementById('drawerPanel');
+  const closeBtn = document.getElementById('drawerCloseBtn');
+  const logoutBtn = document.getElementById('logoutMobileBtn');
+
+  if (!hamburger || !overlay || !panel) {
+    console.warn('[drawer] Elements not found:', { hamburger: !!hamburger, overlay: !!overlay, panel: !!panel });
+    return;
+  }
+
+  console.info('[drawer] Setting up mobile drawer');
+
+  // Sync profile info to drawer
+  const syncProfile = () => {
+    const topName = document.getElementById('topProfileName');
+    const topAvatar = document.getElementById('topProfileAvatar');
+    const drawerName = document.getElementById('drawerProfileName');
+    const drawerAvatar = document.getElementById('drawerProfileAvatar');
+    
+    if (topName && drawerName) drawerName.textContent = topName.textContent;
+    if (topAvatar && drawerAvatar) drawerAvatar.src = topAvatar.src;
+  };
+
+  // Open drawer
+  const openDrawer = () => {
+    syncProfile();
+    overlay.setAttribute('aria-hidden', 'false');
+    panel.setAttribute('aria-hidden', 'false');
+    hamburger.classList.add('is-open');
+    
+    // Hide chatbot when drawer opens
+    const chatbotContainer = document.getElementById('chatbot-container');
+    const chatbotToggle = document.getElementById('chatbot-toggle');
+    if (chatbotContainer) {
+      chatbotContainer.style.display = 'none';
+    }
+    if (chatbotToggle) {
+      chatbotToggle.style.display = 'none';
+    }
+    
+    // Close space dropdown if open
+    const spaceDropdownMenu = document.getElementById('topbarSpaceDropdownMenu');
+    const spaceDropdownBtn = document.getElementById('topbarSpaceDropdownBtn');
+    if (spaceDropdownMenu) {
+      spaceDropdownMenu.classList.remove('show');
+    }
+    if (spaceDropdownBtn) {
+      spaceDropdownBtn.classList.remove('active');
+    }
+  };
+
+  // Close drawer
+  const closeDrawer = () => {
+    overlay.setAttribute('aria-hidden', 'true');
+    panel.setAttribute('aria-hidden', 'true');
+    hamburger.classList.remove('is-open');
+    
+    // Show chatbot when drawer closes
+    const chatbotContainer = document.getElementById('chatbot-container');
+    const chatbotToggle = document.getElementById('chatbot-toggle');
+    if (chatbotToggle) {
+      chatbotToggle.style.display = 'flex';
+    }
+    // Don't auto-show chatbot container, let user toggle it
+  };
+
+  // Event listeners
+  hamburger.addEventListener('click', openDrawer);
+  closeBtn.addEventListener('click', closeDrawer);
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) closeDrawer();
+  });
+
+  // Logout handler
+  if (logoutBtn) {
+    logoutBtn.addEventListener('click', () => {
+      const pathFn = () => {
+        const p = (location.pathname || '').replace(/\\/g,'/').toLowerCase();
+        if (p.includes('/src/html/lessons/')) return '../../register-form.html';
+        if (p.includes('/src/html/admin/')) return '../register-form.html';
+        return './register-form.html';
+      };
+      closeDrawer();
+      if (typeof openLogoutConfirmation === 'function') {
+        openLogoutConfirmation(pathFn);
+      }
+    });
+  }
+
+  // Show admin link if admin
+  const role = localStorage.getItem('authRole');
+  if (role === 'admin') {
+    const adminLink = document.getElementById('adminLinkDrawer');
+    if (adminLink) adminLink.style.display = 'list-item';
+  }
+
+  console.info('[drawer] Mobile drawer ready');
+}
+
 function openLogoutConfirmation(getRedirect){
   const overlay = document.getElementById('logoutConfirmModal');
   if (!overlay) return;
@@ -499,75 +721,6 @@ function closeLogoutConfirmation(){
   const overlay = document.getElementById('logoutConfirmModal');
   if (!overlay) return;
   overlay.setAttribute('aria-hidden','true');
-}
-
-// ===== Mobile drawer (hamburger) =====
-function setupMobileDrawer(){
-  try{
-    const btn = document.getElementById('hamburgerBtn');
-    const drawer = document.getElementById('mobileDrawer');
-    const closeBtn = document.getElementById('drawerClose');
-    if (!btn || !drawer) return;
-
-    const open = () => {
-      drawer.setAttribute('aria-hidden','false');
-      btn.setAttribute('aria-expanded','true');
-      btn.classList.add('is-open');
-      // Sync profile name/avatar into drawer
-      const name = document.getElementById('topProfileName')?.textContent || 'Profile';
-      let avatarSrc = document.getElementById('topProfileAvatar')?.getAttribute('src') || '';
-      
-      // Fallback: get avatar from localStorage if topProfileAvatar is not set or is default
-      if (!avatarSrc || avatarSrc.includes('pixel-avatar.png')) {
-        const avatarMap = {
-          'Sen': 'https://i.ibb.co/2W0DdZm/avatar1.png',
-          'Aldrick': 'https://i.ibb.co/5Fsb0CQ/avatar2.png',
-          'Maya': 'https://i.ibb.co/0hZk0hh/avatar3.png',
-          'Annette': 'https://i.ibb.co/0rp25M5/avatar4.png'
-        };
-        const savedSrc = localStorage.getItem('cyberedAvatarSrc') || '';
-        const savedNameKey = localStorage.getItem('cyberedAvatarName') || localStorage.getItem('cyberedAvatar') || '';
-        avatarSrc = savedSrc || (savedNameKey ? avatarMap[savedNameKey] : '') || avatarSrc;
-      }
-      
-      const nameEl = document.getElementById('drawerProfileName');
-      const avatarEl = document.getElementById('drawerProfileAvatar');
-      if (nameEl) nameEl.textContent = name;
-      if (avatarEl && avatarSrc) avatarEl.src = avatarSrc;
-    };
-    const close = () => {
-      drawer.setAttribute('aria-hidden','true');
-      btn.setAttribute('aria-expanded','false');
-      btn.classList.remove('is-open');
-    };
-    btn.addEventListener('click', () => {
-      const hidden = drawer.getAttribute('aria-hidden') !== 'false';
-      hidden ? open() : close();
-    });
-    closeBtn && closeBtn.addEventListener('click', close);
-    drawer.addEventListener('click', (e) => { if (e.target === drawer) close(); });
-
-    // Hook mobile logout inside drawer
-    const logoutMobile = document.getElementById('logoutMobileBtn');
-    if (logoutMobile){
-      logoutMobile.addEventListener('click', (e) => {
-        e.preventDefault();
-        // Reuse confirmation modal
-        const pathFn = () => {
-          const p = (location.pathname || '').replace(/\\/g,'/').toLowerCase();
-          if (p.includes('/src/html/lessons/')) return '../../register-form.html';
-          if (p.includes('/src/html/admin/')) return '../register-form.html';
-          return './register-form.html';
-        };
-        openLogoutConfirmation(pathFn);
-      });
-    }
-
-    // ESC key closes drawer
-    document.addEventListener('keydown', (e) => {
-      if (e.key === 'Escape' && drawer.getAttribute('aria-hidden') === 'false') close();
-    });
-  }catch(e){}
 }
 
 // Notification Badge System
@@ -1031,4 +1184,167 @@ function getTimeAgo(dateString) {
   if (seconds < 604800) return `${Math.floor(seconds / 86400)}d ago`;
   
   return date.toLocaleDateString();
+}
+
+// Show/hide space dropdown based on current page
+function checkSpaceDropdownVisibility() {
+  try {
+    const currentPath = window.location.pathname.toLowerCase();
+    const isModulesPage = currentPath.includes('modules.html');
+    
+    // Show topbar space dropdown on all pages
+    const topbarSpaceDropdown = document.getElementById('topbarSpaceDropdown');
+    if (topbarSpaceDropdown) {
+      topbarSpaceDropdown.style.display = 'block'; // Always show
+    }
+    
+    // Show drawer space item on all pages
+    const drawerSpaceItem = document.getElementById('drawerSpaceItem');
+    if (drawerSpaceItem) {
+      drawerSpaceItem.style.display = 'block'; // Always show
+    }
+    
+    // Load spaces if not on modules page (modules page loads its own)
+    if (!isModulesPage) {
+      loadSpacesForNav();
+    }
+  } catch (error) {
+    console.error('Error checking space dropdown visibility:', error);
+  }
+}
+
+// Load spaces for navigation dropdowns (non-modules pages)
+async function loadSpacesForNav() {
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) return;
+    
+    const userRole = localStorage.getItem('authRole');
+    const isFacultyOrAdmin = userRole === 'faculty' || userRole === 'admin';
+    
+    const stored = localStorage.getItem('apiBase');
+    let apiBase = stored ? stored.replace(/\/$/, '') : null;
+    if (!apiBase) {
+      const { protocol, hostname } = window.location || {};
+      if (hostname) {
+        const proto = protocol || 'http:';
+        apiBase = `${proto}//${hostname}:4000/api`;
+      } else {
+        apiBase = 'http://localhost:4000/api';
+      }
+    }
+    
+    const endpoint = isFacultyOrAdmin 
+      ? `${apiBase}/faculty-modules/my-spaces`
+      : `${apiBase}/faculty-modules/enrolled`;
+    
+    const response = await fetch(endpoint, {
+      headers: { 'Authorization': `Bearer ${token}` }
+    });
+    
+    if (!response.ok) return;
+    
+    const data = await response.json();
+    const userSpaces = data.spaces || [];
+    
+    // Populate topbar dropdown
+    const topbarDropdownMenu = document.getElementById('topbarSpaceDropdownMenu');
+    if (topbarDropdownMenu) {
+      populateSpaceDropdown(topbarDropdownMenu, userSpaces, true);
+    }
+    
+    // Populate drawer dropdown
+    const drawerSpaceMenu = document.getElementById('drawerSpaceMenu');
+    if (drawerSpaceMenu) {
+      populateDrawerSpaces(drawerSpaceMenu, userSpaces);
+    }
+  } catch (error) {
+    console.error('Error loading spaces for nav:', error);
+  }
+}
+
+// Populate space dropdown menu
+function populateSpaceDropdown(menuElement, spaces, isTopbar) {
+  const spaceItems = spaces.map(space => `
+    <button class="space-dropdown-item" onclick="window.location.href='faculty-space.html?id=${space._id}'">
+      <svg fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/>
+      </svg>
+      <span>${space.name}</span>
+    </button>
+  `).join('');
+  
+  menuElement.innerHTML = `
+    <button class="space-dropdown-item active" onclick="window.location.href='modules.html'">
+      <svg fill="currentColor" viewBox="0 0 20 20">
+        <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/>
+      </svg>
+      <span>All Modules</span>
+    </button>
+    ${spaceItems}
+  `;
+}
+
+// Populate drawer space menu
+function populateDrawerSpaces(menuElement, spaces) {
+  const spaceItems = spaces.map(space => `
+    <li><a href="faculty-space.html?id=${space._id}" class="drawer-link">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" width="28" height="28">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/>
+      </svg>
+      <span>${space.name}</span>
+    </a></li>
+  `).join('');
+  
+  menuElement.innerHTML = `
+    <li><a href="modules.html" class="drawer-link">
+      <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" width="28" height="28">
+        <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/>
+      </svg>
+      <span>All Modules</span>
+    </a></li>
+    ${spaceItems}
+  `;
+}
+
+// Setup space dropdown handlers
+function setupSpaceDropdowns() {
+  // Topbar space dropdown toggle (desktop)
+  const topbarSpaceDropdownBtn = document.getElementById('topbarSpaceDropdownBtn');
+  const topbarSpaceDropdownMenu = document.getElementById('topbarSpaceDropdownMenu');
+
+  if (topbarSpaceDropdownBtn && topbarSpaceDropdownMenu) {
+    topbarSpaceDropdownBtn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      topbarSpaceDropdownBtn.classList.toggle('active');
+      topbarSpaceDropdownMenu.classList.toggle('show');
+    });
+    
+    // Close dropdown when clicking outside
+    document.addEventListener('click', (e) => {
+      if (!topbarSpaceDropdownBtn.contains(e.target) && !topbarSpaceDropdownMenu.contains(e.target)) {
+        topbarSpaceDropdownBtn.classList.remove('active');
+        topbarSpaceDropdownMenu.classList.remove('show');
+      }
+    });
+  }
+
+  // Drawer space dropdown toggle (mobile)
+  const drawerSpaceBtn = document.getElementById('drawerSpaceBtn');
+  const drawerSpaceMenu = document.getElementById('drawerSpaceMenu');
+
+  if (drawerSpaceBtn && drawerSpaceMenu) {
+    drawerSpaceBtn.addEventListener('click', (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      drawerSpaceMenu.classList.toggle('expanded');
+      
+      // Update button text
+      const isExpanded = drawerSpaceMenu.classList.contains('expanded');
+      const btnText = drawerSpaceBtn.querySelector('span');
+      if (btnText) {
+        btnText.textContent = isExpanded ? 'Spaces ▼' : 'Spaces ▶';
+      }
+    });
+  }
 }

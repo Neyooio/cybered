@@ -1,3 +1,5 @@
+import { API_BASE_URL } from './config.js';
+
 const modulesIndex = [
   {
     id: 'web-security',
@@ -24,6 +26,10 @@ const modulesIndex = [
     description: 'Malware types, infection methods, detection techniques, and preventive measures.'
   }
 ];
+
+const API_URL = `${API_BASE_URL}/api`;
+let userSpaces = [];
+let currentView = 'modules';
 
 function renderModules(grid) {
   const markup = modulesIndex.map(module => `
@@ -79,9 +85,168 @@ function startModule(id) {
   window.location.href = page;
 }
 
+// Load user's faculty spaces (created or enrolled)
+async function loadUserSpaces() {
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) {
+      console.log('No auth token found');
+      return;
+    }
+
+    const userRole = localStorage.getItem('authRole');
+    const isFacultyOrAdmin = userRole === 'faculty' || userRole === 'admin';
+    
+    console.log('Loading spaces for role:', userRole);
+    
+    // Faculty/Admin: load created spaces, Students: load enrolled spaces
+    const endpoint = isFacultyOrAdmin 
+      ? `${API_URL}/faculty-modules/my-spaces`
+      : `${API_URL}/faculty-modules/enrolled`;
+
+    console.log('Fetching from endpoint:', endpoint);
+
+    const response = await fetch(endpoint, {
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      console.error('Failed to load spaces. Status:', response.status);
+      return;
+    }
+
+    const data = await response.json();
+    console.log('Spaces loaded:', data);
+    
+    userSpaces = data.spaces || [];
+    console.log('Number of spaces:', userSpaces.length);
+    
+    if (userSpaces.length > 0) {
+      renderSpaceTabs();
+    } else {
+      console.log('No spaces to display');
+    }
+  } catch (error) {
+    console.error('Error loading spaces:', error);
+  }
+}
+
+// Render space tabs
+function renderSpaceTabs() {
+  const dropdownMenu = document.getElementById('spaceDropdownMenu');
+  const topbarDropdownMenu = document.getElementById('topbarSpaceDropdownMenu');
+  const drawerSpaceMenu = document.getElementById('drawerSpaceMenu');
+  
+  if (!dropdownMenu) {
+    console.log('Space dropdown menu not found');
+    return;
+  }
+  
+  console.log('📍 Rendering space dropdown. Number of spaces:', userSpaces.length);
+  console.log('📍 User spaces:', userSpaces);
+  
+  // Add space items to dropdown
+  const spaceItems = userSpaces.map(space => {
+    console.log('📍 Creating item for space:', space.name);
+    return `
+    <button class="space-dropdown-item" data-view="space" data-space-id="${space._id}">
+      <svg fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/>
+      </svg>
+      <span>${space.name}</span>
+    </button>
+  `}).join('');
+  
+  const dropdownHTML = `
+    <button class="space-dropdown-item active" data-view="modules">
+      <svg fill="currentColor" viewBox="0 0 20 20">
+        <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/>
+      </svg>
+      <span>All Modules</span>
+    </button>
+    ${spaceItems}
+  `;
+  
+  // Update page dropdown
+  dropdownMenu.innerHTML = dropdownHTML;
+  
+  // Update topbar dropdown (desktop)
+  if (topbarDropdownMenu) {
+    topbarDropdownMenu.innerHTML = dropdownHTML;
+    setupDropdownHandlers(topbarDropdownMenu, 'topbarSpaceDropdownBtn', 'topbarSpaceDropdownMenu');
+  }
+  
+  // Update drawer dropdown (mobile)
+  if (drawerSpaceMenu) {
+    const drawerSpaceItems = userSpaces.map(space => `
+      <li><a href="faculty-space.html?id=${space._id}" class="drawer-link">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" width="28" height="28">
+          <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm1-11a1 1 0 10-2 0v2H7a1 1 0 100 2h2v2a1 1 0 102 0v-2h2a1 1 0 100-2h-2V7z" clip-rule="evenodd"/>
+        </svg>
+        <span>${space.name}</span>
+      </a></li>
+    `).join('');
+    
+    drawerSpaceMenu.innerHTML = `
+      <li><button class="drawer-link" onclick="window.location.href='modules.html'">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="currentColor" viewBox="0 0 20 20" width="28" height="28">
+          <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/>
+        </svg>
+        <span>All Modules</span>
+      </button></li>
+      ${drawerSpaceItems}
+    `;
+  }
+  
+  console.log('📍 Dropdown HTML updated. Total items:', 1 + userSpaces.length);
+  
+  // Add click handlers for page dropdown
+  setupDropdownHandlers(dropdownMenu, 'spaceDropdownBtn', 'spaceDropdownMenu');
+  
+  console.log('Space dropdown rendered successfully');
+}
+
+// Setup dropdown click handlers
+function setupDropdownHandlers(menuElement, btnId, menuId) {
+  menuElement.addEventListener('click', (e) => {
+    const item = e.target.closest('.space-dropdown-item');
+    if (!item) return;
+    
+    const view = item.dataset.view;
+    const spaceId = item.dataset.spaceId;
+    
+    // Update active state
+    menuElement.querySelectorAll('.space-dropdown-item').forEach(i => i.classList.remove('active'));
+    item.classList.add('active');
+    
+    // Close dropdown
+    const dropdownBtn = document.getElementById(btnId);
+    const menu = document.getElementById(menuId);
+    dropdownBtn?.classList.remove('active');
+    menu?.classList.remove('show');
+    
+    if (view === 'modules') {
+      currentView = 'modules';
+      if (modulesGrid) {
+        renderModules(modulesGrid);
+      }
+    } else if (view === 'space' && spaceId) {
+      window.location.href = `faculty-space.html?id=${spaceId}`;
+    }
+  });
+}
+
 const modulesGrid = document.getElementById('modulesGrid');
 if (modulesGrid){
   renderModules(modulesGrid);
+  
+  // Load user spaces and populate dropdown
+  loadUserSpaces();
+  
+  // Initialize dropdown with "All Modules" even before spaces load
+  renderSpaceTabs();
 
   modulesGrid.addEventListener('click', event => {
     const button = event.target.closest('.module-start');
@@ -89,6 +254,64 @@ if (modulesGrid){
 
     const moduleId = button.dataset.module;
     if (moduleId) startModule(moduleId);
+  });
+}
+
+// Space dropdown toggle
+const spaceDropdownBtn = document.getElementById('spaceDropdownBtn');
+const spaceDropdownMenu = document.getElementById('spaceDropdownMenu');
+
+if (spaceDropdownBtn && spaceDropdownMenu) {
+  spaceDropdownBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    spaceDropdownBtn.classList.toggle('active');
+    spaceDropdownMenu.classList.toggle('active');
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!spaceDropdownBtn.contains(e.target) && !spaceDropdownMenu.contains(e.target)) {
+      spaceDropdownBtn.classList.remove('active');
+      spaceDropdownMenu.classList.remove('active');
+    }
+  });
+}
+
+// Topbar space dropdown toggle (desktop)
+const topbarSpaceDropdownBtn = document.getElementById('topbarSpaceDropdownBtn');
+const topbarSpaceDropdownMenu = document.getElementById('topbarSpaceDropdownMenu');
+
+if (topbarSpaceDropdownBtn && topbarSpaceDropdownMenu) {
+  topbarSpaceDropdownBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    topbarSpaceDropdownBtn.classList.toggle('active');
+    topbarSpaceDropdownMenu.classList.toggle('show');
+  });
+  
+  // Close dropdown when clicking outside
+  document.addEventListener('click', (e) => {
+    if (!topbarSpaceDropdownBtn.contains(e.target) && !topbarSpaceDropdownMenu.contains(e.target)) {
+      topbarSpaceDropdownBtn.classList.remove('active');
+      topbarSpaceDropdownMenu.classList.remove('show');
+    }
+  });
+}
+
+// Drawer space dropdown toggle (mobile)
+const drawerSpaceBtn = document.getElementById('drawerSpaceBtn');
+const drawerSpaceMenu = document.getElementById('drawerSpaceMenu');
+
+if (drawerSpaceBtn && drawerSpaceMenu) {
+  drawerSpaceBtn.addEventListener('click', (e) => {
+    e.stopPropagation();
+    drawerSpaceMenu.classList.toggle('expanded');
+    
+    // Update button text
+    const isExpanded = drawerSpaceMenu.classList.contains('expanded');
+    const btnText = drawerSpaceBtn.querySelector('span');
+    if (btnText) {
+      btnText.textContent = isExpanded ? 'Spaces ▼' : 'Spaces ▶';
+    }
   });
 }
 

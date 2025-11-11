@@ -5,6 +5,188 @@
   align-items: center;
   gap: 2rem;
   margin-bottom: 2rem;
+  position: relative; /* For dropdown positioning */
+}
+
+/* Faculty add button in header (mobile only) */
+.modules-header-title-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  flex: 1;
+}
+
+.faculty-add-btn-mobile {
+  display: none !important;
+}
+
+/* Space Dropdown Button */
+.space-dropdown-btn {
+  display: none !important; /* Hidden - now in topbar */
+}
+
+.space-dropdown-btn .dropdown-arrow {
+  width: 16px;
+  height: 16px;
+  transition: transform 0.2s ease;
+}
+
+.space-dropdown-btn.active .dropdown-arrow {
+  transform: rotate(180deg);
+}
+
+/* Space Dropdown Menu */
+.space-dropdown-menu {
+  position: absolute;
+  top: calc(100% + 0.5rem);
+  right: 0;
+  background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%);
+  border: 2px solid #f97316;
+  border-radius: 10px;
+  min-width: 250px;
+  max-width: 350px;
+  max-height: 400px;
+  overflow-y: auto;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+  display: none;
+  z-index: 99;
+  padding: 0.5rem;
+}
+
+.space-dropdown-menu.active {
+  display: block;
+}
+
+.space-dropdown-item {
+  display: flex;
+  align-items: center;
+  gap: 0.75rem;
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(15, 23, 42, 0.4);
+  border: 1px solid transparent;
+  border-radius: 8px;
+  color: rgba(255, 255, 255, 0.8);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.9rem;
+  text-align: left;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  margin-bottom: 0.25rem;
+}
+
+.space-dropdown-item:hover {
+  background: rgba(30, 58, 138, 0.6);
+  border-color: rgba(249, 115, 22, 0.3);
+  color: #ffffff;
+}
+
+.space-dropdown-item.active {
+  background: rgba(249, 115, 22, 0.2);
+  border-color: #f97316;
+  color: #ffffff;
+}
+
+.space-dropdown-item svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.space-dropdown-item span {
+  flex: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@media (max-width: 768px) {
+  .modules-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1rem;
+    padding-top: 0;
+  }
+  
+  .modules-header-title-wrapper {
+    order: 1;
+    width: 100%;
+  }
+  
+  .space-dropdown-btn {
+    position: absolute;
+    left: 0;
+    top: 0;
+    padding: 0.6rem 0.75rem;
+    font-size: 0.85rem;
+    min-width: 50px;
+  }
+  
+  .space-dropdown-btn span {
+    display: none; /* Hide "Spaces" text on mobile */
+  }
+  
+  .space-dropdown-btn svg:first-child {
+    width: 24px;
+    height: 24px;
+  }
+  
+  .space-dropdown-btn .dropdown-arrow {
+    width: 14px;
+    height: 14px;
+  }
+  
+  .space-dropdown-menu {
+    left: 0;
+    right: auto;
+    top: calc(100% + 0.5rem); /* Position relative to button */
+    min-width: 250px;
+    max-width: 90vw; /* Don't exceed viewport width */
+    max-height: 60vh; /* Limit height on mobile */
+    overflow-y: auto; /* Enable scrolling */
+  }
+  
+  .space-dropdown-item {
+    font-size: 0.85rem;
+    padding: 0.65rem 0.85rem;
+  }
+  
+  .faculty-add-btn-mobile {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    background: linear-gradient(180deg, #ff6b35 0%, #f4511e 100%);
+    border-radius: 50%;
+    border: 3px solid #000;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+    cursor: pointer;
+    flex-shrink: 0;
+    position: fixed;
+    right: 20px;
+    bottom: 90px;
+    z-index: 1000;
+    animation: faculty-float 3s ease-in-out infinite;
+    transition: all 0.3s ease;
+  }
+  
+  .faculty-add-btn-mobile:hover {
+    transform: scale(1.08);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+  }
+  
+  .faculty-add-btn-mobile svg {
+    width: 28px;
+    height: 28px;
+    color: #ffffff;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+    stroke-width: 2.5;
+  }
+  
+  .faculty-add-btn-mobile:active {
+    transform: scale(0.95);
+  }
 }
 
 .modules-search-container {
@@ -56,6 +238,7 @@
   
   .modules-search-container {
     max-width: 100%;
+    order: 3; /* Search goes last */
   }
 }
 
@@ -133,8 +316,10 @@
 }
 
 .module-title{
+  font-family: 'Press Start 2P', monospace;
   font-size:clamp(1.1rem, 1.4vw + .6rem, 1.8rem);
   margin:0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
 }
 
 .module-description{
@@ -183,3 +368,121 @@
   .module-actions{ justify-content:flex-start; }
 }
 
+/* Space Tabs */
+.space-tabs-container {
+  margin-bottom: 2rem;
+  overflow-x: auto;
+  -webkit-overflow-scrolling: touch;
+  position: relative;
+  z-index: 1;
+  display: block; /* Always show */
+}
+
+/* Hide if explicitly marked as empty */
+.space-tabs-container.is-empty {
+  display: none;
+}
+
+.space-tabs {
+  display: flex;
+  gap: 0.5rem;
+  min-width: fit-content;
+  padding-bottom: 0.5rem;
+}
+
+.space-tab {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.25rem;
+  background: rgba(15, 23, 42, 0.6);
+  border: 2px solid rgba(249, 115, 22, 0.3);
+  border-radius: 10px;
+  color: rgba(255, 255, 255, 0.7);
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.9rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+
+.space-tab:hover {
+  background: rgba(30, 58, 138, 0.4);
+  color: #ffffff;
+  border-color: rgba(249, 115, 22, 0.5);
+}
+
+.space-tab.active {
+  background: linear-gradient(135deg, #1e3a8a 0%, #1e40af 100%);
+  border-color: #f97316;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+
+.space-tab svg {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.space-tabs-container::-webkit-scrollbar {
+  height: 6px;
+}
+
+.space-tabs-container::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.4);
+  border-radius: 3px;
+}
+
+.space-tabs-container::-webkit-scrollbar-thumb {
+  background: linear-gradient(90deg, #f97316 0%, #ea580c 100%);
+  border-radius: 3px;
+}
+
+.space-tabs-container::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(90deg, #fb923c 0%, #f97316 100%);
+}
+
+/* Mobile responsiveness for space tabs */
+@media (max-width: 768px) {
+  .space-tabs-container {
+    display: block !important; /* Always show on mobile */
+    margin-bottom: 1.5rem;
+    margin-left: -1rem;
+    margin-right: -1rem;
+    padding-left: 1rem;
+    padding-right: 1rem;
+    background: rgba(15, 23, 42, 0.5);
+    padding-top: 1rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid rgba(249, 115, 22, 0.3);
+  }
+  
+  .space-tabs-container.is-empty {
+    display: none !important;
+  }
+
+  .space-tabs {
+    display: flex !important;
+  }
+
+  .space-tab {
+    padding: 0.6rem 1rem;
+    font-size: 0.85rem;
+    min-width: 120px;
+  }
+
+  .space-tab svg {
+    width: 16px;
+    height: 16px;
+  }
+  
+  .space-tab span {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 150px;
+  }
+}

@@ -1,0 +1,314 @@
+/* Faculty Space Creation Modal */
+.faculty-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.8);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  z-index: 10000;
+  backdrop-filter: blur(4px);
+}
+
+.faculty-modal-overlay.active {
+  display: flex;
+}
+
+.faculty-modal {
+  background: linear-gradient(180deg, #1e3a8a 0%, #1e40af 100%);
+  border: 3px solid #f97316;
+  border-radius: 16px;
+  padding: 2rem;
+  max-width: 500px;
+  width: 90%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+  animation: modalSlideIn 0.3s ease-out;
+}
+
+/* Custom Scrollbar for Modal */
+.faculty-modal::-webkit-scrollbar {
+  width: 10px;
+}
+
+.faculty-modal::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.5);
+  border-radius: 10px;
+  margin: 0.5rem;
+}
+
+.faculty-modal::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #f97316 0%, #ea580c 100%);
+  border-radius: 10px;
+  border: 2px solid rgba(15, 23, 42, 0.5);
+}
+
+.faculty-modal::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #fb923c 0%, #f97316 100%);
+}
+
+/* Firefox Scrollbar */
+.faculty-modal {
+  scrollbar-width: thin;
+  scrollbar-color: #f97316 rgba(15, 23, 42, 0.5);
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+.faculty-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1.5rem;
+  padding-bottom: 1rem;
+  border-bottom: 2px solid rgba(249, 115, 22, 0.3);
+}
+
+.faculty-modal-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.2rem;
+  color: #ffffff;
+  margin: 0;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.faculty-modal-close {
+  background: transparent;
+  border: none;
+  color: #f97316;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 0.25rem 0.5rem;
+  transition: all 0.2s ease;
+}
+
+.faculty-modal-close:hover {
+  color: #ffffff;
+  transform: scale(1.1);
+}
+
+.faculty-form-group {
+  margin-bottom: 1.5rem;
+}
+
+.faculty-form-label {
+  display: block;
+  color: #ffffff;
+  font-size: 0.9rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.faculty-form-helper {
+  display: block;
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 0.75rem;
+  margin-top: 0.5rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-style: italic;
+}
+
+.faculty-form-input,
+.faculty-form-textarea {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  background: rgba(15, 23, 42, 0.7);
+  border: 2px solid rgba(249, 115, 22, 0.4);
+  border-radius: 8px;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-family: inherit;
+  transition: all 0.3s ease;
+  outline: none;
+}
+
+.faculty-form-input:focus,
+.faculty-form-textarea:focus {
+  border-color: #f97316;
+  background: rgba(15, 23, 42, 0.9);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.1);
+}
+
+.faculty-form-input::placeholder,
+.faculty-form-textarea::placeholder {
+  color: rgba(226, 232, 240, 0.5);
+}
+
+.faculty-form-textarea {
+  min-height: 100px;
+  resize: vertical;
+}
+
+.faculty-color-picker-group {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(50px, 1fr));
+  gap: 0.75rem;
+  margin-top: 0.5rem;
+}
+
+.faculty-color-option {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 1;
+  border-radius: 8px;
+  border: 3px solid transparent;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.faculty-color-option:hover {
+  transform: scale(1.05);
+  border-color: rgba(255, 255, 255, 0.3);
+}
+
+.faculty-color-option.selected {
+  border-color: #f97316;
+  box-shadow: 0 0 0 2px rgba(249, 115, 22, 0.3);
+  transform: scale(1.1);
+}
+
+.faculty-color-option input[type="radio"] {
+  position: absolute;
+  opacity: 0;
+  cursor: pointer;
+}
+
+.faculty-form-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 2rem;
+}
+
+.faculty-btn {
+  flex: 1;
+  padding: 0.75rem 1.5rem;
+  border: 2px solid;
+  border-radius: 8px;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.95rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-transform: uppercase;
+}
+
+.faculty-btn-primary {
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  border-color: #000;
+  color: #ffffff;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+}
+
+.faculty-btn-primary:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(249, 115, 22, 0.6);
+}
+
+.faculty-btn-primary:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+.faculty-btn-secondary {
+  background: transparent;
+  border-color: rgba(249, 115, 22, 0.6);
+  color: #f97316;
+}
+
+.faculty-btn-secondary:hover {
+  background: rgba(249, 115, 22, 0.1);
+  border-color: #f97316;
+}
+
+.faculty-success-message {
+  background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+  border: 2px solid #000;
+  border-radius: 12px;
+  padding: 1.5rem;
+  text-align: center;
+  color: #ffffff;
+}
+
+.faculty-success-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.1rem;
+  margin-bottom: 1rem;
+  color: #ffffff;
+}
+
+.faculty-space-code {
+  background: rgba(0, 0, 0, 0.3);
+  border: 2px solid #000;
+  border-radius: 8px;
+  padding: 1rem;
+  margin: 1rem 0;
+}
+
+.faculty-space-code-label {
+  font-size: 0.85rem;
+  color: rgba(255, 255, 255, 0.8);
+  margin-bottom: 0.5rem;
+}
+
+.faculty-space-code-value {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.5rem;
+  color: #f97316;
+  letter-spacing: 0.2em;
+  user-select: all;
+}
+
+.faculty-success-info {
+  font-size: 0.9rem;
+  color: rgba(255, 255, 255, 0.9);
+  margin-top: 1rem;
+  line-height: 1.6;
+}
+
+.faculty-error-message {
+  background: rgba(239, 68, 68, 0.1);
+  border: 2px solid #ef4444;
+  border-radius: 8px;
+  padding: 0.75rem 1rem;
+  color: #fca5a5;
+  font-size: 0.9rem;
+  margin-top: 0.5rem;
+}
+
+/* Mobile Responsive */
+@media (max-width: 768px) {
+  .faculty-modal {
+    padding: 1.5rem;
+    width: 95%;
+  }
+  
+  .faculty-modal-title {
+    font-size: 0.9rem;
+  }
+  
+  .faculty-color-picker-group {
+    grid-template-columns: repeat(4, 1fr);
+  }
+  
+  .faculty-form-actions {
+    flex-direction: column;
+  }
+  
+  .faculty-btn {
+    width: 100%;
+  }
+}

@@ -9,7 +9,49 @@
     --chatbot-panel-2: #1542c7;
     --chatbot-border: #000;
     --chatbot-text: #fff;
-    --chatbot-accent: #fbbf24;
+    --chatbot-accent: #f97316;
+    --faculty-accent: #f97316;
+}
+
+/* Faculty Add Button (Floating) - On spaces page, positioned where chatbot would be */
+.faculty-add-toggle {
+    position: fixed;
+    bottom: 20px;
+    right: 30px;
+    width: 60px;
+    height: 60px;
+    background: linear-gradient(180deg, #ff6b35 0%, #f4511e 100%);
+    border-radius: 50%;
+    display: none; /* Hidden by default */
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
+    transition: all 0.3s ease;
+    z-index: 1000;
+    border: 3px solid var(--chatbot-border);
+    animation: faculty-float 3s ease-in-out infinite;
+}
+
+.faculty-add-toggle:hover {
+    transform: scale(1.08);
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
+}
+
+.faculty-add-toggle svg {
+    width: 30px;
+    height: 30px;
+    color: #fff;
+    filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.3));
+}
+
+@keyframes faculty-float {
+    0%, 100% {
+        transform: translateY(0px);
+    }
+    50% {
+        transform: translateY(-8px);
+    }
 }
 
 /* Chatbot Toggle Button (Floating) */
@@ -27,13 +69,13 @@
     cursor: pointer;
     box-shadow: 0 15px 40px rgba(0, 0, 0, 0.35);
     transition: all 0.3s ease;
-    z-index: 9998;
+    z-index: 1000;
     border: 3px solid var(--chatbot-border);
     animation: chatbot-float 3s ease-in-out infinite;
 }
 
 .chatbot-toggle:hover {
-    transform: scale(1.08) translateY(-2px);
+    transform: scale(1.08);
     box-shadow: 0 20px 50px rgba(0, 0, 0, 0.45);
 }
 
@@ -66,7 +108,7 @@
     display: none;
     flex-direction: column;
     overflow: hidden;
-    z-index: 9999;
+    z-index: 1000;
     border: 3px solid var(--chatbot-border);
     animation: slideUp 0.3s ease;
     transform-origin: bottom right;
@@ -452,6 +494,11 @@
     .chatbot-toggle svg {
         width: 32px;
         height: 32px;
+    }
+    
+    /* Faculty button - hide floating version on mobile, will be repositioned in page */
+    .faculty-add-toggle {
+        display: none;
     }
     
     /* Header adjustments for mobile */
