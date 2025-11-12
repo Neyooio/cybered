@@ -14,11 +14,21 @@ import facultyModulesRouter from './routes/facultyModules.js';
 import challengesRouter from './routes/challenges.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
+import { createServer } from 'http';
+import { Server } from 'socket.io';
+import { initializeGameSocket } from './services/gameSocket.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 const app = express();
+const httpServer = createServer(app);
+const io = new Server(httpServer, {
+  cors: {
+    origin: '*',
+    methods: ['GET', 'POST']
+  }
+});
 
 app.use(helmet());
 // CORS: allow all origins (including file:// -> Origin: null) and preflight
@@ -34,6 +44,7 @@ app.use('/assets', express.static(path.join(frontendPath, 'assets')));
 app.use('/css', express.static(path.join(frontendPath, 'src/css')));
 app.use('/js', express.static(path.join(frontendPath, 'src/js')));
 app.use('/html', express.static(path.join(frontendPath, 'src/html')));
+app.use('/games', express.static(path.join(frontendPath, 'games')));
 
 // Simple root route to avoid confusion when visiting http://localhost:PORT
 app.get('/', (req, res) => {
@@ -71,9 +82,15 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/CyberE
       dbName: undefined // accept database in URI
     });
     console.log('[db] connected');
-    app.listen(PORT, '0.0.0.0', () => {
+    
+    // Initialize game socket
+    initializeGameSocket(io);
+    console.log('[socket.io] game socket initialized');
+    
+    httpServer.listen(PORT, '0.0.0.0', () => {
       console.log(`[server] listening on http://localhost:${PORT}`);
       console.log(`[server] accessible from network at http://<your-ip>:${PORT}`);
+      console.log(`[socket.io] ready for multiplayer connections`);
     });
   } catch (err) {
     console.error('[db] connection error', err);
