@@ -777,9 +777,18 @@
         backendUrl = apiUrl.replace('/api', '');
       } else {
         const hostname = window.location.hostname;
-        backendUrl = (hostname === 'localhost' || hostname === '127.0.0.1') 
-          ? 'http://localhost:4000' 
-          : `http://${hostname}:4000`;
+        // Production environment (Netlify)
+        if (hostname.includes('netlify.app')) {
+          backendUrl = 'https://cybered-backend.onrender.com';
+        }
+        // Local development
+        else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+          backendUrl = 'http://localhost:4000';
+        }
+        // Network access
+        else {
+          backendUrl = `http://${hostname}:4000`;
+        }
       }
       
       const script = document.createElement('script');
