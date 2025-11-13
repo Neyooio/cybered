@@ -935,9 +935,16 @@ function initializeMultiplayerListeners() {
   const playAgainBtn = document.getElementById('playAgainBtn');
   const backToLobbyBtn = document.getElementById('backToLobbyBtn');
 
+  // Enable touch input for join room field
+  joinRoomInput.addEventListener('touchstart', (e) => {
+    e.stopPropagation();
+    joinRoomInput.focus();
+  });
+
   // Create room
   const createRoomHandler = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     const playerData = getPlayerData();
     socket.emit('create-room', playerData, (response) => {
       if (response.success) {
@@ -954,6 +961,7 @@ function initializeMultiplayerListeners() {
   // Join room
   const joinRoomHandler = (e) => {
     e.preventDefault();
+    e.stopPropagation();
     const code = joinRoomInput.value.trim().toUpperCase();
     if (!code) return;
     
