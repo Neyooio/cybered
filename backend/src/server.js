@@ -36,7 +36,7 @@ const corsOptions = {
   origin: [
     'http://localhost:5500',
     'http://127.0.0.1:5500',
-    'https://cybered.netlify.app',           // Netlify production domain
+    'https://cyberedplay.netlify.app',       // Netlify production domain
     'https://cybered-backend.onrender.com',  // Backend domain
     /\.netlify\.app$/                         // Allow Netlify preview deploys
   ],
