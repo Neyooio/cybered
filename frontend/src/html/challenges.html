@@ -61,9 +61,49 @@
         </div>
         <div class="game-controls">
           <button class="game-control-btn" id="restartGameBtn">🔄 Restart</button>
+          <button class="game-control-btn" id="multiplayerToggleBtn" style="display: none;">👥 Multiplayer</button>
           <button class="game-control-btn fullscreen" id="fullscreenBtn">⛶ Fullscreen</button>
         </div>
       </div>
+    </div>
+  </div>
+
+  <!-- External Quiz Modal (for mobile) -->
+  <div id="externalQuizModal" style="display: none;">
+    <div class="external-quiz-content">
+      <h3 id="externalQuizTitle">THREAT DETECTED!</h3>
+      <p id="externalQuizQuestion"></p>
+      <div id="externalQuizOptions"></div>
+      <p id="externalQuizFeedback"></p>
+    </div>
+  </div>
+
+  <!-- External Multiplayer Lobby (for mobile) -->
+  <div id="externalMultiplayerLobby" style="display: none;">
+    <div class="external-lobby-content">
+      <h2 class="lobby-title">MULTIPLAYER LOBBY</h2>
+      
+      <div class="lobby-section" id="externalLobbyCreation">
+        <h3>Create or Join Room</h3>
+        <div class="lobby-input-group">
+          <button id="externalCreateRoomBtn" class="lobby-btn">CREATE</button>
+          <input type="text" id="externalJoinRoomInput" class="lobby-input" placeholder="Room Code" maxlength="6">
+          <button id="externalJoinRoomBtn" class="lobby-btn">JOIN</button>
+        </div>
+      </div>
+
+      <div class="lobby-section" id="externalRoomSection" style="display: none;">
+        <h3>Room Code: <span id="externalRoomCode">------</span></h3>
+        <p style="font-size: 10px; color: #94a3b8; margin-bottom: 10px;">Players: <span id="externalPlayerCount">0</span>/5</p>
+        <ul id="externalPlayersList"></ul>
+        <div class="lobby-actions">
+          <button id="externalReadyBtn" class="lobby-btn">READY</button>
+          <button id="externalStartGameBtn" class="lobby-btn" style="display: none; background: #6b7280; cursor: not-allowed;" disabled>START GAME</button>
+          <button id="externalLeaveRoomBtn" class="lobby-btn secondary">LEAVE</button>
+        </div>
+      </div>
+      
+      <button id="externalCloseLobbyBtn" class="lobby-btn secondary" style="margin-top: 15px; width: 100%;">BACK</button>
     </div>
   </div>
 

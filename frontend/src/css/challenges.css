@@ -104,6 +104,32 @@
   .challenges-grid{ grid-template-columns: repeat(2, minmax(0, 1fr)); }
 }
 
+/* Custom Orange Scrollbar for Challenges Page */
+.main-wrapper::-webkit-scrollbar {
+  width: 12px;
+}
+
+.main-wrapper::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 10px;
+}
+
+.main-wrapper::-webkit-scrollbar-thumb {
+  background: #f97316;
+  border-radius: 10px;
+  border: 2px solid rgba(15, 23, 42, 0.6);
+}
+
+.main-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #fb923c;
+}
+
+/* Firefox scrollbar */
+.main-wrapper {
+  scrollbar-width: thin;
+  scrollbar-color: #f97316 rgba(15, 23, 42, 0.6);
+}
+
 .challenge-card{
   display:flex;
   flex-direction:column;
@@ -235,7 +261,7 @@
   width: 95%;
   height: 90vh;
   max-width: 1400px;
-  max-height: 900px;
+  max-height: 90vh;
   background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
   border: 4px solid #f97316;
   border-radius: 16px;
@@ -320,11 +346,39 @@
   flex: 1;
   position: relative;
   background: #000000;
-  overflow: hidden;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0; /* Important: allows flex item to shrink below content size */
+  margin-bottom: 0.5rem; /* Add space between iframe and footer */
+}
+
+/* Custom scrollbar for game iframe wrapper */
+.game-iframe-wrapper::-webkit-scrollbar {
+  width: 10px;
+}
+
+.game-iframe-wrapper::-webkit-scrollbar-track {
+  background: rgba(15, 23, 42, 0.8);
+}
+
+.game-iframe-wrapper::-webkit-scrollbar-thumb {
+  background: #f97316;
+  border-radius: 5px;
+}
+
+.game-iframe-wrapper::-webkit-scrollbar-thumb:hover {
+  background: #fb923c;
+}
+
+/* Firefox scrollbar */
+.game-iframe-wrapper {
+  scrollbar-width: thin;
+  scrollbar-color: #f97316 rgba(15, 23, 42, 0.8);
 }
 
 .game-iframe {
   width: 100%;
+  min-height: 700px;
   height: 100%;
   border: none;
   display: block;
@@ -380,11 +434,12 @@
 .game-footer {
   background: rgba(15, 23, 42, 0.8);
   border-top: 2px solid rgba(249, 115, 22, 0.3);
-  padding: 1rem 1.5rem;
+  padding: 1.25rem 1.5rem;
   display: flex;
   justify-content: space-between;
   align-items: center;
   flex-shrink: 0;
+  gap: 1rem;
 }
 
 .game-info {
@@ -438,37 +493,352 @@
   }
 
   .game-header {
-    padding: 0.75rem 1rem;
+    padding:  2rem 0.6rem;
+    min-height: 40px;
+    border-bottom-width: 2px;
   }
 
   .game-title {
-    font-size: 0.8rem;
+    font-size: 1rem;
   }
 
   .game-difficulty-badge {
-    font-size: 0.65rem;
-    padding: 0.25rem 0.5rem;
+    font-size: 0.55rem;
+    padding: 0.15rem 0.35rem;
   }
 
   .game-close-btn {
-    width: 36px;
-    height: 36px;
-    font-size: 1.2rem;
+    width: 30px;
+    height: 30px;
+    font-size: 2rem;
   }
 
   .game-footer {
-    padding: 0.75rem 1rem;
+    padding: 3rem 0.6rem;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.3rem;
+    min-height: 50px;
+    border-top-width: 2px;
   }
 
   .game-info {
-    gap: 1rem;
-    font-size: 0.75rem;
+    gap: 0.8rem;
+    font-size: 0.65rem;
   }
 
   .game-controls {
     width: 100%;
     justify-content: center;
+  }
+
+  .game-control-btn {
+    font-size: 0.7rem;
+    padding: 0.4rem 0.8rem;
+  }
+}
+
+/* External Quiz Modal (appears outside iframe on mobile) */
+#externalQuizModal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.external-quiz-content {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border: 3px solid #3b82f6;
+  border-radius: 12px;
+  padding: 25px;
+  max-width: 600px;
+  width: 100%;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+#externalQuizTitle {
+  font-family: 'Press Start 2P', monospace;
+  color: #3b82f6;
+  font-size: 18px;
+  margin-bottom: 15px;
+  text-align: center;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+#externalQuizQuestion {
+  color: #e2e8f0;
+  font-size: 14px;
+  margin-bottom: 20px;
+  line-height: 1.6;
+  text-align: center;
+}
+
+#externalQuizOptions {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.external-quiz-option {
+  background: #334155;
+  color: #e2e8f0;
+  border: 2px solid #475569;
+  padding: 14px 20px;
+  font-size: 12px;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-radius: 8px;
+  text-align: left;
+  min-height: 50px;
+  display: flex;
+  align-items: center;
+}
+
+.external-quiz-option:hover {
+  background: #475569;
+  border-color: #64748b;
+  transform: translateX(5px);
+}
+
+.external-quiz-option.correct {
+  background: #22c55e;
+  border-color: #16a34a;
+  color: white;
+}
+
+.external-quiz-option.wrong {
+  background: #ef4444;
+  border-color: #dc2626;
+  color: white;
+}
+
+#externalQuizFeedback {
+  margin-top: 15px;
+  font-size: 13px;
+  font-weight: bold;
+  text-align: center;
+  min-height: 20px;
+}
+
+@media (max-width: 768px) {
+  .external-quiz-content {
+    padding: 20px;
+  }
+
+  #externalQuizTitle {
+    font-size: 14px;
+  }
+
+  #externalQuizQuestion {
+    font-size: 11px;
+  }
+
+  .external-quiz-option {
+    font-size: 10px;
+    padding: 12px 15px;
+    min-height: 48px;
+  }
+
+  #externalQuizFeedback {
+    font-size: 11px;
+  }
+}
+
+@media (max-width: 480px) {
+  .external-quiz-content {
+    padding: 15px;
+  }
+
+  #externalQuizTitle {
+    font-size: 12px;
+  }
+
+  #externalQuizQuestion {
+    font-size: 10px;
+  }
+
+  .external-quiz-option {
+    font-size: 9px;
+    padding: 10px 12px;
+    min-height: 52px;
+  }
+}
+
+/* External Multiplayer Lobby (appears outside iframe on mobile) */
+#externalMultiplayerLobby {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.85);
+  z-index: 10000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 20px;
+}
+
+.external-lobby-content {
+  background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+  border: 3px solid #f97316;
+  border-radius: 12px;
+  padding: 25px;
+  max-width: 500px;
+  width: 100%;
+  max-height: 90vh;
+  overflow-y: auto;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.external-lobby-content .lobby-title {
+  color: #f97316;
+  font-size: 18px;
+  margin-bottom: 20px;
+  text-align: center;
+  font-family: 'Press Start 2P', monospace;
+}
+
+.external-lobby-content .lobby-section {
+  background: #334155;
+  padding: 15px;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.external-lobby-content .lobby-section h3 {
+  color: #60a5fa;
+  font-size: 12px;
+  margin-bottom: 10px;
+  font-family: 'Press Start 2P', monospace;
+}
+
+.external-lobby-content .lobby-input-group {
+  display: flex;
+  gap: 8px;
+  margin-bottom: 10px;
+  flex-wrap: wrap;
+}
+
+.external-lobby-content .lobby-input {
+  flex: 1;
+  background: #1e293b;
+  border: 2px solid #475569;
+  color: #e2e8f0;
+  padding: 12px;
+  font-size: 14px;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  border-radius: 4px;
+  min-height: 50px;
+  min-width: 120px;
+  touch-action: manipulation;
+}
+
+.external-lobby-content .lobby-input:focus {
+  outline: none;
+  border-color: #f97316;
+}
+
+.external-lobby-content .lobby-btn {
+  background: #f97316;
+  color: white;
+  border: none;
+  padding: 12px 20px;
+  font-size: 11px;
+  font-family: 'Press Start 2P', 'Courier New', monospace;
+  cursor: pointer;
+  border-radius: 4px;
+  transition: all 0.2s;
+  min-height: 50px;
+  min-width: 80px;
+  touch-action: manipulation;
+}
+
+.external-lobby-content .lobby-btn:active {
+  transform: scale(0.95);
+  background: #ea580c;
+}
+
+.external-lobby-content .lobby-btn.secondary {
+  background: #3b82f6;
+}
+
+.external-lobby-content .lobby-btn.secondary:active {
+  background: #2563eb;
+}
+
+.external-lobby-content .lobby-btn:disabled {
+  background: #64748b;
+  cursor: not-allowed;
+}
+
+.external-lobby-content .lobby-actions {
+  display: flex;
+  gap: 8px;
+  margin-top: 15px;
+  flex-wrap: wrap;
+}
+
+.external-lobby-content #externalPlayersList {
+  list-style: none;
+  padding: 0;
+  max-height: 150px;
+  overflow-y: auto;
+}
+
+.external-lobby-content .player-item {
+  background: #1e293b;
+  padding: 10px;
+  margin: 4px 0;
+  border-radius: 4px;
+  color: #e2e8f0;
+  font-size: 11px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.external-lobby-content .player-item.ready {
+  border-left: 3px solid #22c55e;
+}
+
+.external-lobby-content .player-item.host {
+  border-left: 3px solid #fbbf24;
+}
+
+.external-lobby-content #externalRoomCode {
+  color: #fbbf24;
+  font-size: 16px;
+  letter-spacing: 2px;
+}
+
+@media (max-width: 480px) {
+  .external-lobby-content {
+    padding: 15px;
+  }
+
+  .external-lobby-content .lobby-title {
+    font-size: 14px;
+  }
+
+  .external-lobby-content .lobby-section h3 {
+    font-size: 10px;
+  }
+
+  .external-lobby-content .lobby-btn {
+    font-size: 9px;
+    padding: 10px 15px;
+  }
+
+  .external-lobby-content .lobby-input {
+    font-size: 12px;
+    padding: 10px;
   }
 }

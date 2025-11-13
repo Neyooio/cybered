@@ -1,6 +1,5 @@
 // Faculty Space Management
-import { API_BASE_URL } from './config.js';
-
+const API_BASE_URL = window.API_BASE_URL || 'http://localhost:4000';
 const API_URL = `${API_BASE_URL}/api`;
 
 let currentSpace = null;

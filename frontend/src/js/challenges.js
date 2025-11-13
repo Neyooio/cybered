@@ -1,11 +1,11 @@
 const challengesIndex = [
   { 
-    id: 'firewall-frenzy', 
-    title: 'Firewall Frenzy', 
+    id: 'cyber-runner', 
+    title: 'Cyber Runner', 
     icon: '../../assets/images/C2.png', 
     difficulty: 'Easy', 
-    blurb: 'Turn-based Q&A defense battle.',
-    gameUrl: 'https://example.com/unity-games/firewall-frenzy' // Replace with actual Unity WebGL URL
+    blurb: 'Solo or Multiplayer! Dodge viruses and answer questions!',
+    gameUrl: '../../games/cyber-runner/index.html' // Local HTML5 game with multiplayer mode
   },
   { 
     id: 'crypto-crack', 
@@ -67,6 +67,31 @@ function openGame(challengeId) {
   gameDifficulty.textContent = challenge.difficulty;
   currentGameUrl = gameUrl;
 
+  // Show/hide multiplayer button based on game
+  const multiplayerBtn = document.getElementById('multiplayerToggleBtn');
+  if (multiplayerBtn) {
+    if (challengeId === 'cyber-runner') {
+      multiplayerBtn.style.display = 'inline-block';
+      multiplayerBtn.textContent = '👥 Multiplayer';
+      
+      // Remove any existing listeners and add new one
+      const newBtn = multiplayerBtn.cloneNode(true);
+      multiplayerBtn.parentNode.replaceChild(newBtn, multiplayerBtn);
+      
+      newBtn.addEventListener('click', () => {
+        console.log('🎮 Multiplayer button clicked');
+        if (gameIframe && gameIframe.contentWindow) {
+          console.log('📤 Sending toggleMultiplayer message to iframe');
+          gameIframe.contentWindow.postMessage({ type: 'toggleMultiplayer' }, '*');
+        } else {
+          console.error('❌ Game iframe not available');
+        }
+      });
+    } else {
+      multiplayerBtn.style.display = 'none';
+    }
+  }
+
   // Show overlay and loading
   gameOverlay.classList.add('active');
   gameLoading.classList.remove('hidden');
@@ -91,6 +116,12 @@ function closeGame() {
   gameIframe.src = ''; // Stop the game
   document.body.style.overflow = ''; // Restore scroll
   currentGameUrl = '';
+  
+  // Hide multiplayer button
+  const multiplayerBtn = document.getElementById('multiplayerToggleBtn');
+  if (multiplayerBtn) {
+    multiplayerBtn.style.display = 'none';
+  }
 }
 
 function restartGame() {
@@ -223,4 +254,267 @@ if (searchInput) {
         </div>`).join('');
     }
   });
+}
+
+// External Quiz Modal Handler (for mobile)
+const externalQuizModal = document.getElementById('externalQuizModal');
+let currentQuizCallback = null;
+
+// Listen for messages from the game iframe
+window.addEventListener('message', (event) => {
+  // Security: Verify origin if needed
+  // if (event.origin !== expectedOrigin) return;
+  
+  const data = event.data;
+  
+  console.log('📨 Parent received message:', data);
+  
+  if (data.type === 'showQuiz') {
+    showExternalQuiz(data.question, data.options, data.correct);
+  } else if (data.type === 'hideQuiz') {
+    hideExternalQuiz();
+  } else if (data.type === 'showMultiplayerLobby') {
+    console.log('📱 Showing external multiplayer lobby');
+    showExternalMultiplayerLobby();
+  } else if (data.type === 'hideMultiplayerLobby') {
+    hideExternalMultiplayerLobby();
+  } else if (data.type === 'lobbyUpdate') {
+    updateExternalLobby(data);
+  } else if (data.type === 'updateMultiplayerButton') {
+    console.log('🔄 Updating button text to:', data.text);
+    const multiplayerBtn = document.getElementById('multiplayerToggleBtn');
+    if (multiplayerBtn && data.text) {
+      multiplayerBtn.textContent = data.text;
+    }
+  }
+});
+
+function showExternalQuiz(question, options, correctIndex) {
+  // Check if mobile device
+  const isMobile = window.innerWidth <= 768;
+  if (!isMobile) return; // Only show external modal on mobile
+  
+  document.getElementById('externalQuizQuestion').textContent = question;
+  
+  const optionsContainer = document.getElementById('externalQuizOptions');
+  optionsContainer.innerHTML = '';
+  
+  options.forEach((option, index) => {
+    const button = document.createElement('button');
+    button.className = 'external-quiz-option';
+    button.textContent = option;
+    
+    button.onclick = () => handleExternalQuizAnswer(index, correctIndex, button);
+    
+    optionsContainer.appendChild(button);
+  });
+  
+  document.getElementById('externalQuizFeedback').textContent = '';
+  externalQuizModal.style.display = 'flex';
+}
+
+function handleExternalQuizAnswer(selectedIndex, correctIndex, button) {
+  const allButtons = document.querySelectorAll('.external-quiz-option');
+  allButtons.forEach(btn => btn.disabled = true);
+  
+  const isCorrect = selectedIndex === correctIndex;
+  
+  if (isCorrect) {
+    button.classList.add('correct');
+    document.getElementById('externalQuizFeedback').textContent = '✓ Correct! Continue running!';
+    document.getElementById('externalQuizFeedback').style.color = '#22c55e';
+  } else {
+    button.classList.add('wrong');
+    allButtons[correctIndex].classList.add('correct');
+    document.getElementById('externalQuizFeedback').textContent = '✗ Wrong! Game Over!';
+    document.getElementById('externalQuizFeedback').style.color = '#ef4444';
+  }
+  
+  // Send result back to iframe
+  setTimeout(() => {
+    gameIframe.contentWindow.postMessage({
+      type: 'quizAnswer',
+      correct: isCorrect
+    }, '*');
+    
+    hideExternalQuiz();
+  }, isCorrect ? 1500 : 2000);
+}
+
+function hideExternalQuiz() {
+  externalQuizModal.style.display = 'none';
+}
+
+// External Multiplayer Lobby Handler (for mobile)
+const externalMultiplayerLobby = document.getElementById('externalMultiplayerLobby');
+
+function showExternalMultiplayerLobby() {
+  const isMobile = window.innerWidth <= 768;
+  if (!isMobile) return;
+  
+  externalMultiplayerLobby.style.display = 'flex';
+  
+  // Setup event handlers
+  const createBtn = document.getElementById('externalCreateRoomBtn');
+  const joinInput = document.getElementById('externalJoinRoomInput');
+  const joinBtn = document.getElementById('externalJoinRoomBtn');
+  const closeBtn = document.getElementById('externalCloseLobbyBtn');
+  const readyBtn = document.getElementById('externalReadyBtn');
+  const startBtn = document.getElementById('externalStartGameBtn');
+  const leaveBtn = document.getElementById('externalLeaveRoomBtn');
+  
+  // Create room
+  createBtn.ontouchend = createBtn.onclick = (e) => {
+    e.preventDefault();
+    gameIframe.contentWindow.postMessage({ type: 'multiplayerAction', action: 'createRoom' }, '*');
+  };
+  
+  // Join room
+  joinBtn.ontouchend = joinBtn.onclick = (e) => {
+    e.preventDefault();
+    const code = joinInput.value.trim().toUpperCase();
+    if (code) {
+      gameIframe.contentWindow.postMessage({ type: 'multiplayerAction', action: 'joinRoom', code }, '*');
+    }
+  };
+  
+  // Ready
+  readyBtn.ontouchend = readyBtn.onclick = (e) => {
+    e.preventDefault();
+    gameIframe.contentWindow.postMessage({ type: 'multiplayerAction', action: 'toggleReady' }, '*');
+  };
+  
+  // Start game
+  startBtn.ontouchend = startBtn.onclick = (e) => {
+    e.preventDefault();
+    // Only start if button is not disabled
+    if (!startBtn.disabled) {
+      gameIframe.contentWindow.postMessage({ type: 'multiplayerAction', action: 'startGame' }, '*');
+    }
+  };
+  
+  // Leave room
+  leaveBtn.ontouchend = leaveBtn.onclick = (e) => {
+    e.preventDefault();
+    gameIframe.contentWindow.postMessage({ type: 'multiplayerAction', action: 'leaveRoom' }, '*');
+    // Don't hide immediately - wait for hideRoom message from game
+  };
+  
+  // Close lobby
+  closeBtn.ontouchend = closeBtn.onclick = (e) => {
+    e.preventDefault();
+    hideExternalMultiplayerLobby();
+    
+    // Update button text to Multiplayer since we're going back to single player
+    const multiplayerBtn = document.getElementById('multiplayerToggleBtn');
+    if (multiplayerBtn) {
+      multiplayerBtn.textContent = '👥 Multiplayer';
+    }
+    
+    gameIframe.contentWindow.postMessage({ type: 'multiplayerAction', action: 'closeLobby' }, '*');
+  };
+}
+
+function hideExternalMultiplayerLobby() {
+  externalMultiplayerLobby.style.display = 'none';
+  document.getElementById('externalLobbyCreation').style.display = 'block';
+  document.getElementById('externalRoomSection').style.display = 'none';
+  document.getElementById('externalJoinRoomInput').value = '';
+}
+
+function updateExternalLobby(data) {
+  const { action, roomCode, players, playerCount, isHost, canStart, isReady } = data;
+  
+  if (action === 'showRoom') {
+    // Hide creation section, show room section
+    document.getElementById('externalLobbyCreation').style.display = 'none';
+    document.getElementById('externalRoomSection').style.display = 'block';
+    document.getElementById('externalRoomCode').textContent = roomCode;
+    
+    // Reset ready button
+    const readyBtn = document.getElementById('externalReadyBtn');
+    readyBtn.textContent = 'READY';
+    readyBtn.style.background = '#f97316';
+    
+    // Show/hide host-only buttons
+    const startBtn = document.getElementById('externalStartGameBtn');
+    if (isHost) {
+      startBtn.style.display = 'inline-block';
+      startBtn.disabled = true;
+      startBtn.style.background = '#6b7280';
+      startBtn.style.cursor = 'not-allowed';
+      readyBtn.style.display = 'none';
+    } else {
+      startBtn.style.display = 'none';
+      readyBtn.style.display = 'inline-block';
+    }
+  }
+  
+  if (action === 'updatePlayers' && players) {
+    // Player colors based on lane
+    const playerColors = [
+      { main: '#3b82f6', light: '#60a5fa' },  // Blue
+      { main: '#eab308', light: '#facc15' },  // Yellow
+      { main: '#10b981', light: '#34d399' },  // Green
+      { main: '#a855f7', light: '#c084fc' },  // Purple
+      { main: '#f97316', light: '#fb923c' }   // Orange
+    ];
+    
+    // Update player list
+    const playersList = document.getElementById('externalPlayersList');
+    playersList.innerHTML = '';
+    
+    players.forEach(player => {
+      const colorScheme = playerColors[player.lane] || playerColors[0];
+      const li = document.createElement('li');
+      li.className = 'player-item';
+      if (player.ready) li.classList.add('ready');
+      if (player.isHost) li.classList.add('host');
+      
+      // Create color dot
+      const colorDot = document.createElement('span');
+      colorDot.style.display = 'inline-block';
+      colorDot.style.width = '12px';
+      colorDot.style.height = '12px';
+      colorDot.style.borderRadius = '50%';
+      colorDot.style.background = colorScheme.main;
+      colorDot.style.marginRight = '8px';
+      colorDot.style.border = '2px solid ' + colorScheme.light;
+      
+      const nameSpan = document.createElement('span');
+      nameSpan.appendChild(colorDot);
+      nameSpan.appendChild(document.createTextNode(player.username));
+      
+      const badgesSpan = document.createElement('span');
+      if (player.isHost) {
+        badgesSpan.innerHTML = '<span class="host-badge">HOST</span>';
+      } else if (player.ready) {
+        badgesSpan.innerHTML = '<span class="ready-badge">✓ READY</span>';
+      }
+      
+      li.appendChild(nameSpan);
+      li.appendChild(badgesSpan);
+      playersList.appendChild(li);
+    });
+    
+    document.getElementById('externalPlayerCount').textContent = playerCount || players.length;
+  }
+  
+  if (action === 'updateReady') {
+    const readyBtn = document.getElementById('externalReadyBtn');
+    readyBtn.textContent = isReady ? 'UNREADY' : 'READY';
+    readyBtn.style.background = isReady ? '#22c55e' : '#f97316';
+  }
+  
+  if (action === 'canStart') {
+    const startBtn = document.getElementById('externalStartGameBtn');
+    startBtn.disabled = !canStart;
+    // Change button color: green when can start, gray when disabled
+    startBtn.style.background = canStart ? '#22c55e' : '#6b7280';
+    startBtn.style.cursor = canStart ? 'pointer' : 'not-allowed';
+  }
+  
+  if (action === 'hideRoom') {
+    hideExternalMultiplayerLobby();
+  }
 }

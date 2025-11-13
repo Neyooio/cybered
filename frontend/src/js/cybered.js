@@ -39,9 +39,19 @@
     }[id] || 'modules.html';
   }
   try{
-    const mod = JSON.parse(localStorage.getItem('currentModule') || 'null') || {
-      id:'web-security', title:'Web Security', icon:'../../assets/images/Web Security.png'
-    };
+    // Check if user is new (no current module set)
+    let mod = JSON.parse(localStorage.getItem('currentModule') || 'null');
+    
+    if (!mod) {
+      // New user - set default starting module and save it
+      mod = {
+        id: 'web-security', 
+        title: 'Web Security', 
+        icon: '../../assets/images/Web Security.png',
+        description: 'The Web Security module covers vulnerabilities such as SQL Injection, XSS, and CSRF, and secure practices to protect web applications.'
+      };
+      localStorage.setItem('currentModule', JSON.stringify(mod));
+    }
     const iconEl = document.getElementById('homeHeroIcon');
     const titleEl = document.getElementById('homeHeroTitle');
     const fillEl = document.getElementById('homeHeroFill');

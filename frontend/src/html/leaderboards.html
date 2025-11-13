@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Cyber Ed - Leaderboards</title>
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../css/global.css">
+  <link rel="stylesheet" href="../css/challenges.css">
+  <style>
+    .leaderboard-container {
+      max-width: 900px;
+      margin: 0 auto;
+      padding: 2rem;
+    }
+
+    .leaderboard-header {
+      text-align: center;
+      margin-bottom: 3rem;
+    }
+
+    .leaderboard-title {
+      font-size: 2.5rem;
+      color: #f97316;
+      margin-bottom: 1rem;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+      font-family: 'Press Start 2P', monospace;
+    }
+
+    .leaderboard-subtitle {
+      color: #94a3b8;
+      font-size: 1rem;
+    }
+
+    .game-selector {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      margin-bottom: 2rem;
+      flex-wrap: wrap;
+    }
+
+    .game-tab {
+      padding: 0.75rem 1.5rem;
+      background: #1e293b;
+      border: 2px solid #334155;
+      color: #e2e8f0;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.75rem;
+      cursor: pointer;
+      transition: all 0.3s;
+      border-radius: 8px;
+    }
+
+    .game-tab:hover {
+      border-color: #f97316;
+      background: #334155;
+    }
+
+    .game-tab.active {
+      background: #f97316;
+      border-color: #f97316;
+      color: white;
+    }
+
+    .leaderboard-table {
+      background: #1e293b;
+      border-radius: 12px;
+      overflow: hidden;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+    }
+
+    .table-header {
+      background: linear-gradient(135deg, #1e40af 0%, #3b82f6 100%);
+      padding: 1.5rem;
+      display: grid;
+      grid-template-columns: 80px 1fr 150px 150px;
+      gap: 1rem;
+      font-family: 'Press Start 2P', monospace;
+      font-size: 0.75rem;
+      color: white;
+      align-items: center;
+    }
+
+    .table-row {
+      padding: 1.25rem 1.5rem;
+      display: grid;
+      grid-template-columns: 80px 1fr 150px 150px;
+      gap: 1rem;
+      border-bottom: 1px solid #334155;
+      transition: all 0.3s;
+      align-items: center;
+    }
+
+    .table-row:hover {
+      background: #334155;
+    }
+
+    .table-row:last-child {
+      border-bottom: none;
+    }
+
+    .rank {
+      font-family: 'Press Start 2P', monospace;
+      font-size: 1.5rem;
+      font-weight: bold;
+      text-align: center;
+    }
+
+    .rank.gold { color: #fbbf24; }
+    .rank.silver { color: #94a3b8; }
+    .rank.bronze { color: #fb923c; }
+    .rank.normal { color: #60a5fa; }
+
+    .player-info {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+    }
+
+    .player-avatar {
+      width: 40px;
+      height: 40px;
+      background: linear-gradient(135deg, #3b82f6, #1e40af);
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+    }
+
+    .player-name {
+      color: #e2e8f0;
+      font-size: 1rem;
+    }
+
+    .score {
+      color: #fbbf24;
+      font-size: 1.25rem;
+      font-weight: bold;
+      text-align: center;
+      font-family: 'Press Start 2P', monospace;
+    }
+
+    .level {
+      color: #60a5fa;
+      font-size: 1rem;
+      text-align: center;
+      font-family: 'Press Start 2P', monospace;
+    }
+
+    .empty-state {
+      text-align: center;
+      padding: 4rem 2rem;
+      color: #94a3b8;
+    }
+
+    .empty-state-icon {
+      font-size: 4rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+
+    .loading {
+      text-align: center;
+      padding: 3rem;
+      color: #60a5fa;
+      font-size: 1rem;
+    }
+
+    .loading::after {
+      content: '...';
+      animation: dots 1.5s infinite;
+    }
+
+    @keyframes dots {
+      0%, 20% { content: '.'; }
+      40% { content: '..'; }
+      60%, 100% { content: '...'; }
+    }
+
+    @media (max-width: 768px) {
+      .leaderboard-title {
+        font-size: 1.75rem;
+      }
+
+      .table-header, .table-row {
+        grid-template-columns: 60px 1fr 100px;
+        gap: 0.5rem;
+        padding: 1rem;
+      }
+
+      .level {
+        display: none;
+      }
+
+      .table-header .level-header {
+        display: none;
+      }
+
+      .rank {
+        font-size: 1.25rem;
+      }
+
+      .player-avatar {
+        width: 32px;
+        height: 32px;
+      }
+
+      .player-name {
+        font-size: 0.9rem;
+      }
+
+      .score {
+        font-size: 1rem;
+      }
+
+      .game-tab {
+        font-size: 0.65rem;
+        padding: 0.6rem 1rem;
+      }
+    }
+  </style>
+</head>
+<body class="site-background">
+  <div class="layout-shell">
+    <div data-include="./partials/navbar.html"></div>
+    <main class="main-wrapper">
+      <div data-include="./partials/topbar.html"></div>
+      <section class="content-section">
+        <div class="leaderboard-container">
+          <div class="leaderboard-header">
+            <h1 class="leaderboard-title">🏆 LEADERBOARDS</h1>
+            <p class="leaderboard-subtitle">Top players across all challenges</p>
+          </div>
+
+          <div class="game-selector">
+            <button class="game-tab active" data-game="cyber-runner">Cyber Runner</button>
+            <button class="game-tab" data-game="header-check">Header Check</button>
+            <button class="game-tab" data-game="crypto-crack">Crypto Crack</button>
+            <button class="game-tab" data-game="intrusion-intercept">Intrusion Intercept</button>
+          </div>
+
+          <div class="leaderboard-table">
+            <div class="table-header">
+              <div>Rank</div>
+              <div>Player</div>
+              <div>Score</div>
+              <div class="level-header">Level</div>
+            </div>
+            <div id="leaderboardBody">
+              <div class="loading">Loading leaderboard</div>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Game Overlay -->
+  <div id="gameOverlay" class="game-overlay">
+    <div class="game-container">
+      <div class="game-header">
+        <h2 id="gameTitle" class="game-title">Game</h2>
+        <span id="gameDifficulty" class="difficulty-badge">Easy</span>
+        <button id="closeGameBtn" class="game-close-btn">✕</button>
+      </div>
+      <div class="game-iframe-wrapper">
+        <div id="gameLoading" class="game-loading hidden">
+          <div class="loading-spinner"></div>
+          <p>Loading game...</p>
+        </div>
+        <iframe id="gameIframe" class="game-iframe" frameborder="0" allowfullscreen></iframe>
+      </div>
+      <div class="game-footer">
+        <div class="game-info">
+          <span>🎮 Use keyboard/mouse to play</span>
+        </div>
+        <div class="game-controls">
+          <button id="restartGameBtn" class="game-control-btn">🔄 Restart</button>
+          <button id="fullscreenBtn" class="game-control-btn">⛶ Fullscreen</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="../js/includes.js"></script>
+  <script src="../js/config.js" type="module"></script>
+  <script src="../js/leaderboards.js"></script>
+</body>
+</html>

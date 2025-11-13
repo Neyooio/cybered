@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cyber Runner - Malware Defense</title>
+  <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
+    body {
+      font-family: 'Press Start 2P', 'Courier New', monospace;
+      background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%);
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    #gameContainer {
+      background: #1e293b;
+      border: 4px solid #f97316;
+      border-radius: 12px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
+      overflow: hidden;
+      position: relative;
+      transform: scale(0.95);
+      margin: 10px auto;
+    }
+
+    #gameCanvas {
+      display: block;
+      background: linear-gradient(to bottom, #334155 0%, #1e293b 100%);
+    }
+
+    #score {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      color: #fbbf24;
+      font-size: 18px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+      z-index: 10;
+    }
+
+    #highScore {
+      position: absolute;
+      top: 50px;
+      right: 20px;
+      color: #60a5fa;
+      font-size: 14px;
+      text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
+      z-index: 10;
+    }
+
+    #gameOver {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(15, 23, 42, 0.95);
+      padding: 30px;
+      border: 3px solid #f97316;
+      border-radius: 12px;
+      text-align: center;
+      display: none;
+      z-index: 100;
+      min-width: 400px;
+    }
+
+    #gameOver h2 {
+      color: #f97316;
+      font-size: 24px;
+      margin-bottom: 20px;
+    }
+
+    #gameOver h2.new-high-score {
+      color: #fbbf24;
+      animation: highScorePulse 1s infinite;
+      text-shadow: 0 0 10px #fbbf24, 0 0 20px #fbbf24;
+    }
+
+    @keyframes highScorePulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.1); }
+    }
+
+    #gameOver p {
+      color: #e2e8f0;
+      font-size: 14px;
+      margin-bottom: 20px;
+      line-height: 1.6;
+    }
+
+    #restartBtn {
+      background: #f97316;
+      color: white;
+      border: none;
+      padding: 12px 30px;
+      font-size: 14px;
+      font-family: 'Press Start 2P', 'Courier New', monospace;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.3s;
+      pointer-events: auto;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: rgba(249, 115, 22, 0.3);
+    }
+
+    #restartBtn:hover {
+      background: #ea580c;
+      transform: scale(1.05);
+    }
+
+    #restartBtn:active {
+      background: #ea580c;
+      transform: scale(0.98);
+    }
+
+    #quizModal {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(15, 23, 42, 0.98);
+      padding: 30px;
+      border: 3px solid #3b82f6;
+      border-radius: 12px;
+      display: none;
+      z-index: 200;
+      max-width: 600px;
+      width: 90%;
+      pointer-events: auto;
+      touch-action: manipulation;
+    }
+
+    #quizModal h3 {
+      color: #3b82f6;
+      font-size: 18px;
+      margin-bottom: 15px;
+      pointer-events: none;
+    }
+
+    #quizQuestion {
+      color: #e2e8f0;
+      font-size: 14px;
+      margin-bottom: 20px;
+      line-height: 1.6;
+      pointer-events: none;
+    }
+
+    .quiz-option {
+      background: #334155;
+      color: #e2e8f0;
+      border: 2px solid #475569;
+      padding: 12px 20px;
+      margin: 10px 0;
+      font-size: 12px;
+      font-family: 'Press Start 2P', 'Courier New', monospace;
+      cursor: pointer;
+      border-radius: 6px;
+      transition: all 0.3s;
+      text-align: left;
+      width: 100%;
+      pointer-events: auto;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: rgba(59, 130, 246, 0.3);
+    }
+
+    .quiz-option:hover {
+      background: #475569;
+      border-color: #3b82f6;
+      transform: translateX(5px);
+    }
+
+    .quiz-option:active {
+      background: #475569;
+      border-color: #3b82f6;
+      transform: scale(0.98);
+    }
+
+    .quiz-option.correct {
+      background: #166534;
+      border-color: #22c55e;
+    }
+
+    .quiz-option.wrong {
+      background: #7f1d1d;
+      border-color: #ef4444;
+    }
+
+    #quizFeedback {
+      color: #fbbf24;
+      font-size: 12px;
+      margin-top: 15px;
+      min-height: 20px;
+      pointer-events: none;
+    }
+
+    #startScreen {
+      display: block;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      text-align: center;
+      color: #e2e8f0;
+      z-index: 50;
+    }
+
+    #startScreen h1 {
+      color: #f97316;
+      font-size: 32px;
+      margin-bottom: 20px;
+    }
+
+    #startScreen p {
+      font-size: 12px;
+      margin-bottom: 30px;
+      color: #94a3b8;
+    }
+
+    /* Multiplayer Lobby */
+    #multiplayerLobby {
+      display: none;
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(15, 23, 42, 0.98);
+      padding: 30px;
+      border: 3px solid #f97316;
+      border-radius: 12px;
+      z-index: 60;
+      min-width: 400px;
+      max-width: 500px;
+      width: 90%;
+    }
+
+    .lobby-title {
+      color: #f97316;
+      font-size: 20px;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    .lobby-section {
+      background: #334155;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+    }
+
+    .lobby-section h3 {
+      color: #60a5fa;
+      font-size: 12px;
+      margin-bottom: 10px;
+    }
+
+    .lobby-input-group {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 10px;
+    }
+
+    .lobby-input {
+      flex: 1;
+      background: #1e293b;
+      border: 2px solid #475569;
+      color: #e2e8f0;
+      padding: 8px;
+      font-size: 11px;
+      font-family: 'Press Start 2P', 'Courier New', monospace;
+      border-radius: 4px;
+      min-height: 44px;
+      touch-action: manipulation;
+    }
+
+    .lobby-input:focus {
+      outline: none;
+      border-color: #f97316;
+    }
+
+    .lobby-btn {
+      background: #f97316;
+      color: white;
+      border: none;
+      padding: 8px 15px;
+      font-size: 10px;
+      font-family: 'Press Start 2P', 'Courier New', monospace;
+      cursor: pointer;
+      border-radius: 4px;
+      transition: all 0.3s;
+      min-height: 44px;
+      min-width: 60px;
+      touch-action: manipulation;
+      -webkit-tap-highlight-color: rgba(249, 115, 22, 0.3);
+    }
+
+    .lobby-btn:hover {
+      background: #ea580c;
+      transform: scale(1.05);
+    }
+
+    .lobby-btn:disabled {
+      background: #64748b;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    .lobby-btn:active {
+      transform: scale(0.95);
+      background: #dc2626;
+    }
+
+    .lobby-btn.secondary {
+      background: #3b82f6;
+    }
+
+    .lobby-btn.secondary:hover {
+      background: #2563eb;
+    }
+
+    #roomCode {
+      color: #fbbf24;
+      font-size: 18px;
+      text-align: center;
+      margin: 15px 0;
+      letter-spacing: 2px;
+    }
+
+    #playersList {
+      list-style: none;
+      padding: 0;
+      max-height: 150px;
+      overflow-y: auto;
+    }
+
+    .player-item {
+      background: #1e293b;
+      padding: 8px;
+      margin: 4px 0;
+      border-radius: 4px;
+      color: #e2e8f0;
+      font-size: 10px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .player-item.ready {
+      border-left: 3px solid #22c55e;
+    }
+
+    .player-item.host {
+      border-left: 3px solid #fbbf24;
+    }
+
+    .ready-badge {
+      color: #22c55e;
+      font-size: 9px;
+    }
+
+    .host-badge {
+      color: #fbbf24;
+      font-size: 9px;
+    }
+
+    /* Players Info Overlay */
+    #playersInfo {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      z-index: 10;
+      display: none;
+      flex-direction: row;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .player-icon {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 18px;
+      border: 2px solid transparent;
+      transition: all 0.3s ease;
+      cursor: pointer;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    .player-icon.eliminated {
+      opacity: 0.4;
+      filter: grayscale(100%);
+    }
+
+    .player-icon:hover {
+      transform: scale(1.1);
+    }
+
+    /* Spectator Mode */
+    #spectatorOverlay {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background: rgba(15, 23, 42, 0.9);
+      padding: 25px;
+      border: 3px solid #ef4444;
+      border-radius: 12px;
+      text-align: center;
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      z-index: 50;
+    }
+
+    #spectatorOverlay h2 {
+      color: #ef4444;
+      font-size: 20px;
+      margin-bottom: 12px;
+    }
+
+    #spectatorOverlay p {
+      color: #e2e8f0;
+      font-size: 11px;
+      line-height: 1.6;
+    }
+
+    /* Results Screen */
+    #resultsScreen {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(15, 23, 42, 0.98);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+    }
+
+    .results-title {
+      color: #fbbf24;
+      font-size: 28px;
+      margin-bottom: 25px;
+      text-shadow: 0 0 20px #fbbf24;
+    }
+
+    .podium {
+      display: flex;
+      gap: 15px;
+      margin-bottom: 25px;
+      align-items: flex-end;
+    }
+
+    .podium-place {
+      background: #334155;
+      padding: 15px;
+      border-radius: 8px;
+      text-align: center;
+      min-width: 120px;
+    }
+
+    .podium-place.first {
+      background: linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%);
+      border: 3px solid #fef3c7;
+      order: 2;
+      transform: translateY(-15px);
+    }
+
+    .podium-place.second {
+      background: linear-gradient(135deg, #94a3b8 0%, #64748b 100%);
+      border: 3px solid #e2e8f0;
+      order: 1;
+    }
+
+    .podium-place.third {
+      background: linear-gradient(135deg, #fb923c 0%, #ea580c 100%);
+      border: 3px solid #fed7aa;
+      order: 3;
+    }
+
+    .place-number {
+      font-size: 36px;
+      margin-bottom: 8px;
+    }
+
+    .place-username {
+      font-size: 10px;
+      margin-bottom: 8px;
+      color: #1e293b;
+    }
+
+    .place-score {
+      font-size: 9px;
+      color: #1e293b;
+    }
+
+    .multiplier {
+      color: #065f46;
+      font-size: 8px;
+      margin-top: 4px;
+      font-weight: bold;
+    }
+
+    .other-players {
+      background: #334155;
+      padding: 15px;
+      border-radius: 8px;
+      margin-bottom: 15px;
+      max-width: 400px;
+    }
+
+    .other-player {
+      color: #e2e8f0;
+      font-size: 10px;
+      padding: 6px;
+      border-bottom: 1px solid #475569;
+    }
+
+    .results-buttons {
+      display: flex;
+      gap: 12px;
+    }
+
+    .countdown {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      font-size: 100px;
+      color: #fbbf24;
+      text-shadow: 0 0 30px #fbbf24;
+      z-index: 150;
+      animation: countdownPulse 1s;
+    }
+
+    @keyframes countdownPulse {
+      0% { transform: translate(-50%, -50%) scale(0.5); opacity: 0; }
+      50% { transform: translate(-50%, -50%) scale(1.2); }
+      100% { transform: translate(-50%, -50%) scale(1); opacity: 1; }
+    }
+
+    .blink {
+      animation: blink 1s infinite;
+    }
+
+    @keyframes blink {
+      0%, 50% { opacity: 1; }
+      51%, 100% { opacity: 0; }
+    }
+
+    /* Mobile responsiveness */
+    @media (max-width: 768px) {
+      body {
+        padding: 0;
+      }
+
+      #gameContainer {
+        transform: scale(0.95);
+        margin: 0 auto;
+        max-width: 100%;
+      }
+
+      #gameCanvas {
+        width: 100%;
+        height: auto;
+      }
+      
+      #gameOver {
+        min-width: 300px;
+        padding: 20px;
+      }
+
+      #restartBtn {
+        min-height: 44px;
+        padding: 12px 25px;
+      }
+      
+      #quizModal {
+        width: 90%;
+        max-width: 500px;
+        padding: 20px;
+        z-index: 200;
+      }
+      
+      #gameOver h2, #quizModal h3 {
+        font-size: 16px;
+      }
+      
+      #gameOver p, #quizQuestion {
+        font-size: 11px;
+      }
+      
+      .quiz-option {
+        font-size: 10px;
+        padding: 12px 15px;
+        margin: 8px 0;
+        min-height: 44px;
+        display: flex;
+        align-items: center;
+      }
+      
+      #startScreen h1 {
+        font-size: 24px;
+      }
+      
+      #startScreen p {
+        font-size: 10px;
+      }
+
+      /* Multiplayer mobile adjustments */
+      #multiplayerLobby {
+        width: 95%;
+        padding: 20px;
+        min-width: auto;
+      }
+
+      .lobby-btn {
+        font-size: 9px;
+        padding: 10px 12px;
+        min-height: 48px;
+      }
+
+      .lobby-input {
+        font-size: 10px;
+        padding: 10px;
+        min-height: 48px;
+      }
+    }
+
+    @media (max-width: 480px) {
+      body {
+        padding: 0;
+      }
+
+      #gameContainer {
+        transform: scale(0.90);
+        margin: 0 auto;
+      }
+      
+      #quizModal {
+        width: 95%;
+        padding: 15px;
+      }
+      
+      .quiz-option {
+        font-size: 9px;
+        padding: 10px 12px;
+        min-height: 48px;
+      }
+
+      #restartBtn {
+        min-height: 48px;
+        padding: 10px 20px;
+        font-size: 12px;
+      }
+    }
+
+    /* Prevent text selection and touch callout on mobile */
+    * {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+    }
+    
+    /* Allow button interactions */
+    button, .quiz-option {
+      -webkit-user-select: none;
+      -moz-user-select: none;
+      -ms-user-select: none;
+      user-select: none;
+      -webkit-touch-callout: none;
+      pointer-events: auto;
+    }
+  </style>
+</head>
+<body>
+  <div id="gameContainer">
+    <canvas id="gameCanvas" width="1000" height="600"></canvas>
+    <div id="score">SCORE: 0</div>
+    <div id="highScore">HI: 0</div>
+    
+    <div id="startScreen">
+      <h1>CYBER RUNNER</h1>
+      <p class="blink">Press SPACE or TAP to Start</p>
+    </div>
+
+    <!-- Multiplayer Lobby -->
+    <div id="multiplayerLobby">
+      <h2 class="lobby-title">MULTIPLAYER LOBBY</h2>
+      
+      <div class="lobby-section">
+        <h3>Create or Join Room</h3>
+        <div class="lobby-input-group">
+          <button id="createRoomBtn" class="lobby-btn">CREATE</button>
+          <input type="text" id="joinRoomInput" class="lobby-input" placeholder="Room Code" maxlength="6">
+          <button id="joinRoomBtn" class="lobby-btn secondary">JOIN</button>
+        </div>
+      </div>
+
+      <div id="roomSection" class="lobby-section" style="display: none;">
+        <h3>Room</h3>
+        <div id="roomCode">------</div>
+        <h3 style="margin-top: 15px;">Players (<span id="playerCount">0</span>/5)</h3>
+        <ul id="playersList"></ul>
+        <div style="margin-top: 15px; display: flex; gap: 8px; justify-content: center;">
+          <button id="readyBtn" class="lobby-btn">READY</button>
+          <button id="startGameBtn" class="lobby-btn" style="display: none;">START</button>
+          <button id="leaveRoomBtn" class="lobby-btn secondary">BACK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Players Info (Multiplayer) -->
+    <div id="playersInfo"></div>
+
+    <!-- Spectator Overlay (Multiplayer) -->
+    <div id="spectatorOverlay">
+      <h2>ELIMINATED!</h2>
+      <p>You are now spectating</p>
+      <p style="margin-top: 8px; color: #fbbf24;">Your Score: <span id="spectatorScore">0</span></p>
+      <button id="spectatorLeaveBtn" class="lobby-btn secondary" style="margin-top: 16px; display: none;">LEAVE ROOM</button>
+    </div>
+
+    <!-- Results Screen (Multiplayer) -->
+    <div id="resultsScreen">
+      <h1 class="results-title">BATTLE COMPLETE!</h1>
+      
+      <div class="podium" id="podium"></div>
+
+      <div class="other-players" id="otherPlayers" style="display: none;">
+        <h3 style="color: #94a3b8; font-size: 12px; margin-bottom: 8px;">Other Players</h3>
+        <div id="otherPlayersList"></div>
+      </div>
+
+      <div class="results-buttons">
+        <button id="playAgainBtn" class="lobby-btn">BACK TO ROOM</button>
+        <button id="backToLobbyBtn" class="lobby-btn secondary">LOBBY</button>
+      </div>
+    </div>
+
+    <div id="gameOver">
+      <h2 id="gameOverTitle">GAME OVER</h2>
+      <p id="gameOverMessage">Your final score: <span id="finalScore">0</span></p>
+      <button id="restartBtn">RESTART</button>
+    </div>
+
+    <div id="quizModal">
+      <h3>THREAT DETECTED!</h3>
+      <div id="quizQuestion"></div>
+      <div id="quizOptions"></div>
+      <div id="quizFeedback"></div>
+    </div>
+  </div>
+
+  <script>
+    // Dynamically load Socket.IO from the correct backend URL
+    (function() {
+      const urlParams = new URLSearchParams(window.location.search);
+      const apiUrl = urlParams.get('api');
+      let backendUrl;
+      
+      if (apiUrl) {
+        backendUrl = apiUrl.replace('/api', '');
+      } else {
+        const hostname = window.location.hostname;
+        backendUrl = (hostname === 'localhost' || hostname === '127.0.0.1') 
+          ? 'http://localhost:4000' 
+          : `http://${hostname}:4000`;
+      }
+      
+      const script = document.createElement('script');
+      script.src = `${backendUrl}/socket.io/socket.io.js`;
+      script.onerror = function() {
+        console.warn('Socket.IO not available - multiplayer mode disabled');
+      };
+      document.head.appendChild(script);
+    })();
+  </script>
+  <script src="game.js"></script>
+</body>
+</html>

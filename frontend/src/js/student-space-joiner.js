@@ -1,4 +1,4 @@
-import { API_BASE_URL } from './config.js';
+const API_BASE_URL = window.API_BASE_URL || 'http://localhost:4000';
 
 class StudentSpaceJoiner {
   constructor() {

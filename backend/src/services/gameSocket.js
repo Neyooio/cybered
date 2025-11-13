@@ -200,8 +200,18 @@ export function initializeGameSocket(io) {
           score: data.score
         });
 
-        // Don't end game here - only end when last player answers wrong in quiz
-        // Eliminated players can spectate the remaining players
+        // Check if this was the last active player
+        const activePlayers = Array.from(room.players.values()).filter(p => !p.isEliminated);
+        console.log(`[game-socket] Active players after elimination: ${activePlayers.length}`);
+        
+        if (activePlayers.length === 0) {
+          // Last player eliminated - end game (whether from quiz or collision)
+          console.log(`[game-socket] ⚠️ ENDING GAME - Last player eliminated. Calling endGame in 2 seconds...`);
+          setTimeout(() => {
+            console.log(`[game-socket] ⚠️ CALLING endGame NOW for room ${roomCode}`);
+            endGame(io, roomCode);
+          }, 2000);
+        }
       }
     });
 
@@ -240,14 +250,23 @@ export function initializeGameSocket(io) {
         correct: data.correct
       });
       
-      // If this was the last active player and they answered wrong, end the game
+      // If player answered wrong, mark them as eliminated immediately on server side
       if (!data.correct) {
+        const player = room.players.get(socket.id);
+        if (player && !player.isEliminated) {
+          player.isEliminated = true;
+          player.finalScore = player.score;
+          player.eliminationTime = Date.now();
+          console.log(`[game-socket] Marked ${player.username} as eliminated (wrong answer)`);
+        }
+        
+        // Count remaining active players (now excluding the player we just marked as eliminated)
         const activePlayers = Array.from(room.players.values()).filter(p => !p.isEliminated);
         const playerNames = activePlayers.map(p => p.username).join(', ');
-        console.log(`[game-socket] Player answered wrong. Active players: ${activePlayers.length} [${playerNames}]`);
+        console.log(`[game-socket] Active players remaining: ${activePlayers.length} [${playerNames}]`);
         
-        // Check if this is the last player (either 1 active = this player, or 0 active = just eliminated)
-        if (activePlayers.length <= 1) {
+        // If no active players remain, end the game
+        if (activePlayers.length === 0) {
           // Last player answered wrong - end game
           console.log(`[game-socket] ⚠️ ENDING GAME - Last player eliminated. Calling endGame in 2 seconds...`);
           setTimeout(() => {
@@ -379,6 +398,24 @@ function endGame(io, roomCode) {
   console.log(`[game-socket] 🏁 Emitting game-ended event to room ${roomCode}`);
   io.to(roomCode).emit('game-ended', { results });
   console.log(`[game-socket] ✅ game-ended event emitted successfully`);
+  
+  // Reset room state for play again
+  room.gameState = 'waiting';
+  room.readyPlayers.clear();
+  room.players.forEach(player => {
+    player.ready = false;
+    player.isEliminated = false;
+    player.score = 0;
+    player.finalScore = 0;
+    player.position = null;
+  });
+  console.log(`[game-socket] 🔄 Room ${roomCode} reset for play again`);
+  
+  // Emit updated player list so everyone sees the reset state
+  emitPlayerList(io, roomCode);
+  
+  // Update host's start button state (should be disabled since no one is ready)
+  io.to(room.host).emit('can-start-game', false);
 }
 
 function handlePlayerLeave(io, socket) {
