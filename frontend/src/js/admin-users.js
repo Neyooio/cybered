@@ -5,6 +5,15 @@
       if (stored) return stored.replace(/\/$/, '');
       const { protocol, hostname } = window.location || {};
       if (hostname){
+        // Production environment (Netlify)
+        if (hostname.includes('netlify.app')) {
+          return 'https://cybered-backend.onrender.com/api';
+        }
+        // Local development
+        if (hostname === 'localhost' || hostname === '127.0.0.1') {
+          return 'http://localhost:4000/api';
+        }
+        // Network access
         const proto = protocol || 'http:';
         return `${proto}//${hostname}:4000/api`;
       }

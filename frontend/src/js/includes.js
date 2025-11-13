@@ -357,11 +357,15 @@ function setupSpaceButtons() {
     const spaceNavBtn = document.getElementById('spaceNavBtn');
     const drawerSpaceBtn = document.getElementById('drawerSpaceBtn');
     
+    // Determine correct path based on current location
+    const isInAdmin = window.location.pathname.includes('/admin/');
+    const spacesPath = isInAdmin ? '../spaces.html' : 'spaces.html';
+    
     if (spaceNavBtn) {
       // Add click handler to navigate to spaces page
       spaceNavBtn.addEventListener('click', (e) => {
         e.preventDefault();
-        window.location.href = 'spaces.html';
+        window.location.href = spacesPath;
       });
     }
     
@@ -371,7 +375,7 @@ function setupSpaceButtons() {
       if (drawerSpaceLink) {
         drawerSpaceLink.addEventListener('click', (e) => {
           e.preventDefault();
-          window.location.href = 'spaces.html';
+          window.location.href = spacesPath;
         });
       }
     }
