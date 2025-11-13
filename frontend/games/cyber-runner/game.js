@@ -63,6 +63,9 @@ function getBackendUrl() {
   
   // Default: try to use the same host as the frontend
   const hostname = window.location.hostname;
+  if (hostname.includes('netlify.app')) {
+    return 'https://cybered-backend.onrender.com';
+  }
   return hostname === 'localhost' || hostname === '127.0.0.1' 
     ? 'http://localhost:4000' 
     : `http://${hostname}:4000`;

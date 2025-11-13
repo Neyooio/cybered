@@ -2,8 +2,17 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
-// Socket.IO connection
-const socket = io('http://localhost:4000');
+// Socket.IO connection - detect environment
+const getBackendUrl = () => {
+  const hostname = window.location.hostname;
+  if (hostname.includes('netlify.app')) {
+    return 'https://cybered-backend.onrender.com';
+  }
+  return hostname === 'localhost' || hostname === '127.0.0.1' 
+    ? 'http://localhost:4000'
+    : `http://${hostname}:4000`;
+};
+const socket = io(getBackendUrl());
 
 // Audio elements
 const audio = {
@@ -748,7 +757,7 @@ async function submitScore(results) {
   if (!playerData.token) return;
   
   try {
-    const response = await fetch('http://localhost:4000/api/challenges/complete', {
+    const response = await fetch(`${getBackendUrl()}/api/challenges/complete`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
