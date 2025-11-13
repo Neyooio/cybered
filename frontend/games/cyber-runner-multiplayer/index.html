@@ -534,7 +534,33 @@
     </div>
   </div>
 
-  <script src="/socket.io/socket.io.js"></script>
+  <script>
+    // Dynamically load Socket.IO from the correct backend URL
+    (function() {
+      const hostname = window.location.hostname;
+      let backendUrl;
+      
+      // Production environment (Netlify)
+      if (hostname.includes('netlify.app')) {
+        backendUrl = 'https://cybered-backend.onrender.com';
+      }
+      // Local development
+      else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        backendUrl = 'http://localhost:4000';
+      }
+      // Network access
+      else {
+        backendUrl = `http://${hostname}:4000`;
+      }
+      
+      const script = document.createElement('script');
+      script.src = `${backendUrl}/socket.io/socket.io.js`;
+      script.onerror = function() {
+        console.warn('Socket.IO not available - multiplayer mode disabled');
+      };
+      document.head.appendChild(script);
+    })();
+  </script>
   <script src="game.js"></script>
 </body>
 </html>
