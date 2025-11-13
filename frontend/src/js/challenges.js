@@ -51,9 +51,19 @@ function openGame(challengeId) {
 
   // Get authentication info
   const token = localStorage.getItem('authToken');
-  const apiBase = localStorage.getItem('apiBase') || window.location.origin.includes('localhost') 
-    ? 'http://localhost:4000/api' 
-    : `${window.location.protocol}//${window.location.hostname}:4000/api`;
+  
+  // Determine API base URL
+  let apiBase = localStorage.getItem('apiBase');
+  if (!apiBase) {
+    const hostname = window.location.hostname;
+    if (hostname.includes('netlify.app')) {
+      apiBase = 'https://cybered-backend.onrender.com/api';
+    } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      apiBase = 'http://localhost:4000/api';
+    } else {
+      apiBase = `${window.location.protocol}//${hostname}:4000/api`;
+    }
+  }
 
   // Build game URL with authentication parameters
   let gameUrl = challenge.gameUrl;
