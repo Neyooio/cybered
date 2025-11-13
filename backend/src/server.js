@@ -31,8 +31,17 @@ const io = new Server(httpServer, {
 });
 
 app.use(helmet());
-// CORS: allow all origins (including file:// -> Origin: null) and preflight
-const corsOptions = { origin: (origin, cb) => cb(null, true), credentials: true };
+// CORS: allow specific origins for production security
+const corsOptions = {
+  origin: [
+    'http://localhost:5500',
+    'http://127.0.0.1:5500',
+    'https://cybered.netlify.app',           // Netlify production domain
+    'https://cybered-backend.onrender.com',  // Backend domain
+    /\.netlify\.app$/                         // Allow Netlify preview deploys
+  ],
+  credentials: true
+};
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
 app.use(express.json());
