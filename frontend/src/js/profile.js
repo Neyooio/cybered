@@ -1,3 +1,24 @@
+// Helper function to get API base URL
+function getApiBase() {
+	const stored = localStorage.getItem('apiBase');
+	if (stored) return stored.replace(/\/$/, '');
+	
+	const { protocol, hostname } = window.location || {};
+	if (hostname) {
+		// Production environment (Netlify)
+		if (hostname.includes('netlify.app')) {
+			return 'https://cybered-backend.onrender.com/api';
+		}
+		// Local development
+		if (hostname === 'localhost' || hostname === '127.0.0.1') {
+			return 'http://localhost:4000/api';
+		}
+		// Network access
+		return `${protocol || 'http:'}//${hostname}:4000/api`;
+	}
+	return 'http://localhost:4000/api';
+}
+
 document.addEventListener('DOMContentLoaded', () => {
 	// Check for role request notifications first
 	checkRoleRequestNotification();
@@ -113,18 +134,7 @@ async function saveAvatarToBackend(avatarData) {
 		const payload = JSON.parse(atob(token.split('.')[1]));
 		const userId = payload.sub;
 		
-		// Determine API base
-		const stored = localStorage.getItem('apiBase');
-		let apiBase = stored ? stored.replace(/\/$/, '') : null;
-		if (!apiBase) {
-			const { protocol, hostname } = window.location || {};
-			if (hostname) {
-				const proto = protocol || 'http:';
-				apiBase = `${proto}//${hostname}:4000/api`;
-			} else {
-				apiBase = 'http://localhost:4000/api';
-			}
-		}
+		const apiBase = getApiBase();
 		
 		console.log('Saving avatar to backend:', {
 			userId,
@@ -250,7 +260,8 @@ async function fetchUserProfile() {
 			return;
 		}
 
-		const response = await fetch('http://localhost:4000/api/auth/profile', {
+		const apiBase = getApiBase();
+		const response = await fetch(`${apiBase}/auth/profile`, {
 			method: 'GET',
 			headers: {
 				'Authorization': `Bearer ${token}`,
@@ -643,18 +654,7 @@ async function submitRoleRequest(reason) {
 			return false;
 		}
 		
-		// Determine API base
-		const stored = localStorage.getItem('apiBase');
-		let apiBase = stored ? stored.replace(/\/$/, '') : null;
-		if (!apiBase) {
-			const { protocol, hostname } = window.location || {};
-			if (hostname) {
-				const proto = protocol || 'http:';
-				apiBase = `${proto}//${hostname}:4000/api`;
-			} else {
-				apiBase = 'http://localhost:4000/api';
-			}
-		}
+		const apiBase = getApiBase();
 		
 		const response = await fetch(`${apiBase}/role-requests`, {
 			method: 'POST',
@@ -689,18 +689,7 @@ async function checkRoleRequestNotification() {
 		const token = localStorage.getItem('authToken');
 		if (!token) return;
 		
-		// Determine API base
-		const stored = localStorage.getItem('apiBase');
-		let apiBase = stored ? stored.replace(/\/$/, '') : null;
-		if (!apiBase) {
-			const { protocol, hostname } = window.location || {};
-			if (hostname) {
-				const proto = protocol || 'http:';
-				apiBase = `${proto}//${hostname}:4000/api`;
-			} else {
-				apiBase = 'http://localhost:4000/api';
-			}
-		}
+		const apiBase = getApiBase();
 		
 		// Check if we've already shown notification for this session
 		const shownNotification = sessionStorage.getItem('roleRequestNotificationShown');
