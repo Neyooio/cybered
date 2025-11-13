@@ -373,7 +373,7 @@
   border-top: 2px solid rgba(249, 115, 22, 0.2);
 }
 
-.settings-cancel-btn {
+.settings-cancel-btn, .settings-btn-secondary, .settings-btn {
   flex: 1;
   padding: 0.875rem 2rem;
   background: linear-gradient(135deg, #64748b 0%, #475569 100%);
@@ -385,25 +385,25 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  display: block;
+  text-align: center;
   box-shadow: 0 4px 12px rgba(100, 116, 139, 0.4);
 }
 
-.settings-cancel-btn:hover {
+.settings-cancel-btn:hover, .settings-btn-secondary:hover, .settings-btn:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(100, 116, 139, 0.6);
   background: linear-gradient(135deg, #475569 0%, #334155 100%);
 }
 
-.settings-cancel-btn svg {
-  width: 20px;
-  height: 20px;
+.settings-cancel-btn svg, .settings-btn-secondary svg, .settings-btn svg,
+.settings-cancel-btn::before, .settings-btn-secondary::before, .settings-btn::before,
+.settings-cancel-btn::after, .settings-btn-secondary::after, .settings-btn::after {
+  display: none !important;
+  content: none !important;
 }
 
-.settings-save-btn {
+.settings-save-btn, .settings-btn-primary {
   flex: 1;
   padding: 0.875rem 2rem;
   background: linear-gradient(135deg, #10b981 0%, #059669 100%);
@@ -415,22 +415,22 @@
   font-weight: 600;
   cursor: pointer;
   transition: all 0.2s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 0.5rem;
+  display: block;
+  text-align: center;
   box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
 }
 
-.settings-save-btn:hover {
+.settings-save-btn:hover, .settings-btn-primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 6px 16px rgba(16, 185, 129, 0.6);
   background: linear-gradient(135deg, #059669 0%, #047857 100%);
 }
 
-.settings-save-btn svg {
-  width: 20px;
-  height: 20px;
+.settings-save-btn svg, .settings-btn-primary svg,
+.settings-save-btn::before, .settings-btn-primary::before,
+.settings-save-btn::after, .settings-btn-primary::after {
+  display: none !important;
+  content: none !important;
 }
 
 /* Danger Zone */
@@ -485,6 +485,172 @@
   line-height: 1.5;
 }
 
+/* Delete Notification Styles */
+.delete-notification {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%) scale(0.9);
+  background: linear-gradient(135deg, rgba(15, 23, 42, 0.98) 0%, rgba(30, 41, 59, 0.98) 100%);
+  border: 3px solid #000;
+  border-radius: 1rem;
+  padding: 2rem;
+  min-width: 350px;
+  max-width: 500px;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.6), 0 0 40px rgba(249, 115, 22, 0.3);
+  z-index: 10002;
+  opacity: 0;
+  animation: deleteNotificationSlideIn 0.3s ease-out forwards;
+}
+
+@keyframes deleteNotificationSlideIn {
+  to {
+    opacity: 1;
+    transform: translate(-50%, -50%) scale(1);
+  }
+}
+
+.delete-notification.slide-out {
+  animation: deleteNotificationSlideOut 0.3s ease-in forwards;
+}
+
+@keyframes deleteNotificationSlideOut {
+  to {
+    opacity: 0;
+    transform: translate(-50%, -50%) scale(0.9);
+  }
+}
+
+.delete-notification-header {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.delete-notification-icon {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.8rem;
+  font-weight: bold;
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(22, 163, 74, 0.2) 100%);
+  border: 3px solid rgba(34, 197, 94, 0.5);
+}
+
+.delete-notification-icon.success {
+  background: linear-gradient(135deg, rgba(34, 197, 94, 0.2) 0%, rgba(22, 163, 74, 0.2) 100%);
+  border-color: rgba(34, 197, 94, 0.6);
+  color: #22c55e;
+  text-shadow: 0 2px 8px rgba(34, 197, 94, 0.5);
+}
+
+.delete-notification-icon.error {
+  background: linear-gradient(135deg, rgba(239, 68, 68, 0.2) 0%, rgba(220, 38, 38, 0.2) 100%);
+  border-color: rgba(239, 68, 68, 0.6);
+  color: #ef4444;
+  text-shadow: 0 2px 8px rgba(239, 68, 68, 0.5);
+}
+
+.delete-notification-title {
+  font-family: 'Press Start 2P', monospace;
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #ffffff;
+  margin: 0;
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.delete-notification-message {
+  color: rgba(226, 232, 240, 0.95);
+  line-height: 1.6;
+  margin: 0 0 1rem 0;
+  font-size: 0.95rem;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.delete-notification-input-group {
+  margin-bottom: 1.5rem;
+}
+
+.delete-notification-input {
+  width: 100%;
+  padding: 0.875rem 1rem;
+  background: rgba(0, 0, 0, 0.4);
+  border: 2px solid rgba(249, 115, 22, 0.4);
+  border-radius: 0.5rem;
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-family: 'Share Tech Mono', monospace;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.delete-notification-input:focus {
+  border-color: #f97316;
+  background: rgba(0, 0, 0, 0.6);
+  box-shadow: 0 0 0 3px rgba(249, 115, 22, 0.2);
+}
+
+.delete-notification-input::placeholder {
+  color: rgba(255, 255, 255, 0.4);
+}
+
+.delete-notification-actions {
+  display: flex;
+  gap: 1rem;
+  margin-top: 1.5rem;
+}
+
+.delete-notification-button {
+  flex: 1;
+  padding: 0.875rem 1.5rem;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  color: #ffffff;
+  border: 2px solid #000;
+  border-radius: 0.5rem;
+  font-family: 'Share Tech Mono', monospace;
+  font-weight: 600;
+  font-size: 0.95rem;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
+}
+
+.delete-notification-button:hover {
+  background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+  box-shadow: 0 6px 20px rgba(249, 115, 22, 0.6);
+  transform: translateY(-2px);
+}
+
+.delete-notification-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 8px rgba(249, 115, 22, 0.4);
+}
+
+.delete-notification-button.cancel {
+  background: linear-gradient(135deg, #64748b 0%, #475569 100%);
+  box-shadow: 0 4px 12px rgba(100, 116, 139, 0.4);
+}
+
+.delete-notification-button.cancel:hover {
+  background: linear-gradient(135deg, #475569 0%, #334155 100%);
+  box-shadow: 0 6px 20px rgba(100, 116, 139, 0.6);
+}
+
+.delete-notification-button.confirm {
+  background: linear-gradient(135deg, #22c55e 0%, #16a34a 100%);
+  box-shadow: 0 4px 12px rgba(34, 197, 94, 0.4);
+}
+
+.delete-notification-button.confirm:hover {
+  background: linear-gradient(135deg, #16a34a 0%, #15803d 100%);
+  box-shadow: 0 6px 20px rgba(34, 197, 94, 0.6);
+}
+
 /* Mobile Responsive */
 @media (max-width: 768px) {
   .settings-modal {
@@ -510,5 +676,19 @@
 
   .settings-actions {
     flex-direction: column;
+  }
+  
+  .delete-notification {
+    width: 90%;
+    min-width: unset;
+    padding: 1.5rem;
+  }
+  
+  .delete-notification-title {
+    font-size: 0.9rem;
+  }
+  
+  .delete-notification-message {
+    font-size: 0.85rem;
   }
 }

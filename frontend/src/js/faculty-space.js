@@ -37,33 +37,48 @@ async function loadSpaceData(spaceId) {
     const token = localStorage.getItem('authToken');
     
     if (!token) {
+      console.error('No auth token found');
       window.location.href = 'register-form.html';
       return;
     }
 
-    const response = await fetch(`${API_URL}/faculty-modules/${spaceId}`, {
+    const apiUrl = `${API_URL}/faculty-modules/${spaceId}`;
+    console.log('[Faculty Space] Loading space from:', apiUrl);
+    console.log('[Faculty Space] API_URL:', API_URL);
+    console.log('[Faculty Space] API_BASE_URL:', API_BASE_URL);
+    console.log('[Faculty Space] Space ID:', spaceId);
+
+    const response = await fetch(apiUrl, {
       headers: {
         'Authorization': `Bearer ${token}`
       }
     });
 
+    console.log('[Faculty Space] Response status:', response.status);
+    console.log('[Faculty Space] Response ok:', response.ok);
+
     if (!response.ok) {
-      throw new Error('Failed to load space');
+      const errorText = await response.text();
+      console.error('[Faculty Space] Error response:', errorText);
+      throw new Error(`Failed to load space: ${response.status} ${errorText}`);
     }
 
     const data = await response.json();
+    console.log('[Faculty Space] Response data:', data);
+    
     currentSpace = data.space || data;
     
-    console.log('Loaded space:', currentSpace);
-    console.log('Enrolled students:', currentSpace.enrolledStudents);
+    console.log('[Faculty Space] Loaded space:', currentSpace);
+    console.log('[Faculty Space] Enrolled students:', currentSpace.enrolledStudents);
     
     renderSpaceHeader();
     renderModules();
     renderAnnouncements();
     renderStudents();
   } catch (error) {
-    console.error('Error loading space:', error);
-    console.error('Error stack:', error.stack);
+    console.error('[Faculty Space] Error loading space:', error);
+    console.error('[Faculty Space] Error message:', error.message);
+    console.error('[Faculty Space] Error stack:', error.stack);
     alert('Failed to load space. Redirecting to modules page.');
     window.location.href = 'modules.html';
   }
@@ -369,10 +384,6 @@ function initializeSettingsModal() {
     option.addEventListener('click', () => {
       document.querySelectorAll('.theme-color-option').forEach(opt => opt.classList.remove('selected'));
       option.classList.add('selected');
-      
-      // Apply theme color immediately for preview
-      const color = option.dataset.color;
-      applyThemeColor(color);
     });
   });
 }
@@ -556,52 +567,51 @@ async function kickStudent(studentId) {
 
 // Delete space
 async function deleteSpace() {
-  const password = document.getElementById('deletePasswordInput').value;
-  
-  if (!password) {
-    alert('Please enter your password to confirm deletion');
-    return;
+  // Show password input notification
+  showPasswordPrompt();
+}
+
+// Show styled notification for space actions
+function showDeleteNotification(message, type = 'success') {
+  // Remove any existing notification
+  const existing = document.querySelector('.delete-notification');
+  if (existing) {
+    existing.remove();
   }
   
-  if (!confirm('⚠️ ARE YOU ABSOLUTELY SURE?\n\nThis will permanently delete this space and ALL its content including modules, lessons, quizzes, and enrolled students.\n\nThis action CANNOT be undone!')) {
-    return;
-  }
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = 'delete-notification';
   
-  try {
-    const token = localStorage.getItem('authToken');
-    const email = localStorage.getItem('authEmail') || '';
-    
-    // Verify password
-    const authResponse = await fetch(`${API_URL}/auth/login`, {
-      method: 'POST',
-      headers: {
-        'Content-Type': 'application/json'
-      },
-      body: JSON.stringify({ email, password })
-    });
-    
-    if (!authResponse.ok) {
-      alert('Incorrect password. Space deletion cancelled.');
-      return;
-    }
-    
-    // Delete space
-    const response = await fetch(`${API_URL}/faculty-modules/${currentSpace._id}`, {
-      method: 'DELETE',
-      headers: {
-        'Authorization': `Bearer ${token}`
+  const icon = type === 'success' ? '✓' : '⚠';
+  const title = type === 'success' ? 'Success!' : 'Warning';
+  
+  notification.innerHTML = `
+    <div class="delete-notification-header">
+      <div class="delete-notification-icon ${type}">${icon}</div>
+      <h3 class="delete-notification-title">${title}</h3>
+    </div>
+    <p class="delete-notification-message">${message}</p>
+    <button class="delete-notification-button">OK</button>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Close on button click
+  const closeBtn = notification.querySelector('.delete-notification-button');
+  closeBtn.addEventListener('click', () => {
+    notification.classList.add('slide-out');
+    setTimeout(() => notification.remove(), 300);
+  });
+  
+  // Auto-close after 5 seconds (except for success with redirect)
+  if (type !== 'success' || !message.includes('Redirecting')) {
+    setTimeout(() => {
+      if (document.body.contains(notification)) {
+        notification.classList.add('slide-out');
+        setTimeout(() => notification.remove(), 300);
       }
-    });
-    
-    if (!response.ok) {
-      throw new Error('Failed to delete space');
-    }
-    
-    alert('Space deleted successfully. Redirecting to modules page...');
-    window.location.href = 'modules.html';
-  } catch (error) {
-    console.error('Error deleting space:', error);
-    alert('Failed to delete space. Please try again.');
+    }, 5000);
   }
 }
 
@@ -861,5 +871,186 @@ async function deleteModule(moduleId) {
   } catch (error) {
     console.error('Error deleting module:', error);
     alert('Failed to delete module. Please try again.');
+  }
+}
+
+// Show password prompt notification
+function showPasswordPrompt() {
+  // Remove any existing notification
+  const existing = document.querySelector('.delete-notification');
+  if (existing) {
+    existing.remove();
+  }
+  
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = 'delete-notification';
+  
+  notification.innerHTML = `
+    <div class="delete-notification-header">
+      <div class="delete-notification-icon error">⚠</div>
+      <h3 class="delete-notification-title" style="color: #ef4444;">Warning</h3>
+    </div>
+    <p class="delete-notification-message" style="color: #ef4444;">Password is required. Please enter your password.</p>
+    <div class="delete-notification-input-group">
+      <input type="password" class="delete-notification-input" id="deletePasswordPromptInput" placeholder="Enter your password">
+    </div>
+    <div class="delete-notification-actions">
+      <button class="delete-notification-button cancel">Cancel</button>
+      <button class="delete-notification-button confirm">OK</button>
+    </div>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Focus on input
+  const input = notification.querySelector('#deletePasswordPromptInput');
+  setTimeout(() => input.focus(), 100);
+  
+  // Handle Enter key
+  input.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      proceedWithDeletion(input.value, notification);
+    }
+  });
+  
+  // Handle Cancel button
+  const cancelBtn = notification.querySelector('.cancel');
+  cancelBtn.addEventListener('click', () => {
+    notification.classList.add('slide-out');
+    setTimeout(() => notification.remove(), 300);
+  });
+  
+  // Handle OK button
+  const confirmBtn = notification.querySelector('.confirm');
+  confirmBtn.addEventListener('click', () => {
+    const password = input.value;
+    proceedWithDeletion(password, notification);
+  });
+}
+
+// Proceed with space deletion after password confirmation
+async function proceedWithDeletion(password, notification) {
+  if (!password) {
+    // Show error but keep the notification open
+    const message = notification.querySelector('.delete-notification-message');
+    message.textContent = 'Password is required. Please enter your password.';
+    message.style.color = '#ef4444';
+    return;
+  }
+  
+  // Close the password prompt and show final confirmation
+  notification.classList.add('slide-out');
+  setTimeout(() => {
+    notification.remove();
+    showFinalConfirmation(password);
+  }, 300);
+}
+
+// Show final confirmation before deletion
+function showFinalConfirmation(password) {
+  // Remove any existing notification
+  const existing = document.querySelector('.delete-notification');
+  if (existing) {
+    existing.remove();
+  }
+  
+  // Create notification element
+  const notification = document.createElement('div');
+  notification.className = 'delete-notification';
+  
+  notification.innerHTML = `
+    <div class="delete-notification-header">
+      <div class="delete-notification-icon error">⚠</div>
+      <h3 class="delete-notification-title" style="color: #ef4444;">ARE YOU ABSOLUTELY SURE?</h3>
+    </div>
+    <p class="delete-notification-message" style="color: #ef4444; line-height: 1.8;">
+      This will permanently delete this space and <strong>ALL</strong> its content including modules, lessons, quizzes, and enrolled students.<br><br>
+      <span style="color: #fbbf24; font-weight: 600;">This action CANNOT be undone!</span>
+    </p>
+    <div class="delete-notification-actions">
+      <button class="delete-notification-button cancel">Cancel</button>
+      <button class="delete-notification-button confirm">OK</button>
+    </div>
+  `;
+  
+  document.body.appendChild(notification);
+  
+  // Handle Cancel button
+  const cancelBtn = notification.querySelector('.cancel');
+  cancelBtn.addEventListener('click', () => {
+    notification.classList.add('slide-out');
+    setTimeout(() => notification.remove(), 300);
+  });
+  
+  // Handle OK button
+  const confirmBtn = notification.querySelector('.confirm');
+  confirmBtn.addEventListener('click', () => {
+    notification.classList.add('slide-out');
+    setTimeout(() => {
+      notification.remove();
+      performDeletion(password);
+    }, 300);
+  });
+}
+
+// Perform the actual deletion
+async function performDeletion(password) {
+  
+  try {
+    const token = localStorage.getItem('authToken');
+    const email = localStorage.getItem('authEmail') || '';
+    const role = localStorage.getItem('authRole') || '';
+    
+    // Verify password based on role
+    let passwordValid = false;
+    
+    if (role === 'admin') {
+      // For admin, check against hardcoded password
+      if (password === 'admin123') {
+        passwordValid = true;
+      } else {
+        showDeleteNotification('Incorrect admin password. Space deletion cancelled.', 'error');
+        return;
+      }
+    } else {
+      // For regular users (faculty/student), verify password through API
+      const authResponse = await fetch(`${API_URL}/auth/login`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ email, password })
+      });
+      
+      if (!authResponse.ok) {
+        showDeleteNotification('Incorrect password. Space deletion cancelled.', 'error');
+        return;
+      }
+      passwordValid = true;
+    }
+    
+    // If password validation passed, proceed with deletion
+    if (passwordValid) {
+      // Delete space
+      const response = await fetch(`${API_URL}/faculty-modules/${currentSpace._id}`, {
+        method: 'DELETE',
+        headers: {
+          'Authorization': `Bearer ${token}`
+        }
+      });
+      
+      if (!response.ok) {
+        throw new Error('Failed to delete space');
+      }
+      
+      showDeleteNotification('Space deleted successfully. Redirecting to spaces page...', 'success');
+      setTimeout(() => {
+        window.location.href = 'spaces.html';
+      }, 2000);
+    }
+  } catch (error) {
+    console.error('Error deleting space:', error);
+    showDeleteNotification('Failed to delete space. Please try again.', 'error');
   }
 }
