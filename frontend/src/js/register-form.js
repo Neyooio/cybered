@@ -2,16 +2,26 @@ document.addEventListener("DOMContentLoaded", () => {
  
   const HOMEPAGE_PATH = "./cybered.html";
   const ADMIN_PAGE_PATH = "./admin/user-management.html";
-  // Dynamic API base: uses stored override, else derives from current host with port 4000, else localhost
+  // Dynamic API base: uses stored override, else derives from current host
   function deriveApiBase(){
     try{
       const stored = localStorage.getItem('apiBase');
       if (stored) return stored.replace(/\/$/, '');
       const { protocol, hostname } = window.location || {};
+      
+      // Production environment (Netlify)
+      if (hostname && hostname.includes('netlify.app')) {
+        return 'https://cybered-backend.onrender.com/api';
+      }
+      
+      // Local development
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:4000/api';
+      }
+      
+      // Network access (IP address)
       if (hostname) {
-        const host = (hostname === 'localhost' || hostname === '127.0.0.1') ? hostname : hostname;
-        const proto = protocol || 'http:';
-        return `${proto}//${host}:4000/api`;
+        return `${protocol}//${hostname}:4000/api`;
       }
     }catch{}
     return 'http://localhost:4000/api';
