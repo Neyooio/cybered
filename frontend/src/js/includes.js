@@ -1,6 +1,27 @@
 const INCLUDES_VERSION = '2025-11-11-v4-DEBUG';
 console.info('[includes.js] Script loaded and executing - VERSION:', INCLUDES_VERSION);
 
+// Helper function to get API base URL
+function getApiBase() {
+  const stored = localStorage.getItem('apiBase');
+  if (stored) return stored.replace(/\/$/, '');
+  
+  const { protocol, hostname } = window.location || {};
+  if (hostname) {
+    // Production environment (Netlify)
+    if (hostname.includes('netlify.app')) {
+      return 'https://cybered-backend.onrender.com/api';
+    }
+    // Local development
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:4000/api';
+    }
+    // Network access
+    return `${protocol || 'http:'}//${hostname}:4000/api`;
+  }
+  return 'http://localhost:4000/api';
+}
+
 // Run immediately if DOM is already ready, or wait for DOMContentLoaded
 const initIncludes = async () => {
   console.info('[init] ===== Starting initialization =====');
@@ -730,19 +751,7 @@ async function updateNotificationBadge() {
     const token = localStorage.getItem('authToken');
     if (!token) return;
     
-    // Determine API base
-    const stored = localStorage.getItem('apiBase');
-    let apiBase = stored ? stored.replace(/\/$/, '') : null;
-    if (!apiBase) {
-      const { protocol, hostname } = window.location || {};
-      if (hostname) {
-        const proto = protocol || 'http:';
-        apiBase = `${proto}//${hostname}:4000/api`;
-      } else {
-        apiBase = 'http://localhost:4000/api';
-      }
-    }
-    
+    const apiBase = getApiBase();
     let count = 0;
     
     if (role === 'admin') {
@@ -889,18 +898,7 @@ async function loadNotifications() {
 // Load notifications for regular users
 async function loadUserNotifications(notificationList, token) {
   try {
-    // Determine API base
-    const stored = localStorage.getItem('apiBase');
-    let apiBase = stored ? stored.replace(/\/$/, '') : null;
-    if (!apiBase) {
-      const { protocol, hostname } = window.location || {};
-      if (hostname) {
-        const proto = protocol || 'http:';
-        apiBase = `${proto}//${hostname}:4000/api`;
-      } else {
-        apiBase = 'http://localhost:4000/api';
-      }
-    }
+    const apiBase = getApiBase();
     
     // Fetch user's own role requests
     const response = await fetch(`${apiBase}/role-requests/my-requests`, {
@@ -1016,18 +1014,7 @@ async function loadUserNotifications(notificationList, token) {
 // Load notifications for admin users
 async function loadAdminNotifications(notificationList, token) {
   try {
-    // Determine API base
-    const stored = localStorage.getItem('apiBase');
-    let apiBase = stored ? stored.replace(/\/$/, '') : null;
-    if (!apiBase) {
-      const { protocol, hostname } = window.location || {};
-      if (hostname) {
-        const proto = protocol || 'http:';
-        apiBase = `${proto}//${hostname}:4000/api`;
-      } else {
-        apiBase = 'http://localhost:4000/api';
-      }
-    }
+    const apiBase = getApiBase();
     
     const response = await fetch(`${apiBase}/role-requests?status=pending`, {
       method: 'GET',
@@ -1222,17 +1209,7 @@ async function loadSpacesForNav() {
     const userRole = localStorage.getItem('authRole');
     const isFacultyOrAdmin = userRole === 'faculty' || userRole === 'admin';
     
-    const stored = localStorage.getItem('apiBase');
-    let apiBase = stored ? stored.replace(/\/$/, '') : null;
-    if (!apiBase) {
-      const { protocol, hostname } = window.location || {};
-      if (hostname) {
-        const proto = protocol || 'http:';
-        apiBase = `${proto}//${hostname}:4000/api`;
-      } else {
-        apiBase = 'http://localhost:4000/api';
-      }
-    }
+    const apiBase = getApiBase();
     
     const endpoint = isFacultyOrAdmin 
       ? `${apiBase}/faculty-modules/my-spaces`
