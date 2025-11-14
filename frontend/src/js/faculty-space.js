@@ -1,5 +1,19 @@
 // Faculty Space Management
-const API_BASE_URL = window.API_BASE_URL || 'http://localhost:4000';
+// Determine API base URL based on environment
+function getApiBase() {
+  if (window.API_BASE_URL) return window.API_BASE_URL;
+  
+  const hostname = window.location.hostname;
+  if (hostname.includes('netlify.app')) {
+    return 'https://cybered-backend.onrender.com';
+  }
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:4000';
+  }
+  return `${window.location.protocol}//${hostname}:4000`;
+}
+
+const API_BASE_URL = getApiBase();
 const API_URL = `${API_BASE_URL}/api`;
 
 let currentSpace = null;

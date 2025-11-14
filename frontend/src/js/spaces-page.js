@@ -18,8 +18,19 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (!apiBase) {
     const { protocol, hostname } = window.location || {};
     if (hostname) {
-      const proto = protocol || 'http:';
-      apiBase = `${proto}//${hostname}:4000/api`;
+      // Production environment (Netlify)
+      if (hostname.includes('netlify.app')) {
+        apiBase = 'https://cybered-backend.onrender.com/api';
+      }
+      // Local development
+      else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        apiBase = 'http://localhost:4000/api';
+      }
+      // Network access
+      else {
+        const proto = protocol || 'http:';
+        apiBase = `${proto}//${hostname}:4000/api`;
+      }
     } else {
       apiBase = 'http://localhost:4000/api';
     }
