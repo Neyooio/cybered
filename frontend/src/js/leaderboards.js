@@ -43,13 +43,25 @@ function initializeGameTabs() {
 }
 
 // Load leaderboard data
+function getApiBase() {
+  if (window.API_BASE_URL) return window.API_BASE_URL;
+  const hostname = window.location.hostname;
+  if (hostname.includes('netlify.app')) {
+    return 'https://cybered-backend.onrender.com';
+  }
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:4000';
+  }
+  return `${window.location.protocol}//${hostname}:4000`;
+}
+
 async function loadLeaderboard(gameId) {
   const leaderboardBody = document.getElementById('leaderboardBody');
   leaderboardBody.innerHTML = '<div class="loading">Loading leaderboard</div>';
   
   try {
     const token = localStorage.getItem('authToken');
-    const apiBase = window.API_BASE_URL || 'http://localhost:4000';
+    const apiBase = getApiBase();
     
     if (gameId === 'cyber-runner') {
       // Fetch real player data from backend
