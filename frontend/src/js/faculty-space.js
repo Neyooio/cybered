@@ -352,8 +352,17 @@ function initializeActionButtons() {
 
 // Open settings modal
 function openSettingsModal() {
+  // Check if currentSpace is loaded
+  if (!currentSpace || !currentSpace._id) {
+    console.error('Cannot open settings: space not loaded', currentSpace);
+    alert('Please wait for the space to load before opening settings.');
+    return;
+  }
+  
   const overlay = document.getElementById('settingsModalOverlay');
   overlay.classList.add('active');
+  
+  console.log('[Settings Modal] Opening with space:', currentSpace._id);
   
   // Populate current settings
   document.getElementById('settingsSpaceName').value = currentSpace.name || '';
@@ -1087,6 +1096,9 @@ async function performDeletion(password) {
       }
       
       // Delete space
+      console.log('[Delete Space] Space ID:', currentSpace._id);
+      console.log('[Delete Space] API URL:', `${API_URL}/faculty-modules/${currentSpace._id}`);
+      
       const response = await fetch(`${API_URL}/faculty-modules/${currentSpace._id}`, {
         method: 'DELETE',
         headers: {
@@ -1094,8 +1106,12 @@ async function performDeletion(password) {
         }
       });
       
+      console.log('[Delete Space] Response status:', response.status);
+      
       if (!response.ok) {
-        throw new Error('Failed to delete space');
+        const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+        console.error('[Delete Space] Error response:', errorData);
+        throw new Error(errorData.error || 'Failed to delete space');
       }
       
       showDeleteNotification('Space deleted successfully. Redirecting to spaces page...', 'success');
