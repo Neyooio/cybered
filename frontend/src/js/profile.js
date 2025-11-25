@@ -19,28 +19,64 @@ function getApiBase() {
 	return 'http://localhost:4000/api';
 }
 
+// Refresh token to get updated role
+async function refreshAuthToken() {
+	try {
+		const token = localStorage.getItem('authToken');
+		if (!token) return false;
+		
+		const response = await fetch(`${getApiBase()}/auth/refresh-token`, {
+			method: 'POST',
+			headers: {
+				'Authorization': `Bearer ${token}`
+			}
+		});
+		
+		if (!response.ok) return false;
+		
+		const data = await response.json();
+		if (data.token && data.user) {
+			// Update localStorage with new token and user data
+			localStorage.setItem('authToken', data.token);
+			localStorage.setItem('authRole', data.user.role);
+			if (data.user.username) localStorage.setItem('cyberedUserName', data.user.username);
+			if (data.user.email) localStorage.setItem('cyberedUserEmail', data.user.email);
+			
+			console.log('✅ Token refreshed - Role updated to:', data.user.role);
+			return true;
+		}
+		return false;
+	} catch (error) {
+		console.error('❌ Failed to refresh token:', error);
+		return false;
+	}
+}
+
 document.addEventListener('DOMContentLoaded', () => {
-	// Check for role request notifications first
-	checkRoleRequestNotification();
-	
-	// Wait for includes to load, then check if admin is viewing
-	setTimeout(() => {
-		checkAdminViewing();
-	}, 100);
-	
-	// Fetch and display user information, then initialize role request
-	fetchUserProfile().then(() => {
-		// Initialize role request handlers after profile is loaded
+	// Refresh token on page load to ensure role is up-to-date
+	refreshAuthToken().then(() => {
+		// Check for role request notifications first
+		checkRoleRequestNotification();
+		
+		// Wait for includes to load, then check if admin is viewing
 		setTimeout(() => {
-			initializeRoleRequest();
-			updateRoleRequestButton();
-		}, 300);
-	}).catch(() => {
-		// Even if fetch fails, try to initialize based on localStorage
-		setTimeout(() => {
-			initializeRoleRequest();
-			updateRoleRequestButton();
-		}, 300);
+			checkAdminViewing();
+		}, 100);
+		
+		// Fetch and display user information, then initialize role request
+		fetchUserProfile().then(() => {
+			// Initialize role request handlers after profile is loaded
+			setTimeout(() => {
+				initializeRoleRequest();
+				updateRoleRequestButton();
+			}, 300);
+		}).catch(() => {
+			// Even if fetch fails, try to initialize based on localStorage
+			setTimeout(() => {
+				initializeRoleRequest();
+				updateRoleRequestButton();
+			}, 300);
+		});
 	});
 
 	const swapBtn = document.getElementById('swapAvatarBtn');
@@ -357,27 +393,32 @@ function updateProfileUI(userData) {
 			'Aldrick': 'https://i.ibb.co/5Fsb0CQ/avatar2.png',
 			'Maya': 'https://i.ibb.co/0hZk0hh/avatar3.png',
 			'Annette': 'https://i.ibb.co/0rp25M5/avatar4.png'
-		};
+	};
+	
+	if (isAdminViewing) {
+		// Use only userData when viewing another user
+		const avatarUrl = userData.avatarSrc || userData.avatar || 
+			(userData.avatarName ? avatarMap[userData.avatarName] : '') ||
+			'https://i.ibb.co/c1g1kkh/pixel-avatar.png';
+		profileAvatarImg.src = avatarUrl;
+	} else {
+		// For own profile, prioritize database over localStorage
+		const avatarUrl = userData.avatarSrc || userData.avatar || 
+			(userData.avatarName ? avatarMap[userData.avatarName] : '') ||
+			localStorage.getItem('cyberedAvatarSrc') ||
+			(localStorage.getItem('cyberedAvatarName') ? avatarMap[localStorage.getItem('cyberedAvatarName')] : '') ||
+			'https://i.ibb.co/c1g1kkh/pixel-avatar.png';
+		profileAvatarImg.src = avatarUrl;
 		
-		if (isAdminViewing) {
-			// Use only userData when viewing another user
-			const avatarUrl = userData.avatarSrc || userData.avatar || 
-				(userData.avatarName ? avatarMap[userData.avatarName] : '') ||
-				'https://i.ibb.co/c1g1kkh/pixel-avatar.png';
-			profileAvatarImg.src = avatarUrl;
-		} else {
-			// For own profile, try localStorage first
-			const localAvatarSrc = localStorage.getItem('cyberedAvatarSrc');
-			const localAvatarName = localStorage.getItem('cyberedAvatarName');
-			const avatarUrl = localAvatarSrc || userData.avatarSrc || userData.avatar || 
-				(localAvatarName ? avatarMap[localAvatarName] : '') ||
-				(userData.avatarName ? avatarMap[userData.avatarName] : '') ||
-				'https://i.ibb.co/c1g1kkh/pixel-avatar.png';
-			profileAvatarImg.src = avatarUrl;
+		// Sync localStorage with database value
+		if (userData.avatarSrc) {
+			localStorage.setItem('cyberedAvatarSrc', userData.avatarSrc);
+		}
+		if (userData.avatarName) {
+			localStorage.setItem('cyberedAvatarName', userData.avatarName);
 		}
 	}
-
-	// Update XP if available
+}	// Update XP if available
 	if (userData.xp !== undefined) {
 		const xpLabel = document.getElementById('xpLabel');
 		const xpProgress = document.getElementById('xpProgress');

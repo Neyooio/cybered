@@ -22,7 +22,10 @@ const userSchema = new mongoose.Schema({
     attempts: { type: Number, default: 0 },
     lastPlayed: { type: Date },
     completedAt: { type: Date }
-  }]
+  }],
+  // Notification Management
+  deletedNotifications: [{ type: String }],
+  readNotifications: [{ type: String }]
 }, { timestamps: true });
 
 userSchema.set('toJSON', {

@@ -83,7 +83,16 @@ async function loadSpaceData(spaceId) {
     currentSpace = data.space || data;
     
     console.log('[Faculty Space] Loaded space:', currentSpace);
+    console.log('[Faculty Space] Space _id:', currentSpace._id);
+    console.log('[Faculty Space] Space id:', currentSpace.id);
     console.log('[Faculty Space] Enrolled students:', currentSpace.enrolledStudents);
+    
+    // Ensure _id exists
+    if (!currentSpace._id && !currentSpace.id) {
+      console.error('[Faculty Space] ERROR: Space has no _id or id field!');
+      console.error('[Faculty Space] Full space object:', JSON.stringify(currentSpace, null, 2));
+      throw new Error('Space data is missing ID field');
+    }
     
     renderSpaceHeader();
     renderModules();
@@ -488,6 +497,13 @@ function getStudentAvatar(student) {
 // Save space settings
 async function saveSpaceSettings() {
   try {
+    // Check if currentSpace is loaded
+    if (!currentSpace || !currentSpace._id) {
+      console.error('Current space not loaded:', currentSpace);
+      alert('Space data not loaded. Please refresh the page.');
+      return;
+    }
+    
     const name = document.getElementById('settingsSpaceName').value.trim();
     const description = document.getElementById('settingsSpaceDescription').value.trim();
     const selectedColorOption = document.querySelector('.theme-color-option.selected');
@@ -499,6 +515,9 @@ async function saveSpaceSettings() {
     }
     
     const token = localStorage.getItem('authToken');
+    console.log('[Save Settings] Space ID:', currentSpace._id);
+    console.log('[Save Settings] API URL:', `${API_URL}/faculty-modules/${currentSpace._id}`);
+    
     const response = await fetch(`${API_URL}/faculty-modules/${currentSpace._id}`, {
       method: 'PUT',
       headers: {
@@ -541,6 +560,13 @@ async function kickStudent(studentId) {
   }
   
   try {
+    // Check if currentSpace is loaded
+    if (!currentSpace || !currentSpace._id) {
+      console.error('Current space not loaded:', currentSpace);
+      alert('Space data not loaded. Please refresh the page.');
+      return;
+    }
+    
     const token = localStorage.getItem('authToken');
     
     // Remove student from enrolled list
@@ -867,6 +893,13 @@ async function deleteModule(moduleId) {
   }
 
   try {
+    // Check if currentSpace is loaded
+    if (!currentSpace || !currentSpace._id) {
+      console.error('Current space not loaded:', currentSpace);
+      alert('Space data not loaded. Please refresh the page.');
+      return;
+    }
+    
     const token = localStorage.getItem('token');
     const response = await fetch(`${API_URL}/faculty-modules/${currentSpace._id}/modules/${moduleId}`, {
       method: 'DELETE',
@@ -1046,6 +1079,13 @@ async function performDeletion(password) {
     
     // If password validation passed, proceed with deletion
     if (passwordValid) {
+      // Check if currentSpace is loaded
+      if (!currentSpace || !currentSpace._id) {
+        console.error('Current space not loaded:', currentSpace);
+        showDeleteNotification('Space data not loaded. Please refresh the page.', 'error');
+        return;
+      }
+      
       // Delete space
       const response = await fetch(`${API_URL}/faculty-modules/${currentSpace._id}`, {
         method: 'DELETE',

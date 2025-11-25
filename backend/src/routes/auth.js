@@ -111,4 +111,152 @@ router.get('/profile', requireAuth, async (req, res) => {
   }
 });
 
+// Refresh token endpoint - generates new token with updated user data
+router.post('/refresh-token', requireAuth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.sub);
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Generate new token with current role
+    const token = sign(user);
+    
+    return res.json({
+      token,
+      user: {
+        id: user._id,
+        username: user.username,
+        email: user.email,
+        role: user.role,
+        avatarSrc: user.avatarSrc,
+        avatarName: user.avatarName
+      }
+    });
+  } catch (error) {
+    console.error('Token refresh error:', error);
+    return res.status(500).json({ error: 'Failed to refresh token' });
+  }
+});
+
+// Get user notification preferences
+router.get('/notifications/preferences', requireAuth, async (req, res) => {
+  try {
+    const user = await User.findById(req.user.sub).select('deletedNotifications readNotifications');
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    return res.json({
+      deletedNotifications: user.deletedNotifications || [],
+      readNotifications: user.readNotifications || []
+    });
+  } catch (error) {
+    console.error('Error fetching notification preferences:', error);
+    return res.status(500).json({ error: 'Failed to fetch notification preferences' });
+  }
+});
+
+// Delete a notification
+router.delete('/notifications/:id', requireAuth, async (req, res) => {
+  try {
+    const notificationId = req.params.id;
+    const user = await User.findById(req.user.sub);
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Add to deletedNotifications if not already there
+    if (!user.deletedNotifications) {
+      user.deletedNotifications = [];
+    }
+    
+    if (!user.deletedNotifications.includes(notificationId)) {
+      user.deletedNotifications.push(notificationId);
+      await user.save();
+    }
+    
+    return res.json({ 
+      success: true, 
+      message: 'Notification deleted',
+      deletedNotifications: user.deletedNotifications
+    });
+  } catch (error) {
+    console.error('Error deleting notification:', error);
+    return res.status(500).json({ error: 'Failed to delete notification' });
+  }
+});
+
+// Mark notification as read
+router.put('/notifications/:id/read', requireAuth, async (req, res) => {
+  try {
+    const notificationId = req.params.id;
+    const user = await User.findById(req.user.sub);
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Add to readNotifications if not already there
+    if (!user.readNotifications) {
+      user.readNotifications = [];
+    }
+    
+    if (!user.readNotifications.includes(notificationId)) {
+      user.readNotifications.push(notificationId);
+      await user.save();
+    }
+    
+    return res.json({ 
+      success: true, 
+      message: 'Notification marked as read',
+      readNotifications: user.readNotifications
+    });
+  } catch (error) {
+    console.error('Error marking notification as read:', error);
+    return res.status(500).json({ error: 'Failed to mark notification as read' });
+  }
+});
+
+// Mark all notifications as read
+router.put('/notifications/mark-all-read', requireAuth, async (req, res) => {
+  try {
+    const { notificationIds } = req.body;
+    
+    if (!Array.isArray(notificationIds)) {
+      return res.status(400).json({ error: 'notificationIds must be an array' });
+    }
+    
+    const user = await User.findById(req.user.sub);
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Initialize if needed
+    if (!user.readNotifications) {
+      user.readNotifications = [];
+    }
+    
+    // Add all new notification IDs
+    notificationIds.forEach(id => {
+      if (!user.readNotifications.includes(id)) {
+        user.readNotifications.push(id);
+      }
+    });
+    
+    await user.save();
+    
+    return res.json({ 
+      success: true, 
+      message: 'All notifications marked as read',
+      readNotifications: user.readNotifications
+    });
+  } catch (error) {
+    console.error('Error marking all as read:', error);
+    return res.status(500).json({ error: 'Failed to mark all notifications as read' });
+  }
+});
+
 export default router;

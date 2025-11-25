@@ -1,0 +1,45 @@
+# Netlify Configuration for CyberEd
+
+[build]
+  # Publish directory - where your static files are
+  publish = "frontend"
+  
+  # No build command needed since this is already built static files
+  command = "echo 'No build needed - deploying static files'"
+
+# Redirect all requests to index.html for SPA routing
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+# Redirect /src/html/* to the actual HTML files
+[[redirects]]
+  from = "/src/html/:file"
+  to = "/src/html/:file"
+  status = 200
+
+# Headers for security and caching
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Frame-Options = "DENY"
+    X-XSS-Protection = "1; mode=block"
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Cache static assets
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/src/css/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"
+
+[[headers]]
+  for = "/src/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000"

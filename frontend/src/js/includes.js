@@ -776,6 +776,8 @@ async function updateNotificationBadge() {
       count = data.count || 0;
     } else {
       // Regular user: count unread approved/rejected requests
+      await fetchNotificationPreferences();
+      
       const response = await fetch(`${apiBase}/role-requests/my-requests`, {
         method: 'GET',
         headers: {
@@ -794,11 +796,13 @@ async function updateNotificationBadge() {
       // Get shown notification IDs from localStorage
       const shownNotifications = JSON.parse(localStorage.getItem('shownNotifications') || '[]');
       
-      // Count approved/rejected requests that haven't been dismissed
+      // Count approved/rejected requests that haven't been dismissed, deleted, or marked as read
       count = myRequests.filter(req => {
         const reqId = req._id || req.id;
         return (req.status === 'approved' || req.status === 'rejected') && 
-               !shownNotifications.includes(reqId);
+               !shownNotifications.includes(reqId) &&
+               !userNotificationPreferences.deletedNotifications.includes(reqId) &&
+               !userNotificationPreferences.readNotifications.includes(reqId);
       }).length;
     }
     
@@ -833,17 +837,149 @@ setInterval(() => {
 // Make updateNotificationBadge globally accessible
 window.updateNotificationBadge = updateNotificationBadge;
 
+// Notification Management Functions
+let userNotificationPreferences = {
+  deletedNotifications: [],
+  readNotifications: []
+};
+
+// Fetch user notification preferences from backend
+async function fetchNotificationPreferences() {
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) return;
+    
+    const apiBase = getApiBase();
+    const response = await fetch(`${apiBase}/auth/notifications/preferences`, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      userNotificationPreferences = data;
+    }
+  } catch (error) {
+    console.error('Error fetching notification preferences:', error);
+  }
+}
+
+// Delete a notification
+async function deleteNotification(notificationId) {
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) return false;
+    
+    const apiBase = getApiBase();
+    const response = await fetch(`${apiBase}/auth/notifications/${notificationId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      userNotificationPreferences.deletedNotifications = data.deletedNotifications || [];
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Error deleting notification:', error);
+    return false;
+  }
+}
+
+// Mark notification as read
+async function markNotificationAsRead(notificationId) {
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) return false;
+    
+    const apiBase = getApiBase();
+    const response = await fetch(`${apiBase}/auth/notifications/${notificationId}/read`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      userNotificationPreferences.readNotifications = data.readNotifications || [];
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Error marking notification as read:', error);
+    return false;
+  }
+}
+
+// Mark all notifications as read
+async function markAllNotificationsAsRead(notificationIds) {
+  try {
+    const token = localStorage.getItem('authToken');
+    if (!token) return false;
+    
+    const apiBase = getApiBase();
+    const response = await fetch(`${apiBase}/auth/notifications/mark-all-read`, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ notificationIds })
+    });
+    
+    if (response.ok) {
+      const data = await response.json();
+      userNotificationPreferences.readNotifications = data.readNotifications || [];
+      return true;
+    }
+    return false;
+  } catch (error) {
+    console.error('Error marking all as read:', error);
+    return false;
+  }
+}
+
 // Notification Dropdown System
-function setupNotificationDropdown() {
+async function setupNotificationDropdown() {
   try {
     const notificationBtn = document.getElementById('notificationBtn');
     const notificationDropdown = document.getElementById('notificationDropdown');
     const closeNotificationsBtn = document.getElementById('closeNotifications');
+    const markAllReadBtn = document.getElementById('markAllReadBtn');
     
     if (!notificationBtn || !notificationDropdown) return;
     
-    // Load badge count on page load
+    // Load badge count and preferences on page load
+    await fetchNotificationPreferences();
     updateNotificationBadge();
+    
+    // Mark all as read button
+    markAllReadBtn?.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const notificationItems = document.querySelectorAll('.notification-item[data-notification-id]');
+      const notificationIds = Array.from(notificationItems).map(item => item.dataset.notificationId);
+      
+      if (notificationIds.length === 0) return;
+      
+      const success = await markAllNotificationsAsRead(notificationIds);
+      if (success) {
+        // Update UI - mark all as read
+        notificationItems.forEach(item => {
+          item.classList.add('read');
+        });
+        markAllReadBtn.style.display = 'none';
+        
+        // Update badge to reflect all marked as read
+        await updateNotificationBadge();
+      }
+    });
     
     // Toggle dropdown
     notificationBtn.addEventListener('click', async (e) => {
@@ -852,6 +988,7 @@ function setupNotificationDropdown() {
       
       if (!isShowing) {
         // Load notifications before showing
+        await fetchNotificationPreferences();
         await loadNotifications();
         notificationDropdown.classList.add('show');
       } else {
@@ -904,6 +1041,9 @@ async function loadUserNotifications(notificationList, token) {
   try {
     const apiBase = getApiBase();
     
+    // Fetch user preferences first
+    await fetchNotificationPreferences();
+    
     // Fetch user's own role requests
     const response = await fetch(`${apiBase}/role-requests/my-requests`, {
       method: 'GET',
@@ -924,21 +1064,26 @@ async function loadUserNotifications(notificationList, token) {
     // Get shown notification IDs from localStorage
     const shownNotifications = JSON.parse(localStorage.getItem('shownNotifications') || '[]');
     
-    // Filter for approved/rejected requests that haven't been dismissed
+    // Filter for approved/rejected requests that haven't been dismissed or deleted
     const processedRequests = myRequests.filter(req => {
       const reqId = req._id || req.id;
       return (req.status === 'approved' || req.status === 'rejected') && 
-             !shownNotifications.includes(reqId);
+             !shownNotifications.includes(reqId) &&
+             !userNotificationPreferences.deletedNotifications.includes(reqId);
     });
     
     if (processedRequests.length === 0) {
       notificationList.innerHTML = '<div class="notification-empty">No notifications</div>';
       
-      // Update badge
+      // Update badge and hide mark all button
       const notificationBadge = document.getElementById('notificationBadge');
+      const markAllReadBtn = document.getElementById('markAllReadBtn');
       if (notificationBadge) {
         notificationBadge.textContent = '0';
         notificationBadge.style.display = 'none';
+      }
+      if (markAllReadBtn) {
+        markAllReadBtn.style.display = 'none';
       }
       return;
     }
@@ -946,6 +1091,7 @@ async function loadUserNotifications(notificationList, token) {
     // Build notification items
     notificationList.innerHTML = processedRequests.map(request => {
       const requestId = request._id || request.id;
+      const isRead = userNotificationPreferences.readNotifications.includes(requestId);
       let message, statusClass, icon;
       
       if (request.status === 'approved') {
@@ -962,7 +1108,12 @@ async function loadUserNotifications(notificationList, token) {
                       request.updatedAt ? getTimeAgo(request.updatedAt) : 'Recently';
       
       return `
-        <div class="notification-item user-notification" data-notification-id="${requestId}">
+        <div class="notification-item user-notification ${isRead ? 'read' : ''}" data-notification-id="${requestId}">
+          <button class="notification-menu-btn" data-menu-id="menu-${requestId}" onclick="event.stopPropagation()">⋮</button>
+          <div class="notification-menu" id="menu-${requestId}">
+            <button class="notification-menu-item mark-read" data-action="mark-read">Mark as read</button>
+            <button class="notification-menu-item delete" data-action="delete">Delete</button>
+          </div>
           <div class="notification-user">
             <div class="notification-icon ${statusClass}">${icon}</div>
             <div class="notification-user-info">
@@ -974,45 +1125,149 @@ async function loadUserNotifications(notificationList, token) {
       `;
     }).join('');
     
-    // Update badge count
+    // Update badge count and show mark all button if there are unread
     const notificationBadge = document.getElementById('notificationBadge');
+    const markAllReadBtn = document.getElementById('markAllReadBtn');
+    const unreadCount = processedRequests.filter(req => 
+      !userNotificationPreferences.readNotifications.includes(req._id || req.id)
+    ).length;
+    
     if (notificationBadge) {
-      notificationBadge.textContent = processedRequests.length;
-      notificationBadge.style.display = 'block';
+      notificationBadge.textContent = unreadCount;
+      notificationBadge.style.display = unreadCount > 0 ? 'block' : 'none';
     }
     
-    // Add click handlers to dismiss
-    notificationList.querySelectorAll('.user-notification').forEach(item => {
-      item.addEventListener('click', () => {
-        const notificationId = item.dataset.notificationId;
-        
-        // Mark as shown
-        const shown = JSON.parse(localStorage.getItem('shownNotifications') || '[]');
-        if (!shown.includes(notificationId)) {
-          shown.push(notificationId);
-          localStorage.setItem('shownNotifications', JSON.stringify(shown));
-        }
-        
-        item.style.animation = 'slideOut 0.3s ease-in';
-        setTimeout(() => {
-          item.remove();
-          
-          // Update badge
-          const remaining = notificationList.querySelectorAll('.notification-item').length;
-          if (notificationBadge) {
-            notificationBadge.textContent = remaining;
-            if (remaining === 0) {
-              notificationBadge.style.display = 'none';
-              notificationList.innerHTML = '<div class="notification-empty">No notifications</div>';
-            }
-          }
-        }, 300);
-      });
-    });
+    if (markAllReadBtn) {
+      markAllReadBtn.style.display = unreadCount > 0 ? 'block' : 'none';
+    }
+    
+    // Add event handlers for notification items
+    setupNotificationItemHandlers(notificationList);
+    
   } catch (error) {
     console.error('Error loading user notifications:', error);
     notificationList.innerHTML = '<div class="notification-empty">No notifications</div>';
   }
+}
+
+// Setup notification item event handlers
+function setupNotificationItemHandlers(notificationList) {
+  console.log('Setting up notification handlers...');
+  
+  // Click on notification item (not on menu button)
+  notificationList.querySelectorAll('.notification-item').forEach(notificationItem => {
+    const notificationUser = notificationItem.querySelector('.notification-user');
+    if (notificationUser) {
+      notificationUser.addEventListener('click', (e) => {
+        // Don't trigger if clicking on menu button
+        if (e.target.closest('.notification-menu-btn') || e.target.closest('.notification-menu')) {
+          return;
+        }
+        
+        // Navigate to profile page for role request notifications
+        window.location.href = 'profile.html';
+      });
+      
+      // Make it look clickable
+      notificationUser.style.cursor = 'pointer';
+    }
+  });
+  
+  // Three-dot menu toggle
+  const menuButtons = notificationList.querySelectorAll('.notification-menu-btn');
+  console.log('Found menu buttons:', menuButtons.length);
+  
+  menuButtons.forEach(btn => {
+    btn.addEventListener('click', (e) => {
+      e.stopPropagation();
+      console.log('Menu button clicked');
+      const menuId = btn.dataset.menuId;
+      const menu = document.getElementById(menuId);
+      console.log('Menu ID:', menuId, 'Menu element:', menu);
+      
+      // Close all other menus
+      document.querySelectorAll('.notification-menu.show').forEach(m => {
+        if (m.id !== menuId) m.classList.remove('show');
+      });
+      
+      // Toggle this menu
+      menu?.classList.toggle('show');
+    });
+  });
+  
+  // Menu item actions
+  const menuItems = notificationList.querySelectorAll('.notification-menu-item');
+  console.log('Found menu items:', menuItems.length);
+  
+  menuItems.forEach(item => {
+    item.addEventListener('click', async (e) => {
+      e.stopPropagation();
+      const action = item.dataset.action;
+      const menu = item.closest('.notification-menu');
+      const notificationItem = item.closest('.notification-item');
+      const notificationId = notificationItem?.dataset.notificationId;
+      
+      if (!notificationId) {
+        console.error('No notification ID found');
+        return;
+      }
+      
+      console.log('Notification action:', action, 'ID:', notificationId);
+      
+      menu?.classList.remove('show');
+      
+      if (action === 'delete') {
+        console.log('Deleting notification:', notificationId);
+        const success = await deleteNotification(notificationId);
+        console.log('Delete success:', success);
+        if (success) {
+          notificationItem.style.animation = 'slideOut 0.3s ease-in';
+          setTimeout(async () => {
+            notificationItem.remove();
+            
+            // Update badge to reflect deletion
+            await updateNotificationBadge();
+            
+            // Check if list is empty
+            const remaining = notificationList.querySelectorAll('.notification-item').length;
+            if (remaining === 0) {
+              notificationList.innerHTML = '<div class="notification-empty">No notifications</div>';
+              const markAllReadBtn = document.getElementById('markAllReadBtn');
+              if (markAllReadBtn) markAllReadBtn.style.display = 'none';
+            }
+          }, 300);
+        } else {
+          console.error('Failed to delete notification');
+        }
+      } else if (action === 'mark-read') {
+        console.log('Marking as read:', notificationId);
+        const success = await markNotificationAsRead(notificationId);
+        console.log('Mark as read success:', success);
+        if (success) {
+          notificationItem.classList.add('read');
+          
+          // Update badge immediately to reflect read status
+          await updateNotificationBadge();
+          
+          // Hide mark all button if all are read
+          const unread = notificationList.querySelectorAll('.notification-item:not(.read)').length;
+          const markAllReadBtn = document.getElementById('markAllReadBtn');
+          if (markAllReadBtn && unread === 0) {
+            markAllReadBtn.style.display = 'none';
+          }
+        } else {
+          console.error('Failed to mark notification as read');
+        }
+      }
+    });
+  });
+  
+  // Click anywhere else to close menus
+  document.addEventListener('click', () => {
+    document.querySelectorAll('.notification-menu.show').forEach(menu => {
+      menu.classList.remove('show');
+    });
+  });
 }
 
 // Load notifications for admin users

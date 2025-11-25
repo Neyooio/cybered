@@ -122,10 +122,27 @@ function openGame(challengeId) {
 }
 
 function closeGame() {
+  // Exit fullscreen if currently in fullscreen
+  if (document.fullscreenElement || document.webkitFullscreenElement) {
+    if (document.exitFullscreen) {
+      document.exitFullscreen();
+    } else if (document.webkitExitFullscreen) {
+      document.webkitExitFullscreen();
+    } else if (document.msExitFullscreen) {
+      document.msExitFullscreen();
+    }
+  }
+  
   gameOverlay.classList.remove('active');
   gameIframe.src = ''; // Stop the game
   document.body.style.overflow = ''; // Restore scroll
   currentGameUrl = '';
+  
+  // Restore focus and pointer events
+  setTimeout(() => {
+    document.body.focus();
+    document.body.style.pointerEvents = '';
+  }, 100);
   
   // Hide multiplayer button
   const multiplayerBtn = document.getElementById('multiplayerToggleBtn');
@@ -166,6 +183,26 @@ function toggleFullscreen() {
     fullscreenBtn.textContent = '⛶ Fullscreen';
   }
 }
+
+// Listen for fullscreen change to restore focus
+document.addEventListener('fullscreenchange', () => {
+  if (!document.fullscreenElement) {
+    // Exiting fullscreen - restore focus to document body
+    setTimeout(() => {
+      document.body.focus();
+      document.body.click(); // Trigger a click to reset pointer events
+    }, 100);
+  }
+});
+
+document.addEventListener('webkitfullscreenchange', () => {
+  if (!document.webkitFullscreenElement) {
+    setTimeout(() => {
+      document.body.focus();
+      document.body.click();
+    }, 100);
+  }
+});
 
 // Event Listeners
 closeGameBtn?.addEventListener('click', closeGame);
