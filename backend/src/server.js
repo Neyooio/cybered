@@ -30,20 +30,49 @@ const io = new Server(httpServer, {
   }
 });
 
-app.use(helmet());
 // CORS: allow specific origins for production security
 const corsOptions = {
-  origin: [
-    'http://localhost:5500',
-    'http://127.0.0.1:5500',
-    'https://cyberedplay.netlify.app',       // Netlify production domain
-    'https://cybered-backend.onrender.com',  // Backend domain
-    /\.netlify\.app$/                         // Allow Netlify preview deploys
-  ],
-  credentials: true
+  origin: function (origin, callback) {
+    const allowedOrigins = [
+      'http://localhost:5500',
+      'http://127.0.0.1:5500',
+      'https://cyberedplay.netlify.app',
+      'https://cybered-backend.onrender.com'
+    ];
+    
+    // Allow requests with no origin (like mobile apps or Postman)
+    if (!origin) return callback(null, true);
+    
+    // Check if origin is in allowed list
+    if (allowedOrigins.includes(origin)) {
+      return callback(null, true);
+    }
+    
+    // Check for local network IPs
+    if (origin.match(/^http:\/\/192\.168\.\d{1,3}\.\d{1,3}:\d+$/)) {
+      return callback(null, true);
+    }
+    
+    // Check for Netlify preview deploys
+    if (origin.match(/^https:\/\/.*\.netlify\.app$/)) {
+      return callback(null, true);
+    }
+    
+    callback(new Error('Not allowed by CORS'));
+  },
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'PATCH', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 86400 // 24 hours
 };
+
+// Apply CORS before other middleware
 app.use(cors(corsOptions));
 app.options('*', cors(corsOptions));
+
+// Apply helmet after CORS
+app.use(helmet());
 app.use(express.json());
 app.use(morgan('dev'));
 
