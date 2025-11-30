@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node src/server.js",
     "dev": "nodemon src/server.js",
-    "seed-quiz": "node src/scripts/seedQuizData.js"
+    "seed-quiz": "node src/scripts/seedQuizData.js",
+    "generate-erd-diagram": "mmdc -i ../docs/erd-diagram.mmd -o ../docs/erd-diagram.png -t neutral && mmdc -i ../docs/erd-diagram.mmd -o ../docs/erd-diagram.svg -t neutral"
   },
   "dependencies": {
     "bcryptjs": "^2.4.3",
@@ -22,6 +23,7 @@
     "socket.io": "^4.8.1"
   },
   "devDependencies": {
+    "@mermaid-js/mermaid-cli": "^10.9.1",
     "nodemon": "^3.1.0"
   }
 }
