@@ -1,22 +1,23 @@
 (function(){
   function deriveApiBase(){
+    // Use global config if available
+    if (window.API_BASE_URL) return window.API_BASE_URL + '/api';
+    
     try{
-      const stored = localStorage.getItem('apiBase');
-      if (stored) return stored.replace(/\/$/, '');
-      const { protocol, hostname } = window.location || {};
-      if (hostname){
-        // Production environment (Netlify)
-        if (hostname.includes('netlify.app')) {
-          return 'https://cybered-backend.onrender.com/api';
-        }
-        // Local development
-        if (hostname === 'localhost' || hostname === '127.0.0.1') {
-          return 'http://localhost:4000/api';
-        }
-        // Network access
-        const proto = protocol || 'http:';
-        return `${proto}//${hostname}:4000/api`;
+      const hostname = window.location.hostname;
+      
+      // Production environments
+      if (hostname.includes('netlify.app') || hostname.includes('github.io') || hostname.includes('onrender.com')) {
+        return 'https://cybered-backend.onrender.com/api';
       }
+      
+      // Local development
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:4000/api';
+      }
+      
+      // Network access (LAN)
+      return `${window.location.protocol}//${hostname}:4000/api`;
     }catch(e){}
     return 'http://localhost:4000/api';
   }

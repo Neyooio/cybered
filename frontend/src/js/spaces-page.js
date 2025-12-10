@@ -12,29 +12,28 @@ document.addEventListener('DOMContentLoaded', async () => {
     return;
   }
   
-  // Get API base
-  const stored = localStorage.getItem('apiBase');
-  let apiBase = stored ? stored.replace(/\/$/, '') : null;
-  if (!apiBase) {
-    const { protocol, hostname } = window.location || {};
-    if (hostname) {
-      // Production environment (Netlify)
-      if (hostname.includes('netlify.app')) {
-        apiBase = 'https://cybered-backend.onrender.com/api';
-      }
-      // Local development
-      else if (hostname === 'localhost' || hostname === '127.0.0.1') {
-        apiBase = 'http://localhost:4000/api';
-      }
-      // Network access
-      else {
-        const proto = protocol || 'http:';
-        apiBase = `${proto}//${hostname}:4000/api`;
-      }
-    } else {
-      apiBase = 'http://localhost:4000/api';
+  // Get API base using centralized config
+  function getApiBase() {
+    // Use global config if available
+    if (window.API_BASE_URL) return window.API_BASE_URL + '/api';
+    
+    const hostname = window.location.hostname;
+    
+    // Production environments
+    if (hostname.includes('netlify.app') || hostname.includes('github.io') || hostname.includes('onrender.com')) {
+      return 'https://cybered-backend.onrender.com/api';
     }
+    
+    // Local development
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      return 'http://localhost:4000/api';
+    }
+    
+    // Network access (LAN)
+    return `${window.location.protocol}//${hostname}:4000/api`;
   }
+  
+  const apiBase = getApiBase();
   
   const spacesGrid = document.getElementById('spacesGrid');
   const emptyState = document.getElementById('emptyState');

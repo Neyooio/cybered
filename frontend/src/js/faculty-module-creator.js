@@ -1,12 +1,20 @@
 function getApiBase() {
+  // Use global config if available
   if (window.API_BASE_URL) return window.API_BASE_URL;
+  
   const hostname = window.location.hostname;
-  if (hostname.includes('netlify.app') || hostname.includes('github.io')) {
+  
+  // Production environments
+  if (hostname.includes('netlify.app') || hostname.includes('github.io') || hostname.includes('onrender.com')) {
     return 'https://cybered-backend.onrender.com';
   }
+  
+  // Local development
   if (hostname === 'localhost' || hostname === '127.0.0.1') {
     return 'http://localhost:4000';
   }
+  
+  // Network access (LAN)
   return `${window.location.protocol}//${hostname}:4000`;
 }
 

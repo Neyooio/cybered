@@ -1,22 +1,22 @@
 // Helper function to get API base URL
 function getApiBase() {
-	const stored = localStorage.getItem('apiBase');
-	if (stored) return stored.replace(/\/$/, '');
+	// Use global config if available
+	if (window.API_BASE_URL) return window.API_BASE_URL + '/api';
 	
-	const { protocol, hostname } = window.location || {};
-	if (hostname) {
-		// Production environment (Netlify or GitHub Pages)
-		if (hostname.includes('netlify.app') || hostname.includes('github.io')) {
-			return 'https://cybered-backend.onrender.com/api';
-		}
-		// Local development
-		if (hostname === 'localhost' || hostname === '127.0.0.1') {
-			return 'http://localhost:4000/api';
-		}
-		// Network access
-		return `${protocol || 'http:'}//${hostname}:4000/api`;
+	const hostname = window.location.hostname;
+	
+	// Production environments
+	if (hostname.includes('netlify.app') || hostname.includes('github.io') || hostname.includes('onrender.com')) {
+		return 'https://cybered-backend.onrender.com/api';
 	}
-	return 'http://localhost:4000/api';
+	
+	// Local development
+	if (hostname === 'localhost' || hostname === '127.0.0.1') {
+		return 'http://localhost:4000/api';
+	}
+	
+	// Network access (LAN)
+	return `${window.location.protocol}//${hostname}:4000/api`;
 }
 
 // Refresh token to get updated role
