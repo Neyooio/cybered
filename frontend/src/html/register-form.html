@@ -4,7 +4,12 @@
   <meta charset="UTF-8">
   <title>Cyber Ed - Registration</title>
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <base href="/cybered/">
+  <script>
+    // Auto-detect base path for GitHub Pages vs Netlify
+    if (window.location.hostname.includes('github.io')) {
+      document.write('<base href="/cybered/">');
+    }
+  </script>
   <link rel="icon" type="image/png" href="../../assets/images/Logo.png" />
   <link rel="stylesheet" href="../css/register-form.css" />
  
