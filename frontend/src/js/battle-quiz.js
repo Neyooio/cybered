@@ -546,8 +546,8 @@ class BattleQuiz {
     
     // Map avatar name to battle sprite (e.g., 'sen' -> 'sen-battle.png')
     if (avatarName) {
-      // Remove any file extension if present
-      const cleanName = avatarName.replace(/\.(png|jpg|jpeg|gif)$/i, '');
+      // Remove any file extension if present and convert to lowercase for case-sensitive servers
+      const cleanName = avatarName.replace(/\.(png|jpg|jpeg|gif)$/i, '').toLowerCase();
       return `../../../../assets/images/battle_avatar/${cleanName}-battle.png`;
     }
     
