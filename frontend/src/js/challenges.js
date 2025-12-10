@@ -21,7 +21,7 @@ const challengesIndex = [
     icon: '../../assets/images/C4.png', 
     difficulty: 'Hard', 
     blurb: 'Outsmart stealthy hacker NPCs before they breach the core.',
-    gameUrl: 'https://example.com/unity-games/intrusion-intercept' // Replace with actual Unity WebGL URL
+    gameUrl: '../../games/security-breach-protocol/index.html' // Interactive branching scenario game
   },
   { 
     id: 'header-check', 
@@ -29,7 +29,7 @@ const challengesIndex = [
     icon: '../../assets/images/C1.png', 
     difficulty: 'Easy', 
     blurb: 'Spot phishing clues in mail headers.',
-    gameUrl: 'https://example.com/unity-games/header-check' // Replace with actual Unity WebGL URL
+    gameUrl: '../../games/header-check/index.html' // Local multiplayer card game
   }
 ];
 
@@ -38,7 +38,6 @@ const gameOverlay = document.getElementById('gameOverlay');
 const gameIframe = document.getElementById('gameIframe');
 const gameLoading = document.getElementById('gameLoading');
 const gameTitle = document.getElementById('gameTitle');
-const gameDifficulty = document.getElementById('gameDifficulty');
 const closeGameBtn = document.getElementById('closeGameBtn');
 const restartGameBtn = document.getElementById('restartGameBtn');
 const fullscreenBtn = document.getElementById('fullscreenBtn');
@@ -74,7 +73,6 @@ function openGame(challengeId) {
 
   // Set game info
   gameTitle.textContent = challenge.title;
-  gameDifficulty.textContent = challenge.difficulty;
   currentGameUrl = gameUrl;
 
   // Show/hide multiplayer button based on game
@@ -242,7 +240,6 @@ function renderChallenges() {
         </div>
         <div>
           <h3 class='challenge-title'>${c.title}</h3>
-          <p class='challenge-difficulty'>${c.difficulty} • Challenge</p>
         </div>
       </div>
       <p class='challenge-description'>${c.blurb}</p>
@@ -270,8 +267,7 @@ if (searchInput) {
     // Filter challenges based on search term
     const filteredChallenges = challengesIndex.filter(challenge => {
       return challenge.title.toLowerCase().includes(searchTerm) ||
-             challenge.blurb.toLowerCase().includes(searchTerm) ||
-             challenge.difficulty.toLowerCase().includes(searchTerm);
+             challenge.blurb.toLowerCase().includes(searchTerm);
     });
     
     // Render filtered results
@@ -291,7 +287,6 @@ if (searchInput) {
             </div>
             <div>
               <h3 class='challenge-title'>${c.title}</h3>
-              <p class='challenge-difficulty'>${c.difficulty} • Challenge</p>
             </div>
           </div>
           <p class='challenge-description'>${c.blurb}</p>

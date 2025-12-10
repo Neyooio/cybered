@@ -1,0 +1,309 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+  <title>Header Check</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../src/css/global.css" />
+  <link rel="stylesheet" href="../../src/css/cybered.css" />
+  <link rel="stylesheet" href="./header-check.css" />
+</head>
+<body class="cybered-theme">
+  <div id="app" class="hc-container">
+    <!-- Splash Screen -->
+    <div id="splashScreen" class="splash-screen">
+      <div class="splash-content">
+        <img src="../../assets/images/header-check-logo.png" alt="Header Check" class="splash-logo" />
+        <h1 class="splash-title">
+          <span class="splash-title-header">HEADER</span>
+          <span class="splash-title-check">CHECK</span>
+        </h1>
+        <div class="splash-loading">
+          <div class="splash-loading-bar"></div>
+        </div>
+        <p class="splash-prompt">Press SPACE or TAP to continue</p>
+      </div>
+    </div>
+
+    <main class="hc-main">
+      <section id="lobby" class="hc-lobby">
+        <div class="lobby-container">
+          <!-- Join Section -->
+          <div id="joinSection" class="lobby-section">
+            <div class="lobby-card">
+              <div class="lobby-header">
+                <h1 class="lobby-title">HEADER CHECK</h1>
+                <p class="lobby-subtitle">Multiplayer Email Security Challenge</p>
+              </div>
+
+              <div class="lobby-form">
+                <div class="form-group">
+                  <label for="roomCodeInput">Room Code</label>
+                  <input id="roomCodeInput" class="hc-input room-code-input" placeholder="Enter 6-character code" maxlength="6" />
+                </div>
+                <div class="lobby-actions">
+                  <button id="createRoomBtn" class="btn btn-primary btn-large">
+                    Create Room
+                  </button>
+                  <button id="joinRoomBtn" class="btn btn-secondary btn-large">
+                    Join Room
+                  </button>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Room Section -->
+          <div id="roomSection" class="lobby-section hidden">
+            <div class="lobby-card">
+              <div class="room-header">
+                <div class="room-info">
+                  <h3 class="room-code-label">Room Code</h3>
+                  <div class="room-code-display" id="roomCodeDisplay">------</div>
+                  <p class="room-status">Waiting for Players... <span id="playerCount">1/6</span></p>
+                </div>
+                <div class="room-header-actions">
+                  <button id="addBotBtn" class="btn-icon-only btn-add-bot" title="Add Bot">
+                    <span>🤖</span>
+                  </button>
+                  <button id="leaveRoomBtn" class="btn-icon-only btn-leave" title="Rules">
+                    <span>?</span>
+                  </button>
+                </div>
+              </div>
+
+              <!-- Player Grid -->
+              <div class="players-section">
+                <h3 class="section-title">Players</h3>
+                <div id="playerGrid" class="player-grid"></div>
+              </div>
+
+              <!-- Host Controls -->
+              <div class="lobby-controls">
+                <button id="startBtn" class="btn btn-start btn-large" disabled>
+                  Start
+                </button>
+                <button id="leaveGameBtn" class="btn btn-leave-game btn-large">
+                  Leave
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="hud" class="hc-panel hidden">
+        <div class="game-layout">
+          <!-- Left Sidebar: Players -->
+          <div class="game-sidebar-left">
+            <button id="playersBtn" class="player-icon-btn">
+              <span>👥</span>
+            </button>
+            <div id="playersDisplay" class="players-display">
+              <!-- 5 colored player icons will be dynamically generated (excluding your color) -->
+            </div>
+            
+            <!-- Scan Bin (Phase 1) -->
+            <div id="scanBin" class="scan-bin">
+              <div class="scan-bin-icon">🔍</div>
+              <div class="scan-bin-text">SCAN</div>
+            </div>
+
+            <!-- Send Bin (Phase 2) -->
+            <div id="sendBin" class="send-bin hidden">
+              <div class="send-bin-icon">📧</div>
+              <div class="send-bin-text">SEND</div>
+            </div>
+          </div>
+
+          <!-- Main Game Area -->
+          <div class="game-main-area">
+            <div id="gameCanvas" class="game-canvas">
+              <!-- Header Bar -->
+              <div class="game-header-bar">
+                <div class="turn-indicator">Turn <span id="turnNumber">1</span></div>
+                <div class="timer-display">
+                  <div class="timer-label">Time</div>
+                  <div class="timer-value"><span id="timerValue">30</span>s</div>
+                  <div class="timer-progress">
+                    <div id="timerBar" class="timer-bar-fill"></div>
+                  </div>
+                </div>
+                <div class="ap-display">
+                  <div class="ap-label">Action Points</div>
+                  <div class="ap-value"><span id="apValue">3</span> / 3</div>
+                </div>
+                <div class="phase-info-container">
+                  <div id="phaseIndicator" class="phase-indicator">Phase 1: Header Check</div>
+                  <button id="phaseInfoBtn" class="phase-info-btn" title="Phase Info">?</button>
+                </div>
+              </div>
+
+              <!-- Action Buttons (Phase 1 only) -->
+              <div id="actionButtons" class="action-buttons">
+                <button id="scanBtn" class="action-btn" data-cost="1" title="Answer a quiz to scan an email. Correct answer contains the infection, wrong answer spreads it to 1 clean card.">
+                  <span class="action-name">Scan Email</span>
+                  <span class="action-cost">1 AP</span>
+                </button>
+                <button id="firewallBtn" class="action-btn" data-cost="2" title="Only receive clean email this turn.">
+                  <span class="action-name">Firewall</span>
+                  <span class="action-cost">2 AP</span>
+                  <span id="firewallUsed" class="action-used hidden">USED</span>
+                </button>
+                <button id="phishingBtn" class="action-btn" data-cost="2" title="Send an infected email to another player (disguised as clean). Only usable in Phase 2 if you have infected cards.">
+                  <span class="action-name">Phishing Attack</span>
+                  <span class="action-cost">2 AP</span>
+                </button>
+              </div>
+
+              <!-- Email Cards Container -->
+              <div class="cards-container">
+                <div id="hand" class="hand-cards"></div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Right Sidebar: Game Logs -->
+          <div class="game-sidebar-right">
+            <div class="game-logs">
+              <div class="logs-header">Game Logs</div>
+              <div class="logs-content">
+              </div>
+            </div>
+            <button id="leaveGameFieldBtn" class="btn-leave">LEAVE</button>
+          </div>
+        </div>
+
+        <!-- Phase Splash Screen -->
+        <div id="phaseSplash" class="phase-splash hidden">
+          <div class="phase-splash-text">PHASE 1</div>
+        </div>
+
+        <!-- Header Check Splash Screen -->
+        <div id="headerCheckSplash" class="header-check-splash hidden">
+          <div class="header-check-splash-text">HEADER CHECK</div>
+        </div>
+
+        <!-- Send Email Splash Screen -->
+        <div id="sendEmailSplash" class="send-email-splash hidden">
+          <div class="send-email-splash-text">SEND EMAIL</div>
+        </div>
+
+        <!-- Cyber Guard Splash Screen -->
+        <div id="cyberGuardSplash" class="cyber-guard-splash hidden">
+          <div class="cyber-guard-splash-text">CYBER GUARD</div>
+        </div>
+
+        <!-- Cyber Guard Confirmation Modal -->
+        <div id="cyberGuardModal" class="cyber-guard-modal hidden">
+          <div class="cyber-guard-modal-content">
+            <div class="cyber-guard-modal-header">
+              <h3 class="cyber-guard-modal-title">Cyber Guard Action</h3>
+            </div>
+            <div class="cyber-guard-modal-body">
+              <p>Are you sure <strong id="targetPlayerName">Player</strong> has infected emails?</p>
+            </div>
+            <div class="cyber-guard-modal-actions">
+              <button id="cyberGuardYes" class="btn btn-primary">YES</button>
+              <button id="cyberGuardNo" class="btn btn-secondary">NO</button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <!-- Countdown Overlay -->
+      <div id="countdownOverlay" class="countdown-overlay hidden">
+        <div class="countdown-number">3</div>
+      </div>
+
+      <!-- Card Shuffle Animation -->
+      <div id="shuffleOverlay" class="shuffle-overlay hidden">
+        <div class="shuffle-animation">
+          <div class="shuffle-card card-1"></div>
+          <div class="shuffle-card card-2"></div>
+          <div class="shuffle-card card-3"></div>
+          <div class="shuffle-card card-4"></div>
+          <div class="shuffle-card card-5"></div>
+        </div>
+        <div class="shuffle-text">Shuffling Cards...</div>
+      </div>
+    </main>
+
+    <div id="toast" class="hc-toast hidden"></div>
+    
+    <!-- Eliminated Modal -->
+    <div id="eliminatedModal" class="eliminated-modal hidden">
+      <div class="eliminated-modal-content">
+        <div class="eliminated-icon">💀</div>
+        <h2 class="eliminated-title">ELIMINATED!</h2>
+        <p class="eliminated-message">All 5 of your emails are infected!</p>
+        <p class="eliminated-submessage">You have been eliminated from the game.</p>
+        <button id="eliminatedReturnBtn" class="btn btn-danger btn-large">Return to Lobby</button>
+      </div>
+    </div>
+    
+    <!-- Question Modal -->
+    <div id="questionModal" class="question-modal hidden">
+      <div class="question-modal-content">
+        <div class="question-header">
+          <div class="question-infected-count">Infected Emails Found (1)!!</div>
+        </div>
+        <div class="question-body">
+          <h3 id="questionText" class="question-text">WHAT IS CYBERSECURITY?</h3>
+          <div id="questionChoices" class="question-choices">
+            <button class="choice-btn" data-choice="A">A</button>
+            <button class="choice-btn" data-choice="B">B</button>
+            <button class="choice-btn" data-choice="C">C</button>
+            <button class="choice-btn" data-choice="D">D</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    
+    <!-- Quick Rules Modal -->
+    <div id="rulesModal" class="rules-modal hidden">
+      <div class="rules-modal-content">
+        <div class="rules-modal-header">
+          <h3 class="rules-modal-title">Quick Rules</h3>
+          <button id="closeRulesBtn" class="btn-close">×</button>
+        </div>
+        <ul class="rules-modal-list">
+          <li>Survive by containing infected emails</li>
+          <li>Answer questions correctly to contain infected cards</li>
+          <li>Send cards strategically to other players</li>
+          <li>Cyber Guard can guess players that holds infected</li>
+          <li>Eliminated when all 5 cards are infected</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Phase Info Modal -->
+    <div id="phaseInfoModal" class="phase-info-modal hidden">
+      <div class="phase-info-content">
+        <div class="phase-info-header">
+          <h3 id="phaseInfoTitle" class="phase-info-title">Phase 1: Header Check</h3>
+          <button id="closePhaseInfoBtn" class="btn-close">×</button>
+        </div>
+        <div id="phaseInfoBody" class="phase-info-body">
+          <p><strong>Objective:</strong> Identify and contain infected emails in your hand.</p>
+          <p><strong>How to Play:</strong></p>
+          <ul>
+            <li>Examine the 5 email cards dealt to you</li>
+            <li>Drag suspected infected emails to the SCAN BIN</li>
+            <li>Answer the cybersecurity question correctly to contain the infected email</li>
+            <li>Incorrect answers keep the infected email in your hand</li>
+          </ul>
+          <p><strong>Warning:</strong> If all 5 cards become infected, you're eliminated!</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.socket.io/4.5.4/socket.io.min.js"></script>
+  <script src="../../src/js/config.js"></script>
+  <script src="./header-check.js"></script>
+</body>
+</html>

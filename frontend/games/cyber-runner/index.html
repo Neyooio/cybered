@@ -2,8 +2,11 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
   <title>Cyber Runner - Malware Defense</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
   <style>
     * {
       margin: 0;
@@ -11,30 +14,39 @@
       box-sizing: border-box;
     }
 
-    body {
+    html, body {
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
       font-family: 'Press Start 2P', 'Courier New', monospace;
       background: linear-gradient(135deg, #1e3a8a 0%, #312e81 100%);
+    }
+
+    body {
       display: flex;
       justify-content: center;
       align-items: center;
-      min-height: 100vh;
-      overflow: hidden;
     }
 
     #gameContainer {
+      width: 100%;
+      height: 100%;
+      max-width: 100vw;
+      max-height: 100vh;
       background: #1e293b;
-      border: 4px solid #f97316;
-      border-radius: 12px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-      overflow: hidden;
       position: relative;
-      transform: scale(0.95);
-      margin: 10px auto;
+      display: flex;
+      justify-content: center;
+      align-items: center;
     }
 
     #gameCanvas {
       display: block;
       background: linear-gradient(to bottom, #334155 0%, #1e293b 100%);
+      max-width: 100%;
+      max-height: 100%;
+      width: auto;
+      height: auto;
     }
 
     #score {
@@ -131,11 +143,20 @@
       border: 3px solid #3b82f6;
       border-radius: 12px;
       display: none;
-      z-index: 200;
+      z-index: 2147483647;
       max-width: 600px;
       width: 90%;
       pointer-events: auto;
       touch-action: manipulation;
+    }
+
+    /* Ensure quiz modal appears on top in fullscreen mode */
+    #gameContainer:fullscreen #quizModal,
+    #gameContainer:-webkit-full-screen #quizModal,
+    #gameContainer:-moz-full-screen #quizModal,
+    #gameContainer:-ms-fullscreen #quizModal {
+      z-index: 2147483647 !important;
+      position: fixed !important;
     }
 
     #quizModal h3 {
@@ -231,14 +252,29 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background: rgba(15, 23, 42, 0.98);
-      padding: 30px;
-      border: 3px solid #f97316;
-      border-radius: 12px;
+      background: rgba(30, 41, 59, 0.95);
+      padding: 25px;
+      border: 4px solid #f97316;
+      border-radius: 16px;
       z-index: 60;
-      min-width: 400px;
-      max-width: 500px;
+      max-width: 480px;
       width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+      pointer-events: auto;
+    }
+
+    #multiplayerLobby::before {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(0, 0, 0, 0.7);
+      z-index: -1;
+      pointer-events: auto;
     }
 
     .lobby-title {
@@ -246,38 +282,50 @@
       font-size: 20px;
       margin-bottom: 20px;
       text-align: center;
+      text-transform: uppercase;
+      letter-spacing: 3px;
+      font-family: 'Press Start 2P', monospace;
     }
 
     .lobby-section {
-      background: #334155;
-      padding: 15px;
-      border-radius: 8px;
+      background: rgba(51, 65, 85, 0.9);
+      padding: 18px;
+      border-radius: 10px;
       margin-bottom: 15px;
     }
 
     .lobby-section h3 {
       color: #60a5fa;
       font-size: 12px;
-      margin-bottom: 10px;
+      margin-bottom: 12px;
+      font-family: 'Press Start 2P', monospace;
+      text-transform: capitalize;
     }
 
     .lobby-input-group {
-      display: flex;
-      gap: 8px;
-      margin-bottom: 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .lobby-input-group input {
+      grid-column: 1 / -1;
     }
 
     .lobby-input {
-      flex: 1;
-      background: #1e293b;
-      border: 2px solid #475569;
-      color: #e2e8f0;
-      padding: 8px;
-      font-size: 11px;
+      width: 100%;
+      background: rgba(30, 41, 59, 0.8);
+      border: 2px solid #64748b;
+      color: #94a3b8;
+      padding: 14px;
+      font-size: 12px;
       font-family: 'Press Start 2P', 'Courier New', monospace;
-      border-radius: 4px;
-      min-height: 44px;
+      border-radius: 8px;
+      min-height: 52px;
       touch-action: manipulation;
+      box-sizing: border-box;
+      text-align: center;
     }
 
     .lobby-input:focus {
@@ -289,31 +337,36 @@
       background: #f97316;
       color: white;
       border: none;
-      padding: 8px 15px;
-      font-size: 10px;
-      font-family: 'Press Start 2P', 'Courier New', monospace;
+      padding: 14px 24px;
+      font-size: 11px;
+      font-family: 'Press Start 2P', monospace;
       cursor: pointer;
-      border-radius: 4px;
+      border-radius: 8px;
       transition: all 0.3s;
-      min-height: 44px;
-      min-width: 60px;
+      min-height: 52px;
+      width: 100%;
       touch-action: manipulation;
       -webkit-tap-highlight-color: rgba(249, 115, 22, 0.3);
+      text-transform: uppercase;
+      letter-spacing: 1px;
+      font-weight: bold;
     }
 
     .lobby-btn:hover {
       background: #ea580c;
-      transform: scale(1.05);
+      transform: translateY(-2px);
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.4);
     }
 
     .lobby-btn:disabled {
       background: #64748b;
       cursor: not-allowed;
       transform: none;
+      opacity: 0.6;
     }
 
     .lobby-btn:active {
-      transform: scale(0.95);
+      transform: translateY(0);
       background: #dc2626;
     }
 
@@ -323,41 +376,69 @@
 
     .lobby-btn.secondary:hover {
       background: #2563eb;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.4);
+    }
+
+    .lobby-btn.secondary:active {
+      background: #1e40af;
+    }
+
+    .room-buttons-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+      margin-top: 15px;
+    }
+
+    .room-buttons-group .lobby-btn:only-child {
+      grid-column: 1 / -1;
+    }
+
+    .lobby-btn.back-btn {
+      background: #f97316;
+      margin-top: 15px;
+    }
+
+    .lobby-btn.back-btn:hover {
+      background: #ea580c;
     }
 
     #roomCode {
       color: #fbbf24;
-      font-size: 18px;
+      font-size: 22px;
       text-align: center;
       margin: 15px 0;
-      letter-spacing: 2px;
+      letter-spacing: 4px;
+      font-weight: bold;
+      font-family: 'Press Start 2P', monospace;
     }
 
     #playersList {
       list-style: none;
       padding: 0;
-      max-height: 150px;
+      max-height: 200px;
       overflow-y: auto;
     }
 
     .player-item {
-      background: #1e293b;
-      padding: 8px;
-      margin: 4px 0;
-      border-radius: 4px;
+      background: rgba(30, 41, 59, 0.8);
+      padding: 12px 14px;
+      margin: 6px 0;
+      border-radius: 8px;
       color: #e2e8f0;
       font-size: 10px;
+      font-family: 'Press Start 2P', monospace;
       display: flex;
       justify-content: space-between;
       align-items: center;
     }
 
     .player-item.ready {
-      border-left: 3px solid #22c55e;
+      border-left: 4px solid #22c55e;
     }
 
     .player-item.host {
-      border-left: 3px solid #fbbf24;
+      border-left: 4px solid #fbbf24;
     }
 
     .ready-badge {
@@ -562,23 +643,31 @@
 
     /* Mobile responsiveness */
     @media (max-width: 768px) {
-      body {
-        padding: 0;
-      }
-
       #gameContainer {
-        transform: scale(0.95);
-        margin: 0 auto;
-        max-width: 100%;
+        width: 100%;
+        height: 100%;
       }
 
       #gameCanvas {
         width: 100%;
-        height: auto;
+        height: 100%;
+        object-fit: contain;
+      }
+      
+      #score, #highScore {
+        font-size: 14px;
+        top: 10px;
+        right: 10px;
+      }
+
+      #highScore {
+        top: 35px;
+        font-size: 11px;
       }
       
       #gameOver {
-        min-width: 300px;
+        min-width: 90%;
+        max-width: 350px;
         padding: 20px;
       }
 
@@ -588,22 +677,23 @@
       }
       
       #quizModal {
-        width: 90%;
+        width: 92%;
         max-width: 500px;
         padding: 20px;
-        z-index: 200;
+        max-height: 90vh;
+        overflow-y: auto;
       }
       
       #gameOver h2, #quizModal h3 {
-        font-size: 16px;
+        font-size: 14px;
       }
       
       #gameOver p, #quizQuestion {
-        font-size: 11px;
+        font-size: 10px;
       }
       
       .quiz-option {
-        font-size: 10px;
+        font-size: 9px;
         padding: 12px 15px;
         margin: 8px 0;
         min-height: 44px;
@@ -612,41 +702,58 @@
       }
       
       #startScreen h1 {
-        font-size: 24px;
+        font-size: 20px;
       }
       
       #startScreen p {
-        font-size: 10px;
-      }
-
-      /* Multiplayer mobile adjustments */
-      #multiplayerLobby {
-        width: 95%;
-        padding: 20px;
-        min-width: auto;
-      }
-
-      .lobby-btn {
         font-size: 9px;
-        padding: 10px 12px;
-        min-height: 48px;
       }
 
-      .lobby-input {
-        font-size: 10px;
-        padding: 10px;
-        min-height: 48px;
+      /* Multiplayer - stack vertically on mobile */
+      .lobby-input-group {
+        grid-template-columns: 1fr;
+      }
+
+      .lobby-input-group input {
+        grid-column: 1;
+        order: 1;
+      }
+
+      #createRoomBtn {
+        order: 2;
+      }
+
+      #joinRoomBtn {
+        order: 3;
+      }
+
+      .room-buttons-group {
+        grid-template-columns: 1fr;
+      }
+
+      #playersInfo {
+        top: 10px;
+        left: 10px;
+        gap: 6px;
+      }
+
+      .player-icon {
+        width: 30px;
+        height: 30px;
+        font-size: 14px;
       }
     }
 
     @media (max-width: 480px) {
-      body {
-        padding: 0;
+      #score {
+        font-size: 12px;
+        top: 8px;
+        right: 8px;
       }
 
-      #gameContainer {
-        transform: scale(0.90);
-        margin: 0 auto;
+      #highScore {
+        font-size: 10px;
+        top: 28px;
       }
       
       #quizModal {
@@ -655,7 +762,7 @@
       }
       
       .quiz-option {
-        font-size: 9px;
+        font-size: 8px;
         padding: 10px 12px;
         min-height: 48px;
       }
@@ -663,7 +770,49 @@
       #restartBtn {
         min-height: 48px;
         padding: 10px 20px;
-        font-size: 12px;
+        font-size: 11px;
+      }
+
+      #startScreen h1 {
+        font-size: 18px;
+      }
+
+      #startScreen p {
+        font-size: 8px;
+      }
+
+      .results-title {
+        font-size: 20px;
+      }
+
+      .podium-place {
+        min-width: 90px;
+        padding: 12px;
+      }
+
+      .place-number {
+        font-size: 28px;
+      }
+
+      .place-username {
+        font-size: 8px;
+      }
+    }
+
+    @media (orientation: landscape) and (max-height: 500px) {
+      #quizModal, #multiplayerLobby, #gameOver {
+        max-height: 95vh;
+        overflow-y: auto;
+      }
+
+      #startScreen h1 {
+        font-size: 18px;
+        margin-bottom: 10px;
+      }
+
+      #startScreen p {
+        font-size: 8px;
+        margin-bottom: 15px;
       }
     }
 
@@ -700,28 +849,30 @@
 
     <!-- Multiplayer Lobby -->
     <div id="multiplayerLobby">
-      <h2 class="lobby-title">MULTIPLAYER LOBBY</h2>
+      <h2 class="lobby-title">Multiplayer Lobby</h2>
       
-      <div class="lobby-section">
+      <div id="lobbyCreationSection" class="lobby-section">
         <h3>Create or Join Room</h3>
         <div class="lobby-input-group">
-          <button id="createRoomBtn" class="lobby-btn">CREATE</button>
+          <button id="createRoomBtn" class="lobby-btn">Create</button>
+          <button id="joinRoomBtn" class="lobby-btn secondary">Join</button>
           <input type="text" id="joinRoomInput" class="lobby-input" placeholder="Room Code" maxlength="6">
-          <button id="joinRoomBtn" class="lobby-btn secondary">JOIN</button>
         </div>
       </div>
 
       <div id="roomSection" class="lobby-section" style="display: none;">
-        <h3>Room</h3>
+        <h3>Room Code</h3>
         <div id="roomCode">------</div>
         <h3 style="margin-top: 15px;">Players (<span id="playerCount">0</span>/5)</h3>
         <ul id="playersList"></ul>
-        <div style="margin-top: 15px; display: flex; gap: 8px; justify-content: center;">
-          <button id="readyBtn" class="lobby-btn">READY</button>
-          <button id="startGameBtn" class="lobby-btn" style="display: none;">START</button>
-          <button id="leaveRoomBtn" class="lobby-btn secondary">BACK</button>
+        <div class="room-buttons-group">
+          <button id="readyBtn" class="lobby-btn">Ready</button>
+          <button id="startGameBtn" class="lobby-btn" style="display: none;">Start</button>
+          <button id="leaveRoomBtn" class="lobby-btn secondary">Leave</button>
         </div>
       </div>
+
+      <button class="lobby-btn back-btn" onclick="gameMode='single'; document.getElementById('multiplayerLobby').style.display='none'; document.getElementById('startScreen').style.display='block'; resetMultiplayerLobby();">Back</button>
     </div>
 
     <!-- Players Info (Multiplayer) -->

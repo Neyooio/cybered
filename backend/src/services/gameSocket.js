@@ -324,11 +324,13 @@ function startObstacleGeneration(io, roomCode) {
     }
 
     // Generate obstacle
+    const canvasHeight = 600;
+    const ground = canvasHeight - 50; // 550
     const obstacle = {
       id: room.obstacleCounter++,
       type: Math.random() > 0.6 ? 'flying' : 'ground',
       x: 1000,
-      y: Math.random() > 0.6 ? 180 : 280,
+      y: Math.random() > 0.6 ? ground - 60 : ground, // Flying: 490, Ground: 550
       timestamp: Date.now()
     };
 

@@ -81,4 +81,33 @@ router.put('/:id/avatar', async (req, res) => {
   }
 });
 
+// Update user profile (bio, avatar, etc.) - user can update their own or admin can update anyone's
+router.put('/:id/profile', requireAuth, async (req, res) => {
+  try {
+    const { id } = req.params;
+    const { displayName, bio, avatarSrc, avatarName, avatar } = req.body;
+    
+    console.log('Profile update request:', { id, displayName, bio, avatarSrc, avatarName, user: req.user?.sub, role: req.user?.role });
+    
+    // Allow user to update their own profile, or admin to update anyone's
+    if (req.user.sub !== id && req.user.role !== 'admin') {
+      return res.status(403).json({ error: 'Not authorized' });
+    }
+    
+    const updateData = {};
+    if (displayName !== undefined) updateData.name = displayName;
+    if (bio !== undefined) updateData.bio = bio;
+    if (avatarSrc) updateData.avatarSrc = avatarSrc;
+    if (avatarName) updateData.avatarName = avatarName;
+    if (avatar) updateData.avatar = avatar;
+    
+    const user = await User.findByIdAndUpdate(id, updateData, { new: true });
+    console.log('Profile updated successfully for user:', user?.username);
+    res.json({ user });
+  } catch (error) {
+    console.error('Error updating profile:', error);
+    res.status(500).json({ error: 'Failed to update profile' });
+  }
+});
+
 export default router;

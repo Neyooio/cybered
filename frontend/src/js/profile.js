@@ -155,6 +155,9 @@ document.addEventListener('DOMContentLoaded', () => {
 			closeOverlay();
 		}
 	});
+
+	// Initialize edit profile functionality
+	initializeEditProfile();
 });
 
 // Save avatar to backend
@@ -399,7 +402,7 @@ function updateProfileUI(userData) {
 		// Use only userData when viewing another user
 		const avatarUrl = userData.avatarSrc || userData.avatar || 
 			(userData.avatarName ? avatarMap[userData.avatarName] : '') ||
-			'https://i.ibb.co/c1g1kkh/pixel-avatar.png';
+			"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect fill='%23334155' width='200' height='200'/%3E%3Ccircle fill='%2364748b' cx='100' cy='80' r='40'/%3E%3Cellipse fill='%2364748b' cx='100' cy='160' rx='60' ry='50'/%3E%3C/svg%3E";
 		profileAvatarImg.src = avatarUrl;
 	} else {
 		// For own profile, prioritize database over localStorage
@@ -407,7 +410,7 @@ function updateProfileUI(userData) {
 			(userData.avatarName ? avatarMap[userData.avatarName] : '') ||
 			localStorage.getItem('cyberedAvatarSrc') ||
 			(localStorage.getItem('cyberedAvatarName') ? avatarMap[localStorage.getItem('cyberedAvatarName')] : '') ||
-			'https://i.ibb.co/c1g1kkh/pixel-avatar.png';
+			"data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='200' height='200' viewBox='0 0 200 200'%3E%3Crect fill='%23334155' width='200' height='200'/%3E%3Ccircle fill='%2364748b' cx='100' cy='80' r='40'/%3E%3Cellipse fill='%2364748b' cx='100' cy='160' rx='60' ry='50'/%3E%3C/svg%3E";
 		profileAvatarImg.src = avatarUrl;
 		
 		// Sync localStorage with database value
@@ -418,7 +421,25 @@ function updateProfileUI(userData) {
 			localStorage.setItem('cyberedAvatarName', userData.avatarName);
 		}
 	}
-}	// Update XP if available
+}	
+	
+	// Update bio
+	const profileBioEl = document.getElementById('profileBio');
+	if (profileBioEl) {
+		const bio = userData.bio || localStorage.getItem('userBio') || '';
+		if (bio) {
+			profileBioEl.textContent = bio;
+			profileBioEl.classList.remove('empty');
+			if (!isAdminViewing) {
+				localStorage.setItem('userBio', bio);
+			}
+		} else {
+			profileBioEl.textContent = 'Add a bio to tell others about yourself...';
+			profileBioEl.classList.add('empty');
+		}
+	}
+	
+	// Update XP if available
 	if (userData.xp !== undefined) {
 		const xpLabel = document.getElementById('xpLabel');
 		const xpProgress = document.getElementById('xpProgress');
@@ -736,7 +757,7 @@ async function checkRoleRequestNotification() {
 		const shownNotification = sessionStorage.getItem('roleRequestNotificationShown');
 		if (shownNotification) return;
 		
-		const response = await fetch(`${apiBase}/role-requests`, {
+		const response = await fetch(`${apiBase}/role-requests/my-requests`, {
 			method: 'GET',
 			headers: {
 				'Authorization': `Bearer ${token}`
@@ -837,4 +858,204 @@ function addUserNotification(request) {
 			}
 		}, 300);
 	});
+}
+
+// Initialize Edit Profile Functionality
+function initializeEditProfile() {
+	// Edit Name
+	const editNameBtn = document.getElementById('editNameBtn');
+	const editNameModal = document.getElementById('editNameModal');
+	const closeEditName = document.getElementById('closeEditName');
+	const cancelEditName = document.getElementById('cancelEditName');
+	const editNameForm = document.getElementById('editNameForm');
+	const newNameInput = document.getElementById('newName');
+
+	editNameBtn?.addEventListener('click', () => {
+		const currentName = document.getElementById('profileName').textContent;
+		newNameInput.value = currentName;
+		editNameModal?.classList.remove('hidden');
+	});
+
+	closeEditName?.addEventListener('click', () => editNameModal?.classList.add('hidden'));
+	cancelEditName?.addEventListener('click', () => editNameModal?.classList.add('hidden'));
+
+	editNameForm?.addEventListener('submit', async (e) => {
+		e.preventDefault();
+		const newName = newNameInput.value.trim();
+		if (newName) {
+			const success = await updateProfile({ displayName: newName });
+			if (success) {
+				document.getElementById('profileName').textContent = newName;
+				localStorage.setItem('cyberedUserName', newName);
+				editNameModal?.classList.add('hidden');
+			}
+		}
+	});
+
+	// Edit Bio
+	const editBioBtn = document.getElementById('editBioBtn');
+	const editBioModal = document.getElementById('editBioModal');
+	const closeEditBio = document.getElementById('closeEditBio');
+	const cancelEditBio = document.getElementById('cancelEditBio');
+	const editBioForm = document.getElementById('editBioForm');
+	const newBioInput = document.getElementById('newBio');
+	const bioCharCount = document.getElementById('bioCharCount');
+
+	editBioBtn?.addEventListener('click', () => {
+		const currentBio = localStorage.getItem('userBio') || '';
+		newBioInput.value = currentBio;
+		bioCharCount.textContent = currentBio.length;
+		editBioModal?.classList.remove('hidden');
+	});
+
+	newBioInput?.addEventListener('input', () => {
+		bioCharCount.textContent = newBioInput.value.length;
+	});
+
+	closeEditBio?.addEventListener('click', () => editBioModal?.classList.add('hidden'));
+	cancelEditBio?.addEventListener('click', () => editBioModal?.classList.add('hidden'));
+
+	editBioForm?.addEventListener('submit', async (e) => {
+		e.preventDefault();
+		const newBio = newBioInput.value.trim();
+		if (newBio.length > 0 && newBio.length < 3) {
+			alert('Bio must be at least 3 characters long or leave it empty.');
+			return;
+		}
+		const success = await updateProfile({ bio: newBio });
+		if (success) {
+			const bioElement = document.getElementById('profileBio');
+			if (newBio) {
+				bioElement.textContent = newBio;
+				bioElement.classList.remove('empty');
+			} else {
+				bioElement.textContent = 'Add a bio to tell others about yourself...';
+				bioElement.classList.add('empty');
+			}
+			localStorage.setItem('userBio', newBio);
+			editBioModal?.classList.add('hidden');
+		}
+	});
+
+	// Edit Profile (Combined)
+	const editProfileBtn = document.getElementById('editProfileBtn');
+	const editProfileModal = document.getElementById('editProfileModal');
+	const closeEditProfile = document.getElementById('closeEditProfile');
+	const cancelEditProfile = document.getElementById('cancelEditProfile');
+	const editProfileForm = document.getElementById('editProfileForm');
+	const profileNameInput = document.getElementById('profileNameInput');
+	const profileBioInput = document.getElementById('profileBioInput');
+	const profileBioCharCount = document.getElementById('profileBioCharCount');
+
+	editProfileBtn?.addEventListener('click', () => {
+		const currentName = document.getElementById('profileName').textContent;
+		const currentBio = localStorage.getItem('userBio') || '';
+		profileNameInput.value = currentName;
+		profileBioInput.value = currentBio;
+		profileBioCharCount.textContent = currentBio.length;
+		editProfileModal?.classList.remove('hidden');
+	});
+
+	profileBioInput?.addEventListener('input', () => {
+		profileBioCharCount.textContent = profileBioInput.value.length;
+	});
+
+	closeEditProfile?.addEventListener('click', () => editProfileModal?.classList.add('hidden'));
+	cancelEditProfile?.addEventListener('click', () => editProfileModal?.classList.add('hidden'));
+
+	editProfileForm?.addEventListener('submit', async (e) => {
+		e.preventDefault();
+		const newName = profileNameInput.value.trim();
+		const newBio = profileBioInput.value.trim();
+		
+		if (newBio.length > 0 && newBio.length < 3) {
+			alert('Bio must be at least 3 characters long or leave it empty.');
+			return;
+		}
+		
+		const success = await updateProfile({ 
+			displayName: newName,
+			bio: newBio 
+		});
+		
+		if (success) {
+			// Update name
+			if (newName) {
+				document.getElementById('profileName').textContent = newName;
+				localStorage.setItem('cyberedUserName', newName);
+			}
+			
+			// Update bio
+			const bioElement = document.getElementById('profileBio');
+			if (newBio) {
+				bioElement.textContent = newBio;
+				bioElement.classList.remove('empty');
+			} else {
+				bioElement.textContent = 'Add a bio to tell others about yourself...';
+				bioElement.classList.add('empty');
+			}
+			localStorage.setItem('userBio', newBio);
+			
+			editProfileModal?.classList.add('hidden');
+		}
+	});
+
+	// Close modals with Escape key
+	document.addEventListener('keydown', (e) => {
+		if (e.key === 'Escape') {
+			editNameModal?.classList.add('hidden');
+			editBioModal?.classList.add('hidden');
+			editProfileModal?.classList.add('hidden');
+		}
+	});
+
+	// Close modals when clicking backdrop
+	[editNameModal, editBioModal, editProfileModal].forEach(modal => {
+		modal?.addEventListener('click', (e) => {
+			if (e.target === modal) {
+				modal.classList.add('hidden');
+			}
+		});
+	});
+}
+
+// Update Profile Function
+async function updateProfile(data) {
+	try {
+		const token = localStorage.getItem('authToken');
+		if (!token) {
+			console.error('No auth token found');
+			return false;
+		}
+		
+		const payload = JSON.parse(atob(token.split('.')[1]));
+		const userId = payload.sub;
+		const apiBase = getApiBase();
+		
+		console.log('Updating profile:', data);
+		
+		const response = await fetch(`${apiBase}/users/${userId}/profile`, {
+			method: 'PUT',
+			headers: {
+				'Content-Type': 'application/json',
+				'Authorization': `Bearer ${token}`
+			},
+			body: JSON.stringify(data)
+		});
+		
+		if (!response.ok) {
+			const error = await response.json();
+			console.error('Failed to update profile:', error);
+			alert('Failed to update profile. Please try again.');
+			return false;
+		}
+		
+		const result = await response.json();
+		console.log('Profile updated successfully:', result);
+		return true;
+	} catch (err) {
+		console.error('Failed to update profile:', err);
+		alert('Failed to update profile. Please try again.');
+		return false;
+	}
 }

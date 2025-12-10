@@ -19,6 +19,10 @@ let multiplayerState = {
   spectating: false
 };
 
+// Animation system for collisions and respawns
+let particles = [];
+let playerAnimations = new Map(); // Map of playerId -> animation state
+
 // Player colors based on lane (0-4)
 const playerColors = [
   { main: '#3b82f6', light: '#60a5fa', dark: '#1e40af', name: 'Blue' },    // Player 1
@@ -110,7 +114,12 @@ const robot = {
   height: 50,
   velocityY: 0,
   jumping: false,
-  grounded: true
+  grounded: true,
+  isInvincible: false,
+  invincibilityTimer: 0,
+  isRespawning: false,
+  respawnY: 0,
+  isVisible: true
 };
 
 const ground = canvas.height - 50;
@@ -216,10 +225,16 @@ function gameLoop() {
   // Draw ground
   drawGround();
 
+  // Update respawn animations and invincibility
+  updateRespawnAnimation();
+
   // Update and check collisions only if not spectating
   if (gameMode === 'single' || !multiplayerState.spectating) {
     updateRobot();
-    checkCollisions();
+    // Only check collisions if not invincible
+    if (!robot.isInvincible) {
+      checkCollisions();
+    }
   }
 
   // Draw players based on game mode
@@ -235,13 +250,23 @@ function gameLoop() {
     // Draw all players (including self)
     drawAllPlayers();
   } else {
-    // Single player mode - only draw own robot
-    drawRobot();
+    // Single player mode - only draw own robot (with visibility check)
+    if (robot.isVisible) {
+      let opacity = 1.0;
+      if (robot.isInvincible) {
+        opacity = Math.abs(Math.sin(Date.now() / 100)) * 0.4 + 0.3; // Flicker between 30% and 70%
+      }
+      drawRobot(robot.x, robot.y, robot.width, robot.height, playerColors[0], score, opacity);
+    }
   }
 
   // Update and draw obstacles
   updateObstacles();
   drawObstacles();
+
+  // Update and draw particles
+  updateParticles();
+  drawParticles();
 
   // Update score (only if not spectating)
   if (gameMode === 'single' || !multiplayerState.spectating) {
@@ -343,7 +368,11 @@ function updateRobot() {
 }
 
 // Draw robot
-function drawRobot(x = robot.x, y = robot.y, width = robot.width, height = robot.height, colorScheme = playerColors[0], animOffset = 0) {
+function drawRobot(x = robot.x, y = robot.y, width = robot.width, height = robot.height, colorScheme = playerColors[0], animOffset = 0, opacity = 1.0) {
+  // Save current context state
+  const previousAlpha = ctx.globalAlpha;
+  ctx.globalAlpha = opacity;
+  
   ctx.fillStyle = colorScheme.main;
   
   // Body
@@ -368,19 +397,171 @@ function drawRobot(x = robot.x, y = robot.y, width = robot.width, height = robot
   ctx.fillStyle = colorScheme.main;
   ctx.fillRect(x - 5, y + 10, 5, 20);
   ctx.fillRect(x + width, y + 10, 5, 20);
+  
+  // Restore previous alpha
+  ctx.globalAlpha = previousAlpha;
+}
+
+// Particle system for collision effects
+function createBreakParticles(x, y, width, height, colorScheme) {
+  const particleCount = 20;
+  for (let i = 0; i < particleCount; i++) {
+    particles.push({
+      x: x + width / 2,
+      y: y + height / 2,
+      vx: (Math.random() - 0.5) * 8,
+      vy: (Math.random() - 0.5) * 8 - 2,
+      size: Math.random() * 4 + 2,
+      color: [colorScheme.main, colorScheme.light, colorScheme.dark][Math.floor(Math.random() * 3)],
+      life: 60,
+      maxLife: 60
+    });
+  }
+}
+
+function updateParticles() {
+  particles = particles.filter(p => {
+    p.x += p.vx;
+    p.y += p.vy;
+    p.vy += 0.3; // Gravity
+    p.life--;
+    return p.life > 0;
+  });
+}
+
+function drawParticles() {
+  particles.forEach(p => {
+    const alpha = p.life / p.maxLife;
+    ctx.globalAlpha = alpha;
+    ctx.fillStyle = p.color;
+    ctx.fillRect(p.x, p.y, p.size, p.size);
+  });
+  ctx.globalAlpha = 1.0;
+}
+
+// Start respawn animation for a player
+function startRespawnAnimation(playerId) {
+  if (playerId === multiplayerState.myPlayerId) {
+    // Local player respawn
+    robot.isRespawning = true;
+    robot.respawnY = -100; // Start above screen
+    robot.isVisible = true; // Make visible immediately to show falling animation
+    robot.isInvincible = true;
+    robot.invincibilityTimer = 120; // 2 seconds at 60fps
+    robot.y = -100; // Set initial position above screen
+  } else {
+    // Remote player respawn
+    const player = multiplayerState.players.get(playerId);
+    if (player && player.position) {
+      player.position.y = -100; // Set initial position above screen
+    }
+    playerAnimations.set(playerId, {
+      isRespawning: true,
+      respawnY: -100,
+      isVisible: true, // Make visible immediately to show falling animation
+      isInvincible: true,
+      invincibilityTimer: 120
+    });
+  }
+}
+
+// Update respawn animation
+function updateRespawnAnimation() {
+  // Update local player
+  if (robot.isRespawning) {
+    robot.respawnY += 5; // Fall speed
+    if (robot.respawnY >= -robot.height) {
+      robot.y = robot.respawnY;
+    }
+    if (robot.respawnY >= ground - robot.height) {
+      robot.y = ground - robot.height;
+      robot.respawnY = 0;
+      robot.isRespawning = false;
+      robot.isVisible = true;
+    }
+  }
+  
+  // Update invincibility
+  if (robot.isInvincible && robot.invincibilityTimer > 0) {
+    robot.invincibilityTimer--;
+    if (robot.invincibilityTimer <= 0) {
+      robot.isInvincible = false;
+    }
+  }
+  
+  // Update remote players' animations
+  playerAnimations.forEach((anim, playerId) => {
+    if (anim.isRespawning) {
+      anim.respawnY += 5;
+      const player = multiplayerState.players.get(playerId);
+      if (player && player.position) {
+        if (anim.respawnY >= -robot.height) {
+          player.position.y = anim.respawnY;
+        }
+        if (anim.respawnY >= ground - robot.height) {
+          player.position.y = ground - robot.height;
+          anim.respawnY = 0;
+          anim.isRespawning = false;
+          anim.isVisible = true;
+        }
+      }
+    }
+    
+    if (anim.isInvincible && anim.invincibilityTimer > 0) {
+      anim.invincibilityTimer--;
+      if (anim.invincibilityTimer <= 0) {
+        anim.isInvincible = false;
+      }
+    }
+  });
 }
 
 function drawAllPlayers() {
+  const myPlayerId = multiplayerState.myPlayerId;
+  let myPlayer = null;
+  
+  // First pass: draw other players with lower opacity (background layer)
   multiplayerState.players.forEach(player => {
     if (player.isEliminated) return; // Don't draw eliminated players
     if (!player.position) return; // Skip if position not yet initialized
     
+    // Skip local player in this pass - will draw them on top
+    if (player.id === myPlayerId) {
+      myPlayer = player;
+      return;
+    }
+    
+    // Check if player is visible (not broken)
+    const anim = playerAnimations.get(player.id);
+    if (anim && !anim.isVisible) return;
+    
     const colorScheme = playerColors[player.lane] || playerColors[0];
     const pos = player.position;
     
-    // Draw player's robot
-    drawRobot(pos.x, pos.y, robot.width, robot.height, colorScheme, player.score || 0);
+    // Calculate opacity based on invincibility (flicker effect)
+    let opacity = 0.4; // Other players base opacity
+    if (anim && anim.isInvincible) {
+      opacity = Math.abs(Math.sin(Date.now() / 100)) * 0.25 + 0.15; // Flicker between 15% and 40%
+    }
+    
+    // Draw other players
+    drawRobot(pos.x, pos.y, robot.width, robot.height, colorScheme, player.score || 0, opacity);
   });
+  
+  // Second pass: draw local player on top with full opacity (foreground layer)
+  if (myPlayer && myPlayer.position && robot.isVisible) {
+    const colorScheme = playerColors[myPlayer.lane] || playerColors[0];
+    const pos = myPlayer.position;
+    
+    // Calculate opacity for invincibility flicker
+    let opacity = 1.0;
+    if (robot.isInvincible) {
+      opacity = Math.abs(Math.sin(Date.now() / 100)) * 0.4 + 0.3; // Flicker between 30% and 70%
+    }
+    
+    // Draw local player with full opacity on top
+    drawRobot(pos.x, pos.y, robot.width, robot.height, colorScheme, myPlayer.score || 0, opacity);
+  }
 }
 
 // Spawn obstacle
@@ -388,7 +569,7 @@ function spawnObstacle() {
   const type = Math.random() > 0.7 ? 'flying' : 'ground';
   const obstacle = {
     x: canvas.width,
-    y: type === 'flying' ? ground - 100 : ground,
+    y: type === 'flying' ? ground - 60 : ground,
     width: 30,
     height: type === 'flying' ? 30 : 40,
     type: type,
@@ -432,13 +613,14 @@ function drawObstacles() {
       // Main body
       ctx.fillRect(obstacle.x, virusY, obstacle.width, virusHeight);
       
-      // Spikes on top
+      // Spikes on top - aligned to box width
       ctx.fillStyle = '#991b1b';
+      const spikeWidth = obstacle.width / 3;
       for (let i = 0; i < 3; i++) {
         ctx.beginPath();
-        ctx.moveTo(obstacle.x + i * 12, virusY);
-        ctx.lineTo(obstacle.x + i * 12 + 6, virusY - 10);
-        ctx.lineTo(obstacle.x + i * 12 + 12, virusY);
+        ctx.moveTo(obstacle.x + i * spikeWidth, virusY);
+        ctx.lineTo(obstacle.x + i * spikeWidth + spikeWidth / 2, virusY - 10);
+        ctx.lineTo(obstacle.x + (i + 1) * spikeWidth, virusY);
         ctx.fill();
       }
     }
@@ -457,7 +639,23 @@ function checkCollisions() {
       robot.y < obstacleY + obstacle.height &&
       robot.y + robot.height > obstacleY
     ) {
-      // Collision detected - show quiz
+      // Collision detected - trigger break animation
+      const colorScheme = gameMode === 'multi' 
+        ? playerColors[multiplayerState.myLane] || playerColors[0]
+        : playerColors[0];
+      
+      createBreakParticles(robot.x, robot.y, robot.width, robot.height, colorScheme);
+      robot.isVisible = false;
+      
+      // Notify other players about collision in multiplayer
+      if (gameMode === 'multi' && socket) {
+        socket.emit('player-collision', {
+          playerId: multiplayerState.myPlayerId,
+          position: { x: robot.x, y: robot.y }
+        });
+      }
+      
+      // Show quiz
       pauseGameForQuiz();
     }
   });
@@ -550,9 +748,16 @@ function checkAnswer(selectedIndex, button) {
       obstacles = []; // Clear obstacles
       gamePaused = false;
       
+      // Start respawn animation
+      startRespawnAnimation(multiplayerState.myPlayerId);
+      
       // In multiplayer, notify other players that this player resumed
       if (gameMode === 'multi' && socket) {
         socket.emit('player-resumed', { playerId: multiplayerState.myPlayerId });
+        socket.emit('player-respawn', { 
+          playerId: multiplayerState.myPlayerId,
+          position: { x: robot.x, y: -100 }
+        });
       }
     }, 1500);
   } else {
@@ -620,11 +825,23 @@ function startGame() {
   highScoreFlicker = false;
   flickerTimer = 0;
   
+  // Reset particles and animations
+  particles = [];
+  playerAnimations.clear();
+  
   // Reset robot position and state
   robot.y = ground - robot.height;
   robot.velocityY = 0;
   robot.jumping = false;
   robot.grounded = true;
+  robot.isInvincible = false;
+  robot.invincibilityTimer = 0;
+  robot.isRespawning = false;
+  robot.respawnY = 0;
+  robot.isVisible = true;
+  
+  // Clear canvas completely
+  ctx.clearRect(0, 0, canvas.width, canvas.height);
   
   // Hide overlays
   document.getElementById('gameOver').style.display = 'none';
@@ -689,6 +906,10 @@ function endGame() {
 document.addEventListener('keydown', (e) => {
   if (e.code === 'Space') {
     e.preventDefault();
+    // Don't start game if multiplayer lobby is open
+    if (document.getElementById('multiplayerLobby').style.display === 'block') {
+      return;
+    }
     if (!gameStarted || !gameRunning) {
       startGame();
     } else {
@@ -698,6 +919,10 @@ document.addEventListener('keydown', (e) => {
 });
 
 canvas.addEventListener('click', () => {
+  // Don't start game if multiplayer lobby is open
+  if (document.getElementById('multiplayerLobby').style.display === 'block') {
+    return;
+  }
   if (!gameStarted || !gameRunning) {
     startGame();
   } else {
@@ -708,6 +933,10 @@ canvas.addEventListener('click', () => {
 // Mobile touch support
 canvas.addEventListener('touchstart', (e) => {
   e.preventDefault();
+  // Don't start game if multiplayer lobby is open
+  if (document.getElementById('multiplayerLobby').style.display === 'block') {
+    return;
+  }
   if (!gameStarted || !gameRunning) {
     startGame();
   } else {
@@ -761,9 +990,16 @@ function handleExternalQuizAnswer(isCorrect) {
     obstacles = []; // Clear obstacles
     gamePaused = false;
     
+    // Start respawn animation
+    startRespawnAnimation(multiplayerState.myPlayerId);
+    
     // In multiplayer, notify other players that this player resumed
     if (gameMode === 'multi' && socket) {
       socket.emit('player-resumed', { playerId: multiplayerState.myPlayerId });
+      socket.emit('player-respawn', { 
+        playerId: multiplayerState.myPlayerId,
+        position: { x: robot.x, y: -100 }
+      });
     }
   } else {
     // Wrong answer
@@ -1071,9 +1307,35 @@ function initializeMultiplayerListeners() {
     e.preventDefault();
     // Stop the game
     gameRunning = false;
+    gameStarted = false;
     audio.theme.pause();
-    // Hide results screen
+    
+    // Clear all game state
+    obstacles = [];
+    particles = [];
+    playerAnimations.clear();
+    score = 0;
+    
+    // Reset robot
+    robot.y = ground - robot.height;
+    robot.velocityY = 0;
+    robot.jumping = false;
+    robot.grounded = true;
+    robot.isInvincible = false;
+    robot.invincibilityTimer = 0;
+    robot.isRespawning = false;
+    robot.respawnY = 0;
+    robot.isVisible = true;
+    
+    // Clear canvas completely
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // Hide all overlays
     document.getElementById('resultsScreen').style.display = 'none';
+    document.getElementById('gameOver').style.display = 'none';
+    document.getElementById('quizModal').style.display = 'none';
+    document.getElementById('spectatorOverlay').style.display = 'none';
+    
     // Leave the room
     socket.emit('leave-room');
     // The 'left-room' event will handle showing the lobby
@@ -1087,7 +1349,29 @@ function initializeMultiplayerListeners() {
     e.preventDefault();
     // Stop the game
     gameRunning = false;
+    gameStarted = false;
     audio.theme.pause();
+    
+    // Clear all game state
+    obstacles = [];
+    particles = [];
+    playerAnimations.clear();
+    score = 0;
+    
+    // Reset robot
+    robot.y = ground - robot.height;
+    robot.velocityY = 0;
+    robot.jumping = false;
+    robot.grounded = true;
+    robot.isInvincible = false;
+    robot.invincibilityTimer = 0;
+    robot.isRespawning = false;
+    robot.respawnY = 0;
+    robot.isVisible = true;
+    
+    // Clear canvas completely
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
     // Hide spectator overlay
     document.getElementById('spectatorOverlay').style.display = 'none';
     // Leave the room
@@ -1198,6 +1482,31 @@ function initializeMultiplayerListeners() {
     }
   });
 
+  // Handle player collision events
+  socket.on('player-collision', (data) => {
+    const player = multiplayerState.players.get(data.playerId);
+    if (player && data.playerId !== multiplayerState.myPlayerId) {
+      // Create break particles for other players
+      const colorScheme = playerColors[player.lane] || playerColors[0];
+      createBreakParticles(data.position.x, data.position.y, robot.width, robot.height, colorScheme);
+      
+      // Hide the player
+      let anim = playerAnimations.get(data.playerId);
+      if (!anim) {
+        anim = { isVisible: true, isInvincible: false, invincibilityTimer: 0, isRespawning: false, respawnY: 0 };
+        playerAnimations.set(data.playerId, anim);
+      }
+      anim.isVisible = false;
+    }
+  });
+
+  // Handle player respawn events
+  socket.on('player-respawn', (data) => {
+    if (data.playerId !== multiplayerState.myPlayerId) {
+      startRespawnAnimation(data.playerId);
+    }
+  });
+
   socket.on('player-eliminated', (data) => {
     console.log('📡 Received player-eliminated:', data);
     const player = multiplayerState.players.get(data.playerId);
@@ -1271,6 +1580,9 @@ function initializeMultiplayerListeners() {
     // Server confirmed we left, reset lobby to creation screen
     resetMultiplayerLobby();
     
+    // Clear canvas completely
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
     // Show the multiplayer lobby again
     const isMobile = window.innerWidth <= 768;
     const inIframe = window.self !== window.top;
@@ -1289,6 +1601,7 @@ function initializeMultiplayerListeners() {
 function showRoomSection() {
   document.getElementById('roomCode').textContent = multiplayerState.roomCode;
   document.getElementById('roomSection').style.display = 'block';
+  document.getElementById('lobbyCreationSection').style.display = 'none';
   document.getElementById('createRoomBtn').disabled = true;
   document.getElementById('joinRoomInput').disabled = true;
   document.getElementById('joinRoomBtn').disabled = true;
@@ -1306,6 +1619,7 @@ function showRoomSection() {
 function resetMultiplayerLobby() {
   // Hide room section and reset to lobby creation screen
   document.getElementById('roomSection').style.display = 'none';
+  document.getElementById('lobbyCreationSection').style.display = 'block';
   document.getElementById('createRoomBtn').disabled = false;
   document.getElementById('joinRoomInput').disabled = false;
   document.getElementById('joinRoomBtn').disabled = false;
@@ -1462,6 +1776,9 @@ function eliminatePlayer() {
   console.log('  - My player ID:', multiplayerState.myPlayerId);
   console.log('  - Is last player:', isLastPlayer);
   console.log('  - All players:', Array.from(multiplayerState.players.values()).map(p => ({id: p.id, username: p.username, eliminated: p.isEliminated})));
+  
+  // Keep player visible for spectating (they become invisible to others via isEliminated flag)
+  robot.isVisible = true;
   
   // Emit elimination to server
   if (socket) {
@@ -1622,7 +1939,15 @@ function answerQuizMultiplayer(selectedIndex) {
       document.getElementById('quizModal').style.display = 'none';
       obstacles = []; // Clear obstacles
       gamePaused = false;
+      
+      // Start respawn animation
+      startRespawnAnimation(multiplayerState.myPlayerId);
+      
       socket.emit('player-resumed', { playerId: multiplayerState.myPlayerId });
+      socket.emit('player-respawn', { 
+        playerId: multiplayerState.myPlayerId,
+        position: { x: robot.x, y: -100 }
+      });
     }, 1500);
   } else {
     audio.wrongChoice.play();

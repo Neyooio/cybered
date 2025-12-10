@@ -235,11 +235,20 @@ class CyberBot {
         this.showTyping();
 
         try {
+            // Get auth token from localStorage
+            const token = localStorage.getItem('authToken');
+            const headers = {
+                'Content-Type': 'application/json'
+            };
+            
+            // Add Authorization header if token exists
+            if (token) {
+                headers['Authorization'] = `Bearer ${token}`;
+            }
+            
             const response = await fetch(`${this.API_URL}/ask`, {
                 method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
+                headers: headers,
                 body: JSON.stringify({
                     message: message,
                     conversationHistory: this.conversationHistory

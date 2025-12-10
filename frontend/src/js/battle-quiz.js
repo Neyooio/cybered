@@ -440,6 +440,13 @@ class BattleQuiz {
     const totalTime = Math.floor((Date.now() - this.startTime) / 1000);
     const accuracy = Math.round((this.correctAnswers / this.questions.length) * 100);
     
+    // Save victory status to localStorage
+    const lessonKey = `lesson_${this.module}_${this.lessonNumber}_victory`;
+    localStorage.setItem(lessonKey, 'true');
+    
+    // Dispatch custom event to notify the page that victory status changed
+    window.dispatchEvent(new CustomEvent('battleVictoryUpdated', { detail: { lessonKey, victory: true } }));
+    
     const container = document.getElementById('battleContainer');
     container.innerHTML = `
       <div class="battle-arena ${this.module}">
@@ -483,6 +490,10 @@ class BattleQuiz {
     const totalTime = Math.floor((Date.now() - this.startTime) / 1000);
     const accuracy = Math.round((this.correctAnswers / Math.max(1, this.currentQuestionIndex)) * 100);
     
+    // Save defeat status to localStorage (remove victory if exists)
+    const lessonKey = `lesson_${this.module}_${this.lessonNumber}_victory`;
+    localStorage.setItem(lessonKey, 'false');
+    
     const container = document.getElementById('battleContainer');
     container.innerHTML = `
       <div class="battle-arena ${this.module}">
@@ -521,10 +532,11 @@ class BattleQuiz {
   }
   
   endBattle() {
-    if (this.monsterHealth > 0) {
-      this.defeat();
-    } else {
+    // Victory if score is 8 or above, defeat if 7 or below
+    if (this.score >= 8) {
       this.victory();
+    } else {
+      this.defeat();
     }
   }
   
@@ -590,6 +602,9 @@ class BattleQuiz {
       
       // Monitor playback and handle looping
       this.battleMusic.addEventListener('timeupdate', () => {
+        // Check if battleMusic still exists
+        if (!this.battleMusic) return;
+        
         const currentTime = this.battleMusic.currentTime;
         
         // If we haven't played the intro yet and we've reached the loop start point

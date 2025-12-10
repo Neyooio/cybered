@@ -1,0 +1,40 @@
+%% CyberEd ERD (Mermaid ER diagram)
+%% Adjust entities/relations as models evolve
+
+erDiagram
+    User {
+        string _id
+        string username
+        string email
+        string passwordHash
+        string role
+        string avatarUrl
+    }
+    Monster {
+        string _id
+        string name
+        number attack
+        number defense
+        string module
+    }
+    QuizQuestion {
+        string _id
+        string module
+        number lesson
+        string question
+        string[] options
+        number correctIndex
+        string difficulty
+        string explanation
+    }
+    FacultySpace {
+        string _id
+        string name
+        string description
+        string ownerUserId
+    }
+
+    User ||--o{ QuizQuestion : created
+    User ||--o{ FacultySpace : owns
+    FacultySpace ||--o{ User : members
+    QuizQuestion ||--o{ Monster : rewards

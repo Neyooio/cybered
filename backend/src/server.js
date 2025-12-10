@@ -17,6 +17,7 @@ import { fileURLToPath } from 'url';
 import { createServer } from 'http';
 import { Server } from 'socket.io';
 import { initializeGameSocket } from './services/gameSocket.js';
+import { initializeHeaderCheckSocket } from './services/headerCheckSocket.js';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
@@ -124,6 +125,9 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/CyberE
     // Initialize game socket
     initializeGameSocket(io);
     console.log('[socket.io] game socket initialized');
+    // Initialize Header Check socket namespace
+    initializeHeaderCheckSocket(io);
+    console.log('[socket.io] header-check socket initialized');
     
     httpServer.listen(PORT, '0.0.0.0', () => {
       console.log(`[server] listening on http://localhost:${PORT}`);

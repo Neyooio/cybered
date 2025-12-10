@@ -24,6 +24,7 @@ if (hostname.includes('netlify.app') || hostname.includes('yourdomain.com')) {
 // Make it available globally for regular scripts
 if (typeof window !== 'undefined') {
   window.API_BASE_URL = API_BASE_URL;
+  window.API_BASE = API_BASE_URL;
   console.log('[Config] API_BASE_URL set to:', API_BASE_URL);
   console.log('[Config] Current hostname:', hostname);
 }

@@ -1,12 +1,12 @@
 import express from 'express';
 import Groq from 'groq-sdk';
+import { requireAuth } from '../middleware/auth.js';
+import RateLimit from '../models/RateLimit.js';
 
 const router = express.Router();
 
 // Initialize Groq client
-const groq = new Groq({
-    apiKey: process.env.GROQ_API_KEY
-});
+const groq = new Groq({ apiKey: process.env.GROQ_API_KEY });
 
 // System context about CyberEd modules
 const SYSTEM_CONTEXT = `You are Cipher, an intelligent cybersecurity learning assistant for CyberEd - an educational platform teaching cybersecurity concepts.
@@ -57,7 +57,7 @@ Your role:
 - Use simple language suitable for students learning cybersecurity`;
 
 // POST /api/chatbot/ask
-router.post('/ask', async (req, res) => {
+router.post('/ask', requireAuth, async (req, res) => {
     try {
         const { message, conversationHistory = [] } = req.body;
 
@@ -76,6 +76,31 @@ router.post('/ask', async (req, res) => {
             });
         }
 
+        // Per-user daily limit
+        const dailyLimit = Number(process.env.CHATBOT_DAILY_LIMIT || 20);
+        const userId = req.user?.sub || 'anonymous';
+        const today = new Date().toISOString().slice(0, 10);
+        try {
+            let record = await RateLimit.findOne({ userId, date: today });
+            if (!record) {
+                record = await RateLimit.create({ userId, date: today, count: 0 });
+            }
+            if (record.count >= dailyLimit) {
+                return res.status(429).json({
+                    success: false,
+                    error: `Daily chatbot limit reached (${dailyLimit}). Try again tomorrow.`,
+                    remaining: 0,
+                    limit: dailyLimit
+                });
+            }
+            // Increment usage optimistically before generating
+            record.count += 1;
+            await record.save();
+        } catch (rlErr) {
+            console.error('RateLimit error:', rlErr);
+            // Continue without blocking if rate limit storage fails
+        }
+
         // Build conversation messages
         const messages = [
             { role: 'system', content: SYSTEM_CONTEXT }
@@ -91,9 +116,9 @@ router.post('/ask', async (req, res) => {
         // Call Groq API
         const completion = await groq.chat.completions.create({
             messages: messages,
-            model: 'llama-3.3-70b-versatile', // Updated to current supported model
+            model: 'llama-3.3-70b-versatile',
             temperature: 0.7,
-            max_tokens: 500, // Keep responses concise
+            max_tokens: 500,
             top_p: 1,
             stream: false
         });
@@ -150,6 +175,34 @@ router.get('/health', async (req, res) => {
         res.status(500).json({
             available: false,
             message: 'Service check failed'
+        });
+    }
+});
+
+// GET /api/chatbot/limits - Check user's daily usage
+router.get('/limits', requireAuth, async (req, res) => {
+    try {
+        const dailyLimit = Number(process.env.CHATBOT_DAILY_LIMIT || 20);
+        const userId = req.user?.sub || 'anonymous';
+        const today = new Date().toISOString().slice(0, 10);
+        
+        let record = await RateLimit.findOne({ userId, date: today });
+        const used = record?.count || 0;
+        const remaining = Math.max(0, dailyLimit - used);
+        
+        res.json({
+            success: true,
+            limit: dailyLimit,
+            used,
+            remaining,
+            date: today
+        });
+    } catch (error) {
+        console.error('Limits check error:', error);
+        res.status(500).json({
+            success: false,
+            error: 'Failed to retrieve usage limits',
+            details: error?.message || 'Unknown error'
         });
     }
 });

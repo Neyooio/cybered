@@ -630,6 +630,29 @@ body.battle-active .back-to-top {
   grid-template-rows: repeat(4, 1fr);
   gap: 0;
   background: rgba(255, 255, 255, 0.1);
+  max-height: 50vh;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Orange scrollbar for answer side */
+.answer-side::-webkit-scrollbar {
+  width: 10px;
+}
+
+.answer-side::-webkit-scrollbar-track {
+  background: rgba(0, 0, 0, 0.3);
+  border-radius: 10px;
+}
+
+.answer-side::-webkit-scrollbar-thumb {
+  background: linear-gradient(180deg, #f97316, #ea580c);
+  border-radius: 10px;
+  border: 2px solid rgba(0, 0, 0, 0.2);
+}
+
+.answer-side::-webkit-scrollbar-thumb:hover {
+  background: linear-gradient(180deg, #fb923c, #f97316);
 }
 
 .move-button {

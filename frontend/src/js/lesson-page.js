@@ -48,7 +48,59 @@ document.addEventListener('DOMContentLoaded', () => {
 
   const completeBtn = document.getElementById('completeLesson');
   if (completeBtn) {
+    // Check if user has achieved victory in battle
+    const lessonNumber = parseInt(lessonIndex) + 1; // Convert index to lesson number (1-based)
+    const lessonKey = `lesson_${moduleKey}_${lessonNumber}_victory`;
+    
+    // Function to check and update button state
+    const updateCompleteButtonState = () => {
+      const hasVictory = localStorage.getItem(lessonKey) === 'true';
+      console.log('Checking victory status:', lessonKey, hasVictory); // Debug log
+      
+      if (hasVictory) {
+        completeBtn.disabled = false;
+        completeBtn.style.opacity = '1';
+        completeBtn.style.cursor = 'pointer';
+        completeBtn.title = 'Mark this lesson as complete';
+      } else {
+        completeBtn.disabled = true;
+        completeBtn.style.opacity = '0.5';
+        completeBtn.style.cursor = 'not-allowed';
+        completeBtn.title = 'You must achieve Victory in the battle quiz (score 8+) to mark this lesson complete';
+      }
+    };
+    
+    // Initial check
+    updateCompleteButtonState();
+    
+    // Listen for storage changes (when battle quiz updates victory status)
+    window.addEventListener('storage', (e) => {
+      if (e.key === lessonKey) {
+        updateCompleteButtonState();
+      }
+    });
+    
+    // Listen for custom event from battle quiz (same-tab updates)
+    window.addEventListener('battleVictoryUpdated', (e) => {
+      if (e.detail && e.detail.lessonKey === lessonKey) {
+        updateCompleteButtonState();
+      }
+    });
+    
+    // Also check when the page becomes visible again (for same-tab updates)
+    document.addEventListener('visibilitychange', () => {
+      if (!document.hidden) {
+        updateCompleteButtonState();
+      }
+    });
+    
     completeBtn.addEventListener('click', () => {
+      const hasVictory = localStorage.getItem(lessonKey) === 'true';
+      if (!hasVictory) {
+        alert('You must achieve Victory in the battle quiz (score 8 or above) before marking this lesson as complete!');
+        return;
+      }
+      
       const completed = loadProgress(moduleKey, TOTAL_LESSONS);
       if (lessonIndex >= 0 && lessonIndex < completed.length){
         completed[lessonIndex] = true;
