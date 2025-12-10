@@ -37,7 +37,8 @@ document.addEventListener("DOMContentLoaded", () => {
   
   // Wake up backend early (for Render free tier cold starts)
   // This pings the backend as soon as the page loads
-  (async function wakeUpBackend() {\n    try {
+  (async function wakeUpBackend() {
+    try {
       const controller = new AbortController();
       const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
       
