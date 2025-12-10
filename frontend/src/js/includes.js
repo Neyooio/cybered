@@ -1411,10 +1411,10 @@ function getUserAvatarUrl(avatarInfo) {
   }
   
   const avatarMap = {
-    'Sen': basePath + 'Sen.png',
-    'Aldrick': basePath + 'Aldrick.png',
-    'Maya': basePath + 'Maya.png',
-    'Annette': basePath + 'Annette.png'
+    'sen': basePath + 'Sen.png',
+    'aldrick': basePath + 'Aldrick.png',
+    'maya': basePath + 'Maya.png',
+    'annette': basePath + 'Annette.png'
   };
   
   if (avatarInfo && avatarMap[avatarInfo]) {
