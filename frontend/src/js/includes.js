@@ -32,6 +32,9 @@ const initIncludes = async () => {
   const includes = document.querySelectorAll('[data-include]');
   console.debug('[init] Found', includes.length, 'elements with data-include attribute');
   
+  // Add loading class to prevent flash
+  document.body.classList.add('loading-includes');
+  
   await Promise.all(Array.from(includes).map(async host => {
     const url = host.getAttribute('data-include');
     const cacheBust = `${url}?v=${Date.now()}`;
@@ -91,6 +94,9 @@ const initIncludes = async () => {
     }
   }));
   console.info('[init] ===== All includes loaded =====');
+  
+  // Remove loading class to show navbar/sidenav
+  document.body.classList.remove('loading-includes');
 
   resetModuleProgressOnReload();
   setActiveNav();

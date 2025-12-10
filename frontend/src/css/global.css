@@ -39,6 +39,12 @@
 /* Basic reset to remove default page gaps and ensure predictable sizing */
 *, *::before, *::after{ box-sizing: border-box; }
 
+/* Prevent flash of unstyled content while includes are loading */
+body.loading-includes [data-include] {
+  opacity: 0;
+  visibility: hidden;
+}
+
 /* Base gradient applied to html/body - stays fixed across all pages */
 html,body{ 
   height:100%; 
