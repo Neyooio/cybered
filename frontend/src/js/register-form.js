@@ -34,6 +34,33 @@ document.addEventListener("DOMContentLoaded", () => {
     return 'http://localhost:4000/api';
   }
   const API_BASE = deriveApiBase(); // backend base URL
+  
+  // Wake up backend early (for Render free tier cold starts)
+  // This pings the backend as soon as the page loads
+  (async function wakeUpBackend() {\n    try {
+      const controller = new AbortController();
+      const timeoutId = setTimeout(() => controller.abort(), 5000); // 5s timeout
+      
+      await fetch(API_BASE.replace('/api', '') + '/api/health', {
+        signal: controller.signal,
+        mode: 'cors'
+      });
+      clearTimeout(timeoutId);
+      console.log('[Wake-up] Backend is ready');
+    } catch (e) {
+      console.log('[Wake-up] Backend warming up... First login may take 30-60s');
+      // Show friendly message if this is production
+      if (window.location.hostname.includes('netlify.app') || 
+          window.location.hostname.includes('github.io') || 
+          window.location.hostname.includes('onrender.com')) {
+        const hint = document.createElement('div');
+        hint.style.cssText = 'position:fixed;top:20px;left:50%;transform:translateX(-50%);background:#ff6b35;color:white;padding:12px 24px;border-radius:8px;z-index:10000;font-size:14px;box-shadow:0 4px 12px rgba(0,0,0,0.3);animation:slideDown 0.3s ease;';
+        hint.innerHTML = '⏳ Waking up server... First login may take 30-60 seconds';
+        document.body.appendChild(hint);
+        setTimeout(() => hint.remove(), 8000);
+      }
+    }
+  })();
 
   // Intro dialogue handling 
   const overlay = document.getElementById("introOverlay");         
@@ -434,14 +461,38 @@ document.addEventListener("DOMContentLoaded", () => {
   }
 
   async function apiJson(path, body){
-    const res = await fetch(API_BASE + path, {
-      method:'POST',
-      headers:{ 'Content-Type':'application/json' },
-      body: JSON.stringify(body || {})
-    });
-    let data = {};
-    try { data = await res.json(); } catch {}
-    if (!res.ok){ const err = new Error(data?.error || res.statusText); err.status = res.status; throw err; }
-    return data;
+    const submitBtn = registerForm?.querySelector('button[type="submit"]');
+    const originalBtnContent = submitBtn?.innerHTML;
+    
+    try {
+      // Show loading state
+      if (submitBtn) {
+        submitBtn.disabled = true;
+        submitBtn.innerHTML = '<span class="reg-play">⏳</span>';
+      }
+      
+      const res = await fetch(API_BASE + path, {
+        method:'POST',
+        headers:{ 'Content-Type':'application/json' },
+        body: JSON.stringify(body || {})
+      });
+      
+      let data = {};
+      try { data = await res.json(); } catch {}
+      
+      if (!res.ok){ 
+        const err = new Error(data?.error || res.statusText); 
+        err.status = res.status; 
+        throw err; 
+      }
+      
+      return data;
+    } finally {
+      // Restore button state
+      if (submitBtn && originalBtnContent) {
+        submitBtn.disabled = false;
+        submitBtn.innerHTML = originalBtnContent;
+      }
+    }
   }
 });
