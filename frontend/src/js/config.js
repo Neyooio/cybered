@@ -7,8 +7,8 @@
 const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
 let API_BASE_URL;
 
-// Production environment (Netlify or other hosting)
-if (hostname.includes('netlify.app') || hostname.includes('yourdomain.com')) {
+// Production environment (Netlify, GitHub Pages, or other hosting)
+if (hostname.includes('netlify.app') || hostname.includes('github.io') || hostname.includes('yourdomain.com')) {
   // Your actual Render backend URL
   API_BASE_URL = 'https://cybered-backend.onrender.com';
   
