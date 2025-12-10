@@ -12,7 +12,7 @@
   letter-spacing: -0.02em;
   font-family: 'Share Tech Mono', monospace;
 }
-.page-header + .card-panel .lesson-hero .lesson-title{ display:none; }
+.page-header + .lesson-hero .lesson-title{ display:none; }
 .meta-chips{ display:flex; gap:.5rem; flex-wrap:wrap; }
 .chip{ font-size:.75rem; padding:.25rem .5rem; border-radius:.5rem; border:1px solid rgba(255,255,255,.12); background: rgba(15,23,42,.6); }
 
