@@ -438,7 +438,7 @@ document.addEventListener("DOMContentLoaded", () => {
     { id: 'jordan', name: 'Jordan', src: './assets/images/avatars/jordan.png', el: document.getElementById('avatar-jordan') },
     { id: 'sam', name: 'Sam', src: './assets/images/avatars/sam.png', el: document.getElementById('avatar-sam') },
     { id: 'taylor', name: 'Taylor', src: './assets/images/avatars/taylor.png', el: document.getElementById('avatar-taylor') },
-    { id: 'maya', name: 'Maya', el: document.getElementById('avatar-maya') }
+    { id: 'maya', name: 'maya', el: document.getElementById('avatar-maya') }
   ];
 
   // --- Notifications ---
