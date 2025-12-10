@@ -38,6 +38,7 @@ const corsOptions = {
       'http://localhost:5500',
       'http://127.0.0.1:5500',
       'https://cyberedplay.netlify.app',
+      'https://neyooio.github.io',
       'https://cybered-backend.onrender.com'
     ];
     
