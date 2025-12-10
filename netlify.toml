@@ -9,8 +9,6 @@
   from = "/*"
   to = "/index.html"
   status = 200
-  to = "/index.html"
-  status = 200
 
 # Redirect /src/html/* to the actual HTML files
 [[redirects]]
