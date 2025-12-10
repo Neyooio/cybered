@@ -1,15 +1,14 @@
-# Netlify Configuration for CyberEd
+# Netlify Configuration for CyberEd Frontend
 
 [build]
-  # No build command needed since this is already built static files
-  command = ""
-  
-  # Publish directory - where your static files are
   publish = "frontend"
+  command = ""
 
-# Redirect all requests to index.html for SPA routing
+# SPA routing - redirect all requests to index.html
 [[redirects]]
   from = "/*"
+  to = "/index.html"
+  status = 200
   to = "/index.html"
   status = 200
 
