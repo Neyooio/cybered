@@ -16,8 +16,8 @@ document.addEventListener("DOMContentLoaded", () => {
     try{
       const { protocol, hostname } = window.location || {};
       
-      // Production environment (Netlify or GitHub Pages)
-      if (hostname && (hostname.includes('netlify.app') || hostname.includes('github.io'))) {
+      // Production environment (Netlify, GitHub Pages, or Render)
+      if (hostname && (hostname.includes('netlify.app') || hostname.includes('github.io') || hostname.includes('onrender.com'))) {
         return 'https://cybered-backend.onrender.com/api';
       }
       
@@ -26,7 +26,7 @@ document.addEventListener("DOMContentLoaded", () => {
         return 'http://localhost:4000/api';
       }
       
-      // Network access (IP address)
+      // Network access (IP address for LAN)
       if (hostname) {
         return `${protocol}//${hostname}:4000/api`;
       }

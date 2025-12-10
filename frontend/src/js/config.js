@@ -12,18 +12,18 @@ if (typeof window !== 'undefined' && window.localStorage) {
 const hostname = typeof window !== 'undefined' ? window.location.hostname : 'localhost';
 let API_BASE_URL;
 
-// Production environment (Netlify, GitHub Pages, or other hosting)
-if (hostname.includes('netlify.app') || hostname.includes('github.io') || hostname.includes('yourdomain.com')) {
+// Production environment (Netlify, GitHub Pages, Render, or other hosting)
+if (hostname.includes('netlify.app') || hostname.includes('github.io') || hostname.includes('onrender.com') || hostname.includes('yourdomain.com')) {
   // Your actual Render backend URL (NO port number for deployed apps)
   API_BASE_URL = 'https://cybered-backend.onrender.com';
   
-// Network access (IP address)
-} else if (hostname !== 'localhost' && hostname !== '127.0.0.1' && hostname !== '') {
-  API_BASE_URL = `http://${hostname}:4000`;
-  
 // Local development
-} else {
+} else if (hostname === 'localhost' || hostname === '127.0.0.1' || hostname === '') {
   API_BASE_URL = 'http://localhost:4000';
+  
+// Network access (IP address for LAN testing)
+} else {
+  API_BASE_URL = `http://${hostname}:4000`;
 }
 
 // Make it available globally for regular scripts
