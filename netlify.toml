@@ -1,14 +1,11 @@
 # Netlify Configuration for CyberEd
 
 [build]
-  # Base directory - the root of our frontend code
-  base = "frontend"
-  
-  # Publish directory - relative to base, so "." means publish the base directory itself
-  publish = "."
-  
   # No build command needed since this is already built static files
-  command = "echo 'No build needed - deploying static files'"
+  command = ""
+  
+  # Publish directory - where your static files are
+  publish = "frontend"
 
 # Redirect all requests to index.html for SPA routing
 [[redirects]]
