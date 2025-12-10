@@ -60,6 +60,16 @@ const corsOptions = {
       return callback(null, true);
     }
     
+    // Check for Render.com deploys (both main and preview)
+    if (origin.match(/^https:\/\/.*\.onrender\.com$/)) {
+      return callback(null, true);
+    }
+    
+    // Check for GitHub Pages
+    if (origin.match(/^https:\/\/.*\.github\.io$/)) {
+      return callback(null, true);
+    }
+    
     callback(new Error('Not allowed by CORS'));
   },
   credentials: true,

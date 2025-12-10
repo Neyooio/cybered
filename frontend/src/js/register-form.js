@@ -2,11 +2,18 @@ document.addEventListener("DOMContentLoaded", () => {
  
   const HOMEPAGE_PATH = "./cybered.html";
   const ADMIN_PAGE_PATH = "./admin/user-management.html";
-  // Dynamic API base: uses stored override, else derives from current host
+  
+  // Clear any old cached API URLs that might be incorrect
+  localStorage.removeItem('apiBase');
+  
+  // Use config.js API_BASE_URL if available, otherwise derive it
   function deriveApiBase(){
+    // Use global config if available
+    if (window.API_BASE_URL) {
+      return window.API_BASE_URL + '/api';
+    }
+    
     try{
-      const stored = localStorage.getItem('apiBase');
-      if (stored) return stored.replace(/\/$/, '');
       const { protocol, hostname } = window.location || {};
       
       // Production environment (Netlify or GitHub Pages)
