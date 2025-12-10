@@ -9,8 +9,8 @@ document.addEventListener("DOMContentLoaded", () => {
       if (stored) return stored.replace(/\/$/, '');
       const { protocol, hostname } = window.location || {};
       
-      // Production environment (Netlify)
-      if (hostname && hostname.includes('netlify.app')) {
+      // Production environment (Netlify or GitHub Pages)
+      if (hostname && (hostname.includes('netlify.app') || hostname.includes('github.io'))) {
         return 'https://cybered-backend.onrender.com/api';
       }
       

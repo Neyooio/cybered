@@ -46,7 +46,7 @@ function initializeGameTabs() {
 function getApiBase() {
   if (window.API_BASE_URL) return window.API_BASE_URL;
   const hostname = window.location.hostname;
-  if (hostname.includes('netlify.app')) {
+  if (hostname.includes('netlify.app') || hostname.includes('github.io')) {
     return 'https://cybered-backend.onrender.com';
   }
   if (hostname === 'localhost' || hostname === '127.0.0.1') {

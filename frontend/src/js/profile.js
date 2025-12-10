@@ -5,8 +5,8 @@ function getApiBase() {
 	
 	const { protocol, hostname } = window.location || {};
 	if (hostname) {
-		// Production environment (Netlify)
-		if (hostname.includes('netlify.app')) {
+		// Production environment (Netlify or GitHub Pages)
+		if (hostname.includes('netlify.app') || hostname.includes('github.io')) {
 			return 'https://cybered-backend.onrender.com/api';
 		}
 		// Local development
