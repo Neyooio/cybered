@@ -27,6 +27,41 @@ let currentSpace = null;
 let currentTab = 'modules';
 let userRole = null;
 
+// Debug function to test API connectivity
+window.testModuleUpdateAPI = async function() {
+  console.log('=== API Test ===');
+  console.log('API_BASE_URL:', API_BASE_URL);
+  console.log('API_URL:', API_URL);
+  console.log('Current Space:', currentSpace);
+  
+  if (!currentSpace) {
+    console.error('No space loaded. Please load a space first.');
+    return;
+  }
+  
+  const testUrl = `${API_URL}/faculty-modules/${currentSpace._id}/modules/test123`;
+  console.log('Test URL:', testUrl);
+  
+  try {
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(testUrl, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ name: 'Test', description: 'Test', materials: [] })
+    });
+    
+    console.log('Response Status:', response.status);
+    console.log('Response OK:', response.ok);
+    const text = await response.text();
+    console.log('Response:', text);
+  } catch (error) {
+    console.error('Test Error:', error);
+  }
+};
+
 // Initialize on page load
 document.addEventListener('DOMContentLoaded', async () => {
   const spaceId = getSpaceIdFromURL();
@@ -1513,6 +1548,46 @@ function openMaterial(url, type) {
     return;
   }
   
+  // Check if URL is a base64 data URL (for uploaded PDFs)
+  if (url.startsWith('data:')) {
+    console.log('[Open Material] Opening base64 data URL');
+    if (type === 'pdf') {
+      // Create a blob from base64 and open in new tab
+      try {
+        const newWindow = window.open('', '_blank');
+        if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+          showNotification('Popup blocked. Please allow popups for this site.', 'error');
+          return;
+        }
+        
+        // Write an iframe to display the PDF
+        newWindow.document.write(`
+          <!DOCTYPE html>
+          <html>
+          <head>
+            <title>PDF Viewer</title>
+            <style>
+              body { margin: 0; padding: 0; overflow: hidden; }
+              iframe { width: 100%; height: 100vh; border: none; }
+            </style>
+          </head>
+          <body>
+            <iframe src="${url}" type="application/pdf"></iframe>
+          </body>
+          </html>
+        `);
+        newWindow.document.close();
+      } catch (error) {
+        console.error('[Open Material] Error opening base64 PDF:', error);
+        showNotification('Failed to open PDF. The file may be corrupted.', 'error');
+      }
+    } else {
+      // For other data URLs, just open directly
+      window.open(url, '_blank');
+    }
+    return;
+  }
+  
   // Check if URL is valid
   let finalUrl = url;
   
@@ -1545,6 +1620,110 @@ function openMaterial(url, type) {
     // Default: just open the URL
     window.open(finalUrl, '_blank', 'noopener,noreferrer');
   }
+}
+
+// Edit module material functions
+function setupEditPDFInput() {
+  const pdfInput = document.getElementById('editPdfInput');
+  if (!pdfInput) return;
+  
+  pdfInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    
+    if (file.type !== 'application/pdf') {
+      showNotification('Please upload a PDF file', 'error');
+      e.target.value = '';
+      return;
+    }
+    
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      moduleMaterials.push({
+        type: 'pdf',
+        title: file.name,
+        url: e.target.result,
+        fileSize: formatFileSize(file.size),
+        description: ''
+      });
+      updateEditMaterialsPreview();
+      pdfInput.value = '';
+    };
+    reader.readAsDataURL(file);
+  });
+}
+
+window.editModuleAddPDF = function() {
+  const pdfInput = document.getElementById('editPdfInput');
+  if (pdfInput) pdfInput.click();
+};
+
+window.editModuleAddVideo = function() {
+  const url = prompt('Enter YouTube video URL:');
+  if (!url) return;
+  
+  const title = prompt('Enter video title:') || `YouTube Video ${moduleMaterials.filter(m => m.type === 'video').length + 1}`;
+  
+  moduleMaterials.push({
+    type: 'video',
+    title: title,
+    url: url,
+    description: ''
+  });
+  updateEditMaterialsPreview();
+};
+
+window.editModuleAddLink = function() {
+  const url = prompt('Enter link URL:');
+  if (!url) return;
+  
+  const title = prompt('Enter link title:') || `Link ${moduleMaterials.filter(m => m.type === 'link').length + 1}`;
+  
+  moduleMaterials.push({
+    type: 'link',
+    title: title,
+    url: url,
+    description: ''
+  });
+  updateEditMaterialsPreview();
+};
+
+window.editRemoveMaterial = function(index) {
+  if (confirm('Are you sure you want to remove this material?')) {
+    moduleMaterials.splice(index, 1);
+    updateEditMaterialsPreview();
+  }
+};
+
+function updateEditMaterialsPreview() {
+  const preview = document.getElementById('editMaterialsPreview');
+  if (!preview) return;
+  
+  if (moduleMaterials.length === 0) {
+    preview.innerHTML = '<div class="no-materials">No materials added yet</div>';
+    return;
+  }
+  
+  preview.innerHTML = `
+    <div class="materials-list">
+      ${moduleMaterials.map((material, index) => `
+        <div class="material-item">
+          <div class="material-icon ${material.type}">
+            ${getMaterialIcon(material.type)}
+          </div>
+          <div class="material-info">
+            <div class="material-title">${material.title}</div>
+            <div class="material-meta">${material.type.toUpperCase()}${material.fileSize ? ` • ${material.fileSize}` : ''}</div>
+          </div>
+          <button type="button" class="material-remove" onclick="editRemoveMaterial(${index})" title="Remove">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+          </button>
+        </div>
+      `).join('')}
+    </div>
+  `;
 }
 
 // Make functions globally accessible
@@ -1633,12 +1812,17 @@ function openAddAnnouncementModal() {
         const content = document.getElementById('announcementContent').value.trim();
         
         if (!title || !content) {
-          alert('Please fill in all required fields');
-          return;
+          showNotification('Please fill in all required fields', 'error');
+          return false;
         }
         
-        await addAnnouncement(title, content);
-        closeModal(modal);
+        try {
+          await addAnnouncement(title, content);
+          closeModal(modal);
+          return true;
+        } catch (error) {
+          return false;
+        }
       }
     }
   });
@@ -1655,13 +1839,27 @@ function openAddAnnouncementModal() {
 async function addAnnouncement(title, content) {
   try {
     if (!currentSpace || !currentSpace._id) {
-      console.error('Current space not loaded:', currentSpace);
-      alert('Space data not loaded. Please refresh the page.');
-      return;
+      console.error('[Add Announcement] Current space not loaded:', currentSpace);
+      showNotification('Space data not loaded. Please refresh the page.', 'error');
+      throw new Error('Space not loaded');
     }
     
     const token = localStorage.getItem('authToken');
-    const response = await fetch(`${API_URL}/faculty-modules/${currentSpace._id}/announcements`, {
+    
+    if (!token) {
+      console.error('[Add Announcement] No auth token found');
+      showNotification('Authentication required. Please login again.', 'error');
+      throw new Error('No auth token');
+    }
+    
+    console.log('[Add Announcement] Posting announcement...');
+    console.log('[Add Announcement] Space ID:', currentSpace._id);
+    console.log('[Add Announcement] Title:', title);
+    
+    const announcementUrl = `${API_URL}/faculty-modules/${currentSpace._id}/announcements`;
+    console.log('[Add Announcement] URL:', announcementUrl);
+    
+    const response = await fetch(announcementUrl, {
       method: 'POST',
       headers: {
         'Authorization': `Bearer ${token}`,
@@ -1670,13 +1868,24 @@ async function addAnnouncement(title, content) {
       body: JSON.stringify({ title, content })
     });
     
+    console.log('[Add Announcement] Response status:', response.status);
+    
     if (!response.ok) {
-      const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
-      throw new Error(errorData.error || 'Failed to add announcement');
+      const errorText = await response.text();
+      console.error('[Add Announcement] Error response:', errorText);
+      
+      if (response.status === 404) {
+        throw new Error('Route not found (404). The backend server may not be running or the route is not registered.');
+      } else if (response.status === 401 || response.status === 403) {
+        throw new Error('Authentication error. Please login again.');
+      } else {
+        const errorData = await response.json().catch(() => ({ error: errorText }));
+        throw new Error(errorData.error || 'Failed to add announcement');
+      }
     }
     
     const data = await response.json();
-    console.log('Announcement added:', data);
+    console.log('[Add Announcement] Success:', data);
     
     // Reload space data to show the new announcement
     await loadSpaceData(currentSpace._id);
@@ -1684,8 +1893,9 @@ async function addAnnouncement(title, content) {
     // Show success message
     showNotification('Announcement posted successfully!', 'success');
   } catch (error) {
-    console.error('Error adding announcement:', error);
-    alert('Failed to post announcement. Please try again.');
+    console.error('[Add Announcement] Error:', error);
+    showNotification(`Failed to post announcement: ${error.message}`, 'error');
+    throw error;
   }
 }
 
@@ -1716,14 +1926,7 @@ function createModal({ title, icon, content, primaryButton, secondaryButton }) {
             ${secondaryButton.icon || ''}
             ${secondaryButton.text || 'Cancel'}
           </button>
-        ` : `
-          <button class="modal-btn modal-btn-secondary" onclick="this.closest('.modal-overlay').remove()">
-            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-            </svg>
-            Cancel
-          </button>
-        `}
+        ` : ''}
         <button class="modal-btn modal-btn-primary" id="modalPrimaryBtn">
           ${primaryButton.icon || ''}
           ${primaryButton.text || 'Submit'}
@@ -1813,9 +2016,191 @@ function openAddAnnouncementModal_OLD() {
 
 // Edit module
 function editModule(moduleId) {
-  console.log('Edit module:', moduleId);
-  // TODO: Implement module editing
-  alert('Module editing coming soon!');
+  console.log('[Edit Module] Opening editor for module:', moduleId);
+  
+  if (!currentSpace || !currentSpace.modules) {
+    console.error('[Edit Module] Current space or modules not loaded');
+    showNotification('Space data not loaded. Please refresh the page.', 'error');
+    return;
+  }
+  
+  const module = currentSpace.modules.find(m => (m._id || m.id) === moduleId);
+  
+  if (!module) {
+    console.error('[Edit Module] Module not found:', moduleId);
+    showNotification('Module not found', 'error');
+    return;
+  }
+  
+  console.log('[Edit Module] Found module:', module);
+  
+  // Store existing materials for editing
+  moduleMaterials = [...(module.materials || [])];
+  
+  const modal = createModal({
+    title: 'Edit Module',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+    </svg>`,
+    content: `
+      <div class="modal-form-group">
+        <label class="modal-label required">Module Name</label>
+        <input type="text" id="editModuleName" class="modal-input" value="${module.name || module.title || ''}" placeholder="Enter module name" required />
+      </div>
+      
+      <div class="modal-form-group">
+        <label class="modal-label">Description</label>
+        <textarea id="editModuleDescription" class="modal-textarea" placeholder="Enter module description">${module.description || ''}</textarea>
+      </div>
+      
+      <div class="modal-form-group">
+        <label class="modal-label">Materials</label>
+        
+        <div class="material-buttons">
+          <button type="button" class="material-btn" onclick="editModuleAddPDF()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+            </svg>
+            Add PDF
+          </button>
+          
+          <button type="button" class="material-btn" onclick="editModuleAddVideo()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            Add Video
+          </button>
+          
+          <button type="button" class="material-btn" onclick="editModuleAddLink()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+            Add Link
+          </button>
+        </div>
+        
+        <div id="editMaterialsPreview" class="materials-preview"></div>
+        
+        <input type="file" id="editPdfInput" accept="application/pdf" style="display: none;" />
+      </div>
+    `,
+    primaryButton: {
+      text: 'Save Changes',
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>`,
+      onClick: async () => {
+        const name = document.getElementById('editModuleName').value.trim();
+        const description = document.getElementById('editModuleDescription').value.trim();
+        
+        if (!name) {
+          showNotification('Module name is required', 'error');
+          return false;
+        }
+        
+        try {
+          await updateModule(moduleId, name, description);
+          return true;
+        } catch (error) {
+          return false;
+        }
+      }
+    }
+  });
+  
+  document.body.appendChild(modal);
+  
+  // Setup PDF input handler for editing
+  setupEditPDFInput();
+  
+  // Initial materials preview
+  updateEditMaterialsPreview();
+}
+
+// Update module
+async function updateModule(moduleId, name, description) {
+  try {
+    if (!currentSpace || !currentSpace._id) {
+      console.error('Current space not loaded:', currentSpace);
+      showNotification('Space data not loaded. Please refresh the page.', 'error');
+      throw new Error('Space not loaded');
+    }
+    
+    if (!moduleId) {
+      console.error('Module ID is missing');
+      showNotification('Module ID is missing', 'error');
+      throw new Error('Module ID is missing');
+    }
+    
+    const token = localStorage.getItem('authToken');
+    
+    if (!token) {
+      console.error('No auth token found');
+      showNotification('Authentication required. Please login again.', 'error');
+      throw new Error('No auth token');
+    }
+    
+    console.log('[Update Module] Updating module:', moduleId);
+    console.log('[Update Module] Space ID:', currentSpace._id);
+    console.log('[Update Module] Materials:', moduleMaterials);
+    
+    const updateUrl = `${API_URL}/faculty-modules/${currentSpace._id}/modules/${moduleId}`;
+    console.log('[Update Module] Full URL:', updateUrl);
+    console.log('[Update Module] API_URL:', API_URL);
+    console.log('[Update Module] API_BASE_URL:', API_BASE_URL);
+    
+    const requestBody = {
+      name: name,
+      title: name,
+      description: description,
+      materials: moduleMaterials
+    };
+    console.log('[Update Module] Request body:', JSON.stringify(requestBody, null, 2));
+    
+    const response = await fetch(updateUrl, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify(requestBody)
+    });
+
+    console.log('[Update Module] Response status:', response.status);
+    console.log('[Update Module] Response ok:', response.ok);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[Update Module] Error response:', errorText);
+      console.error('[Update Module] Error status:', response.status);
+      console.error('[Update Module] Full URL that failed:', updateUrl);
+      
+      // Provide more specific error messages
+      if (response.status === 404) {
+        throw new Error(`Route not found (404). The backend server may not be running or the route is not registered. URL: ${updateUrl}`);
+      } else if (response.status === 401 || response.status === 403) {
+        throw new Error(`Authentication error (${response.status}). Please login again.`);
+      } else {
+        throw new Error(`Failed to update module: ${response.status} - ${errorText}`);
+      }
+    }
+
+    const data = await response.json();
+    console.log('[Update Module] Success:', data);
+    
+    // Clear materials array
+    moduleMaterials = [];
+    
+    // Reload space data to show the updated module
+    await loadSpaceData(currentSpace._id);
+    
+    showNotification('Module updated successfully!', 'success');
+  } catch (error) {
+    console.error('Error updating module:', error);
+    showNotification(`Failed to update module: ${error.message}`, 'error');
+    throw error;
+  }
 }
 
 // Remove student from space

@@ -100,36 +100,6 @@ router.get('/enrolled', requireAuth, async (req, res) => {
   }
 });
 
-// Get single space details
-router.get('/:spaceId', requireAuth, async (req, res) => {
-  try {
-    const { spaceId } = req.params;
-    const space = await FacultySpace.findById(spaceId)
-      .populate('enrolledStudents', 'username email name avatarSrc avatarName avatar')
-      .lean();
-    
-    if (!space) {
-      return res.status(404).json({ success: false, error: 'Space not found' });
-    }
-    
-    // Check if user has access
-    const isCreator = space.creatorId.toString() === req.user.sub;
-    const isEnrolled = space.enrolledStudents.some(student => 
-      (student._id || student).toString() === req.user.sub
-    );
-    const isAdmin = req.user.role === 'admin';
-    
-    if (!isCreator && !isEnrolled && !isAdmin) {
-      return res.status(403).json({ success: false, error: 'Access denied' });
-    }
-    
-    res.json({ success: true, space });
-  } catch (error) {
-    console.error('Get space error:', error);
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
-
 // Enroll in space using space code
 router.post('/enroll', requireAuth, async (req, res) => {
   try {
@@ -160,32 +130,9 @@ router.post('/enroll', requireAuth, async (req, res) => {
   }
 });
 
-// Update space details
-router.put('/:spaceId', requireAuth, async (req, res) => {
-  try {
-    const { spaceId } = req.params;
-    const updates = req.body;
-    
-    const space = await FacultySpace.findById(spaceId);
-    
-    if (!space) {
-      return res.status(404).json({ success: false, error: 'Space not found' });
-    }
-    
-    // Check permissions
-    if (space.creatorId.toString() !== req.user.sub && req.user.role !== 'admin') {
-      return res.status(403).json({ success: false, error: 'Access denied' });
-    }
-    
-    Object.assign(space, updates);
-    await space.save();
-    
-    res.json({ success: true, space: space.toJSON() });
-  } catch (error) {
-    console.error('Update space error:', error);
-    res.status(500).json({ success: false, error: error.message });
-  }
-});
+// ==============================================
+// MODULE ROUTES - These MUST come before /:spaceId routes
+// ==============================================
 
 // Add module to space
 router.post('/:spaceId/modules', requireAuth, async (req, res) => {
@@ -225,6 +172,63 @@ router.post('/:spaceId/modules', requireAuth, async (req, res) => {
   }
 });
 
+// Update module in space
+router.put('/:spaceId/modules/:moduleId', requireAuth, async (req, res) => {
+  try {
+    const { spaceId, moduleId } = req.params;
+    const { name, title, description, materials, lessons, quizzes } = req.body;
+    
+    console.log('[Update Module] Received request');
+    console.log('[Update Module] Space ID:', spaceId);
+    console.log('[Update Module] Module ID:', moduleId);
+    console.log('[Update Module] Request body:', { name, title, description, materials: materials?.length });
+    console.log('[Update Module] User:', req.user?.sub);
+    
+    const space = await FacultySpace.findById(spaceId);
+    
+    if (!space) {
+      console.error('[Update Module] Space not found:', spaceId);
+      return res.status(404).json({ success: false, error: 'Space not found' });
+    }
+    
+    console.log('[Update Module] Found space:', space.name);
+    console.log('[Update Module] Space has', space.modules?.length, 'modules');
+    
+    // Check permissions
+    if (space.creatorId.toString() !== req.user.sub && req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, error: 'Access denied' });
+    }
+    
+    // Find the module
+    const module = space.modules.find(m => m._id.toString() === moduleId);
+    
+    if (!module) {
+      console.error('[Update Module] Module not found in space');
+      console.error('[Update Module] Looking for module ID:', moduleId);
+      console.error('[Update Module] Available module IDs:', space.modules.map(m => m._id.toString()));
+      return res.status(404).json({ success: false, error: 'Module not found' });
+    }
+    
+    console.log('[Update Module] Found module:', module.title);
+    
+    // Update module fields
+    if (name || title) module.title = name || title;
+    if (description !== undefined) module.description = description;
+    if (materials !== undefined) module.materials = materials;
+    if (lessons !== undefined) module.lessons = lessons;
+    if (quizzes !== undefined) module.quizzes = quizzes;
+    
+    await space.save();
+    
+    console.log('[Update Module] Module updated successfully');
+    res.json({ success: true, message: 'Module updated successfully', space: space.toJSON() });
+  } catch (error) {
+    console.error('[Update Module] Error:', error);
+    console.error('[Update Module] Error stack:', error.stack);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Delete module from space
 router.delete('/:spaceId/modules/:moduleId', requireAuth, async (req, res) => {
   try {
@@ -255,6 +259,150 @@ router.delete('/:spaceId/modules/:moduleId', requireAuth, async (req, res) => {
     res.json({ success: true, message: 'Module deleted successfully', space: space.toJSON() });
   } catch (error) {
     console.error('Delete module error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ==============================================
+// ANNOUNCEMENT ROUTES - Must come before /:spaceId routes
+// ==============================================
+
+// Add announcement to space
+router.post('/:spaceId/announcements', requireAuth, async (req, res) => {
+  try {
+    const { spaceId } = req.params;
+    const { title, content } = req.body;
+    
+    console.log('[Add Announcement] Received request');
+    console.log('[Add Announcement] Space ID:', spaceId);
+    console.log('[Add Announcement] Title:', title);
+    console.log('[Add Announcement] User:', req.user?.sub);
+    
+    const space = await FacultySpace.findById(spaceId);
+    
+    if (!space) {
+      console.error('[Add Announcement] Space not found:', spaceId);
+      return res.status(404).json({ success: false, error: 'Space not found' });
+    }
+    
+    console.log('[Add Announcement] Found space:', space.name);
+    
+    // Check permissions
+    if (space.creatorId.toString() !== req.user.sub && req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, error: 'Access denied' });
+    }
+    
+    // Create new announcement
+    const newAnnouncement = {
+      title: title,
+      content: content,
+      createdBy: req.user.sub,
+      createdAt: new Date()
+    };
+    
+    space.announcements.push(newAnnouncement);
+    
+    await space.save();
+    
+    console.log('[Add Announcement] Announcement added successfully');
+    res.json({ success: true, message: 'Announcement added successfully', space: space.toJSON() });
+  } catch (error) {
+    console.error('[Add Announcement] Error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Delete announcement from space
+router.delete('/:spaceId/announcements/:announcementId', requireAuth, async (req, res) => {
+  try {
+    const { spaceId, announcementId } = req.params;
+    
+    const space = await FacultySpace.findById(spaceId);
+    
+    if (!space) {
+      return res.status(404).json({ success: false, error: 'Space not found' });
+    }
+    
+    // Check permissions
+    if (space.creatorId.toString() !== req.user.sub && req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, error: 'Access denied' });
+    }
+    
+    // Find and remove the announcement
+    const announcementIndex = space.announcements.findIndex(a => a._id.toString() === announcementId);
+    
+    if (announcementIndex === -1) {
+      return res.status(404).json({ success: false, error: 'Announcement not found' });
+    }
+    
+    space.announcements.splice(announcementIndex, 1);
+    
+    await space.save();
+    
+    res.json({ success: true, message: 'Announcement deleted successfully', space: space.toJSON() });
+  } catch (error) {
+    console.error('Delete announcement error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// ==============================================
+// SPACE ROUTES - Generic /:spaceId routes come AFTER module routes
+// ==============================================
+
+// Get single space details
+router.get('/:spaceId', requireAuth, async (req, res) => {
+  try {
+    const { spaceId } = req.params;
+    const space = await FacultySpace.findById(spaceId)
+      .populate('enrolledStudents', 'username email name avatarSrc avatarName avatar')
+      .lean();
+    
+    if (!space) {
+      return res.status(404).json({ success: false, error: 'Space not found' });
+    }
+    
+    // Check if user has access
+    const isCreator = space.creatorId.toString() === req.user.sub;
+    const isEnrolled = space.enrolledStudents.some(student => 
+      (student._id || student).toString() === req.user.sub
+    );
+    const isAdmin = req.user.role === 'admin';
+    
+    if (!isCreator && !isEnrolled && !isAdmin) {
+      return res.status(403).json({ success: false, error: 'Access denied' });
+    }
+    
+    res.json({ success: true, space });
+  } catch (error) {
+    console.error('Get space error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Update space details
+router.put('/:spaceId', requireAuth, async (req, res) => {
+  try {
+    const { spaceId } = req.params;
+    const updates = req.body;
+    
+    const space = await FacultySpace.findById(spaceId);
+    
+    if (!space) {
+      return res.status(404).json({ success: false, error: 'Space not found' });
+    }
+    
+    // Check permissions
+    if (space.creatorId.toString() !== req.user.sub && req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, error: 'Access denied' });
+    }
+    
+    Object.assign(space, updates);
+    await space.save();
+    
+    res.json({ success: true, space: space.toJSON() });
+  } catch (error) {
+    console.error('Update space error:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });

@@ -58,6 +58,7 @@ body {
     font-size: 18px;
     text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.8);
     z-index: 10;
+    display: none;
 }
 
 #timer {
@@ -209,6 +210,33 @@ body {
     font-size: 11px;
     margin-bottom: 20px;
     line-height: 1.8;
+    max-height: 150px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+/* Yellow scrollbar for scenario descriptions */
+.choice-content p::-webkit-scrollbar {
+    width: 8px;
+}
+
+.choice-content p::-webkit-scrollbar-track {
+    background: #1e293b;
+    border-radius: 4px;
+}
+
+.choice-content p::-webkit-scrollbar-thumb {
+    background: #fbbf24;
+    border-radius: 4px;
+}
+
+.choice-content p::-webkit-scrollbar-thumb:hover {
+    background: #f59e0b;
+}
+
+.choice-content p {
+    scrollbar-width: thin;
+    scrollbar-color: #fbbf24 #1e293b;
 }
 
 #choicesContainer {

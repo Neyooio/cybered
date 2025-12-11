@@ -888,11 +888,15 @@
 }
 
 .modal-header {
+  position: sticky;
+  top: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   padding: 1.5rem;
   border-bottom: 2px solid rgba(249, 115, 22, 0.3);
+  background: #1e293b;
+  z-index: 10;
 }
 
 .modal-title {
@@ -934,6 +938,8 @@
 
 .modal-body {
   padding: 2rem 1.5rem;
+  max-height: calc(80vh - 180px);
+  overflow-y: auto;
 }
 
 .modal-form-group {
@@ -990,11 +996,15 @@
 }
 
 .modal-footer {
+  position: sticky;
+  bottom: 0;
   display: flex;
   gap: 0.75rem;
   padding: 1.5rem;
   border-top: 2px solid rgba(249, 115, 22, 0.3);
   justify-content: flex-end;
+  background: #1e293b;
+  z-index: 10;
 }
 
 .modal-btn {
@@ -1163,6 +1173,42 @@
   height: 16px;
 }
 
+/* Material Buttons in Edit Modal */
+.material-buttons {
+  display: flex;
+  gap: 0.75rem;
+  flex-wrap: wrap;
+  margin-bottom: 1rem;
+}
+
+.material-btn {
+  padding: 0.75rem 1.25rem;
+  background: linear-gradient(135deg, #f97316 0%, #ea580c 100%);
+  border: 2px solid #000;
+  border-radius: 10px;
+  color: #ffffff;
+  font-family: 'Share Tech Mono', monospace;
+  font-size: 0.9rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  box-shadow: 0 4px 12px rgba(249, 115, 22, 0.3);
+}
+
+.material-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 16px rgba(249, 115, 22, 0.5);
+  background: linear-gradient(135deg, #fb923c 0%, #f97316 100%);
+}
+
+.material-btn svg {
+  width: 18px;
+  height: 18px;
+}
+
 /* Materials Preview */
 .materials-preview {
   margin-top: 1.5rem;
@@ -1289,6 +1335,128 @@
 .material-preview-remove svg {
   width: 16px;
   height: 16px;
+}
+
+/* Materials List in Edit Modal */
+.materials-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.material-item {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1rem;
+  background: rgba(15, 23, 42, 0.5);
+  border: 2px solid rgba(249, 115, 22, 0.3);
+  border-radius: 10px;
+  transition: all 0.2s ease;
+}
+
+.material-item:hover {
+  background: rgba(15, 23, 42, 0.7);
+  border-color: #f97316;
+}
+
+.material-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.material-icon.pdf {
+  background: rgba(239, 68, 68, 0.2);
+  border: 2px solid rgba(239, 68, 68, 0.4);
+}
+
+.material-icon.pdf svg {
+  width: 28px;
+  height: 28px;
+  color: #ef4444;
+}
+
+.material-icon.video {
+  background: rgba(168, 85, 247, 0.2);
+  border: 2px solid rgba(168, 85, 247, 0.4);
+}
+
+.material-icon.video svg {
+  width: 28px;
+  height: 28px;
+  color: #a855f7;
+}
+
+.material-icon.link {
+  background: rgba(59, 130, 246, 0.2);
+  border: 2px solid rgba(59, 130, 246, 0.4);
+}
+
+.material-icon.link svg {
+  width: 28px;
+  height: 28px;
+  color: #3b82f6;
+}
+
+.material-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.material-title {
+  color: #ffffff;
+  font-size: 0.95rem;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.material-meta {
+  color: rgba(255, 255, 255, 0.6);
+  font-size: 0.8rem;
+  font-family: 'Share Tech Mono', monospace;
+}
+
+.material-remove {
+  padding: 0.5rem;
+  background: rgba(239, 68, 68, 0.1);
+  border: 2px solid rgba(239, 68, 68, 0.3);
+  border-radius: 8px;
+  color: #ef4444;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.material-remove:hover {
+  background: rgba(239, 68, 68, 0.2);
+  border-color: #ef4444;
+  transform: scale(1.1);
+}
+
+.material-remove svg {
+  width: 18px;
+  height: 18px;
+}
+
+.no-materials {
+  padding: 2rem;
+  text-align: center;
+  color: rgba(255, 255, 255, 0.6);
+  font-family: 'Share Tech Mono', monospace;
+  background: rgba(15, 23, 42, 0.3);
+  border: 2px dashed rgba(249, 115, 22, 0.3);
+  border-radius: 10px;
 }
 
 /* Confirmation Dialog Styles */
