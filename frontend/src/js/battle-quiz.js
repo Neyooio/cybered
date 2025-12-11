@@ -447,6 +447,9 @@ class BattleQuiz {
     // Dispatch custom event to notify the page that victory status changed
     window.dispatchEvent(new CustomEvent('battleVictoryUpdated', { detail: { lessonKey, victory: true } }));
     
+    // Sync progress with backend
+    this.syncProgressToBackend(this.score, true);
+    
     const container = document.getElementById('battleContainer');
     container.innerHTML = `
       <div class="battle-arena ${this.module}">
@@ -721,6 +724,84 @@ class BattleQuiz {
     this.showQuestion();
   }  delay(ms) {
     return new Promise(resolve => setTimeout(resolve, ms));
+  }
+  
+  // Sync progress to backend
+  async syncProgressToBackend(score, passed) {
+    try {
+      const token = localStorage.getItem('authToken');
+      if (!token) {
+        console.log('No auth token, skipping progress sync');
+        return;
+      }
+      
+      const apiBase = API_BASE_URL + '/api';
+      const response = await fetch(`${apiBase}/progress/quiz`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': `Bearer ${token}`
+        },
+        body: JSON.stringify({
+          moduleId: this.module,
+          lessonNumber: this.lessonNumber,
+          score: score,
+          passed: passed
+        })
+      });
+      
+      if (response.ok) {
+        const data = await response.json();
+        console.log('✅ Progress synced:', data);
+        
+        // Show new badge notification if any
+        if (data.newBadges && data.newBadges.length > 0) {
+          this.showBadgeNotification(data.newBadges);
+        }
+        
+        // Dispatch event to update profile stats
+        window.dispatchEvent(new CustomEvent('progressUpdated', { 
+          detail: { 
+            achievements: data.totalAchievements,
+            nextGoal: data.nextGoal,
+            newBadges: data.newBadges
+          } 
+        }));
+      } else {
+        console.warn('Failed to sync progress:', await response.text());
+      }
+    } catch (error) {
+      console.error('Error syncing progress:', error);
+    }
+  }
+  
+  // Show badge notification
+  showBadgeNotification(badges) {
+    badges.forEach((badge, index) => {
+      setTimeout(() => {
+        const notification = document.createElement('div');
+        notification.className = 'badge-notification';
+        notification.innerHTML = `
+          <div class="badge-notification-content">
+            <div class="badge-notification-icon">🏆</div>
+            <div class="badge-notification-text">
+              <strong>New Achievement!</strong>
+              <span>${badge.name}</span>
+            </div>
+          </div>
+        `;
+        document.body.appendChild(notification);
+        
+        // Show animation
+        setTimeout(() => notification.classList.add('show'), 10);
+        
+        // Remove after 4 seconds
+        setTimeout(() => {
+          notification.classList.remove('show');
+          setTimeout(() => notification.remove(), 300);
+        }, 4000);
+      }, index * 500); // Stagger multiple badges
+    });
   }
 }
 

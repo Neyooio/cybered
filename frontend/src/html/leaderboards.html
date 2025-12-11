@@ -32,20 +32,37 @@
     }
 
     .leaderboard-subtitle {
-      color: #94a3b8;
-      font-size: 1rem;
+      color: CanvasText;
+      opacity: 0.8;
+      font-size: 1.1rem;
+      font-weight: 500;
+    }
+
+    @supports not (color: CanvasText) {
+      .leaderboard-subtitle {
+        color: #64748b;
+      }
+    }
+
+    @media (prefers-color-scheme: dark) {
+      .leaderboard-subtitle {
+        color: #cbd5e1;
+      }
     }
 
     .game-selector {
-      display: flex;
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
       gap: 1rem;
       justify-content: center;
       margin-bottom: 2rem;
-      flex-wrap: wrap;
+      max-width: 900px;
+      margin-left: auto;
+      margin-right: auto;
     }
 
     .game-tab {
-      padding: 0.75rem 1.5rem;
+      padding: 1rem 1.5rem;
       background: #1e293b;
       border: 2px solid #334155;
       color: #e2e8f0;
@@ -54,6 +71,8 @@
       cursor: pointer;
       transition: all 0.3s;
       border-radius: 8px;
+      text-align: center;
+      white-space: nowrap;
     }
 
     .game-tab:hover {
@@ -221,7 +240,16 @@
 
       .game-tab {
         font-size: 0.65rem;
-        padding: 0.6rem 1rem;
+        padding: 0.75rem 1rem;
+      }
+
+      .game-selector {
+        grid-template-columns: 1fr 1fr;
+        gap: 0.75rem;
+      }
+
+      .leaderboard-subtitle {
+        font-size: 0.95rem;
       }
     }
   </style>

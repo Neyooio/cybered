@@ -31,8 +31,24 @@ const API_URL = `${API_BASE_URL}/api`;
 let userSpaces = [];
 let currentView = 'modules';
 
+function getModuleProgress(moduleId) {
+  try {
+    const raw = localStorage.getItem('moduleProgress:' + moduleId);
+    if (!raw) return 0;
+    const arr = JSON.parse(raw);
+    if (!Array.isArray(arr)) return 0;
+    const completed = arr.filter(Boolean).length;
+    const total = 4; // Each module has 4 lessons
+    return Math.round((completed / total) * 100);
+  } catch {
+    return 0;
+  }
+}
+
 function renderModules(grid) {
-  const markup = modulesIndex.map(module => `
+  const markup = modulesIndex.map(module => {
+    const progressPercent = getModuleProgress(module.id);
+    return `
     <article class="module-card" data-module="${module.id}">
       <div class="module-card-header">
         <div class="module-icon">
@@ -41,11 +57,15 @@ function renderModules(grid) {
         <h2 class="module-title">${module.title}</h2>
       </div>
       <p class="module-description">${module.description}</p>
+      <div class="module-progress-bar">
+        <div class="module-progress-fill" style="width: ${progressPercent}%"></div>
+      </div>
       <div class="module-actions">
         <button type="button" class="module-start" data-module="${module.id}">Start Module</button>
       </div>
     </article>
-  `).join('');
+  `;
+  }).join('');
 
   grid.innerHTML = markup;
 }
@@ -342,7 +362,9 @@ if (searchInput) {
         </div>
       `;
     } else {
-      const markup = filteredModules.map(module => `
+      const markup = filteredModules.map(module => {
+        const progressPercent = getModuleProgress(module.id);
+        return `
         <article class="module-card" data-module="${module.id}">
           <div class="module-card-header">
             <div class="module-icon">
@@ -351,11 +373,15 @@ if (searchInput) {
             <h2 class="module-title">${module.title}</h2>
           </div>
           <p class="module-description">${module.description}</p>
+          <div class="module-progress-bar">
+            <div class="module-progress-fill" style="width: ${progressPercent}%"></div>
+          </div>
           <div class="module-actions">
             <button type="button" class="module-start" data-module="${module.id}">Start Module</button>
           </div>
         </article>
-      `).join('');
+      `;
+      }).join('');
       
       modulesGrid.innerHTML = markup;
     }

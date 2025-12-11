@@ -598,6 +598,9 @@ async function saveSpaceSettings() {
     
     closeSettingsModal();
     showNotification('Space settings updated successfully!', 'success');
+    
+    // Switch back to Modules tab
+    switchTab('modules');
   } catch (error) {
     console.error('Error updating space:', error);
     showNotification('Failed to update space settings. Please try again.', 'error');
@@ -606,10 +609,6 @@ async function saveSpaceSettings() {
 
 // Kick student from space
 async function kickStudent(studentId) {
-  // Will be handled by removeStudent function with custom dialog
-  return;
-}
-  
   try {
     // Check if currentSpace is loaded
     if (!currentSpace || !currentSpace._id) {

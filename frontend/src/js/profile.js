@@ -53,6 +53,9 @@ async function refreshAuthToken() {
 }
 
 document.addEventListener('DOMContentLoaded', () => {
+	// Check daily login first to update streak
+	checkDailyLoginForProfile();
+	
 	// Refresh token on page load to ensure role is up-to-date
 	refreshAuthToken().then(() => {
 		// Check for role request notifications first
@@ -65,6 +68,9 @@ document.addEventListener('DOMContentLoaded', () => {
 		
 		// Fetch and display user information, then initialize role request
 		fetchUserProfile().then(() => {
+			// Load progress stats
+			loadProgressStats();
+			
 			// Initialize role request handlers after profile is loaded
 			setTimeout(() => {
 				initializeRoleRequest();
@@ -77,6 +83,21 @@ document.addEventListener('DOMContentLoaded', () => {
 				updateRoleRequestButton();
 			}, 300);
 		});
+	});
+	
+	// Listen for progress updates from battle quiz or challenges
+	window.addEventListener('progressUpdated', (e) => {
+		if (e.detail) {
+			loadProgressStats(); // Reload stats
+		}
+	});
+	
+	// Listen for streak updates from daily mission
+	window.addEventListener('streakUpdated', (e) => {
+		if (e.detail && e.detail.streak !== undefined) {
+			updatePlantStreak(e.detail.streak);
+			console.log('Streak updated to:', e.detail.streak);
+		}
 	});
 
 	const swapBtn = document.getElementById('swapAvatarBtn');
@@ -255,6 +276,31 @@ function checkAdminViewing() {
 		}
 	} catch(e) {
 		console.error('Error checking admin viewing:', e);
+	}
+}
+
+// Check daily login and update streak (for profile page)
+async function checkDailyLoginForProfile() {
+	try {
+		const token = localStorage.getItem('authToken');
+		if (!token) return;
+		
+		const apiBase = getApiBase();
+		const response = await fetch(`${apiBase}/users/daily-login`, {
+			method: 'POST',
+			headers: {
+				'Authorization': `Bearer ${token}`,
+				'Content-Type': 'application/json'
+			}
+		});
+		
+		if (response.ok) {
+			const data = await response.json();
+			// Streak will be loaded when fetchUserProfile is called
+			console.log('Daily login checked, streak:', data.streak);
+		}
+	} catch (error) {
+		console.error('Error checking daily login:', error);
 	}
 }
 
@@ -475,8 +521,16 @@ function updatePlantStreak(streakDays) {
 	const streakValueEl = document.getElementById('streakValue');
 	const streakPlantImg = document.getElementById('streakPlantImg');
 	
+	// Save to localStorage
+	try {
+		localStorage.setItem('userStreak', streakDays);
+	} catch(e) {
+		console.error('Failed to save streak to localStorage:', e);
+	}
+	
 	if (streakValueEl) {
-		streakValueEl.textContent = `${streakDays} Days`;
+		const dayText = streakDays === 1 ? 'Day' : 'Days';
+		streakValueEl.textContent = `${streakDays} ${dayText}`;
 	}
 	
 	if (streakPlantImg) {
@@ -546,6 +600,91 @@ window.testStreak = function(days) {
 	updatePlantStreak(days);
 	console.log(`Streak set to ${days} days. Plant image:`, getPlantImage(days));
 };
+
+// Load and display progress stats
+async function loadProgressStats() {
+	try {
+		const token = localStorage.getItem('authToken');
+		if (!token) {
+			console.log('No auth token for progress stats');
+			return;
+		}
+		
+		const apiBase = getApiBase();
+		const response = await fetch(`${apiBase}/progress/stats`, {
+			method: 'GET',
+			headers: {
+				'Authorization': `Bearer ${token}`,
+				'Content-Type': 'application/json'
+			}
+		});
+		
+		if (!response.ok) {
+			console.warn('Failed to load progress stats');
+			return;
+		}
+		
+		const stats = await response.json();
+		
+		// Update achievements
+		const achievementsEl = document.getElementById('achievements');
+		if (achievementsEl && stats.achievements) {
+			achievementsEl.textContent = stats.achievements.display;
+		}
+		
+		// Update next goal
+		const nextGoalEl = document.getElementById('nextGoal');
+		if (nextGoalEl && stats.nextGoal) {
+			nextGoalEl.textContent = stats.nextGoal;
+		}
+		
+		// Update badges
+		if (stats.badges && stats.badges.available) {
+			updateBadgesDisplay(stats.badges.available);
+		}
+		
+		console.log('✅ Progress stats loaded:', stats);
+	} catch (error) {
+		console.error('Error loading progress stats:', error);
+	}
+}
+
+// Update badges display in the profile
+function updateBadgesDisplay(badges) {
+	const badgesGrid = document.querySelector('.badges-grid');
+	if (!badgesGrid) return;
+	
+	// Clear existing badges
+	badgesGrid.innerHTML = '';
+	
+	// Badge icon map
+	const badgeIcons = {
+		'first-steps': '🎯',
+		'quick-learner': '⚡',
+		'code-master': '💻',
+		'security-pro': '🛡️',
+		'challenge-champion': '🏆',
+		'master-hacker': '👑',
+    'streak-warrior': '🔥'
+		if (badge.earned) {
+			badgeItem.innerHTML = `
+				<div class="badge-icon">${badgeIcons[badge.id] || '🏅'}</div>
+				<div class="badge-name">${badge.name}</div>
+			`;
+		} else {
+			const progressPercent = Math.round(badge.progress || 0);
+			badgeItem.innerHTML = `
+				<div class="badge-icon">
+					<img src="../../assets/images/Lock.png" alt="Locked" class="badge-lock-img" />
+				</div>
+				<div class="badge-name">${badge.name}</div>
+				<div class="badge-progress">${progressPercent}%</div>
+			`;
+		}
+		
+		badgesGrid.appendChild(badgeItem);
+	});
+}
 
 // Role Request System
 function updateRoleRequestButton() {

@@ -101,7 +101,8 @@ router.get('/profile', requireAuth, async (req, res) => {
       role: user.role,
       avatarSrc: user.avatarSrc,
       avatarName: user.avatarName,
-      xp: user.xp || 0,
+      xp: user.experience || 0,
+      experience: user.experience || 0,
       streak: user.streak || 0,
       rank: user.rank || 0
     });

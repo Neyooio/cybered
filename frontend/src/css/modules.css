@@ -330,6 +330,23 @@
   line-height:1.6;
 }
 
+.module-progress-bar {
+  width: 100%;
+  height: 10px;
+  background: rgba(15, 23, 42, 0.6);
+  border-radius: 5px;
+  overflow: hidden;
+  border: 2px solid rgba(249, 115, 22, 0.3);
+}
+
+.module-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #10b981 0%, #22d3ee 100%);
+  border-radius: 3px;
+  transition: width 0.5s ease;
+  box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+}
+
 .module-actions{
   margin-top:auto;
   display:flex;

@@ -1,0 +1,467 @@
+// ============================================
+// CRYPTO CRACK - Educational Cipher Game
+// ============================================
+
+// Game State
+let gameState = {
+  currentLevel: 1,
+  totalXP: parseInt(localStorage.getItem('cryptoCrackXP')) || 0,
+  masteryLevel: parseInt(localStorage.getItem('cryptoCrackMastery')) || 0,
+  currentCipher: null,
+  currentMessage: null,
+  currentPlaintext: null,
+  caesarShift: 0,
+  substitutionMap: {},
+  currentHash: null,
+  correctHashInput: null
+};
+
+// Cipher Types with unlocking levels
+const cipherTypes = [
+  { id: 'caesar', name: 'Caesar Cipher', unlockLevel: 1 },
+  { id: 'substitution', name: 'Substitution Cipher', unlockLevel: 3 },
+  { id: 'hash', name: 'Hash Challenge', unlockLevel: 5 }
+];
+
+// Messages for each cipher type
+const messages = {
+  caesar: [
+    "HELLO WORLD",
+    "CIPHER IS FUN",
+    "SECURE YOUR DATA",
+    "CRYPTOGRAPHY ROCKS",
+    "KEEP IT SECRET",
+    "BREAK THE CODE",
+    "CYBER SECURITY",
+    "PROTECT PASSWORDS"
+  ],
+  substitution: [
+    "HELLO",
+    "SECRET",
+    "CIPHER",
+    "DECODE",
+    "PUZZLE",
+    "HACKER",
+    "SYSTEM"
+  ],
+  hash: [
+    "PASSWORD",
+    "ADMIN",
+    "SECRET",
+    "LOGIN",
+    "ACCESS",
+    "CRYPTO"
+  ]
+};
+
+// Educational explanations
+const education = {
+  caesar: "This is a Caesar Cipher. It shifts letters by a fixed number. It's easy to break because letter patterns stay the same.",
+  substitution: "This is a Substitution Cipher. Each letter maps to another letter. Breaking it requires frequency analysis and pattern recognition.",
+  hash: "Hashes are one-way functions. You can't reverse them — only match by trying different inputs. This is why strong passwords matter!"
+};
+
+// ============================================
+// INITIALIZATION
+// ============================================
+
+document.addEventListener('DOMContentLoaded', () => {
+  initializeGame();
+  attachEventListeners();
+  updateStats();
+});
+
+function initializeGame() {
+  showScreen('startScreen');
+  updateStats();
+}
+
+function attachEventListeners() {
+  // Start screen
+  document.getElementById('howToPlayBtn').addEventListener('click', () => showScreen('tutorialScreen'));
+  document.getElementById('startGameBtn').addEventListener('click', startNewLevel);
+  
+  // Tutorial screen
+  document.getElementById('beginBtn').addEventListener('click', startNewLevel);
+  
+  // Caesar controls
+  document.getElementById('shiftLeftBtn').addEventListener('click', () => adjustCaesarShift(-1));
+  document.getElementById('shiftRightBtn').addEventListener('click', () => adjustCaesarShift(1));
+  
+  // Substitution controls
+  document.getElementById('frequencyHintBtn').addEventListener('click', showFrequencyHint);
+  
+  // Success screen
+  document.getElementById('nextPuzzleBtn').addEventListener('click', startNewLevel);
+  
+  // Modal close
+  const closePickerBtn = document.getElementById('closePickerBtn');
+  if (closePickerBtn) {
+    closePickerBtn.addEventListener('click', () => {
+      document.getElementById('letterPicker').classList.remove('active');
+    });
+  }
+}
+
+// ============================================
+// SCREEN MANAGEMENT
+// ============================================
+
+function showScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(screenId).classList.add('active');
+}
+
+function updateStats() {
+  // Update HUD elements
+  document.getElementById('totalXP').textContent = gameState.totalXP;
+  document.getElementById('masteryLevel').textContent = gameState.masteryLevel;
+  
+  // Update start screen stats
+  const startXP = document.getElementById('startTotalXP');
+  const startMastery = document.getElementById('startMasteryLevel');
+  if (startXP) startXP.textContent = gameState.totalXP;
+  if (startMastery) startMastery.textContent = gameState.masteryLevel;
+}
+
+// ============================================
+// LEVEL MANAGEMENT
+// ============================================
+
+function startNewLevel() {
+  gameState.currentLevel++;
+  
+  // Select cipher type based on level
+  const availableCiphers = cipherTypes.filter(c => gameState.currentLevel >= c.unlockLevel);
+  const randomCipher = availableCiphers[Math.floor(Math.random() * availableCiphers.length)];
+  gameState.currentCipher = randomCipher.id;
+  
+  // Generate puzzle
+  generatePuzzle(gameState.currentCipher);
+  
+  // Update UI
+  document.getElementById('currentLevel').textContent = gameState.currentLevel;
+  document.getElementById('cipherType').textContent = randomCipher.name;
+  document.getElementById('levelXP').textContent = calculateLevelXP();
+  
+  // Show appropriate controls
+  hideAllControls();
+  showCipherControls(gameState.currentCipher);
+  
+  // Show game screen
+  showScreen('gameScreen');
+}
+
+function hideAllControls() {
+  document.querySelectorAll('.controls').forEach(control => {
+    control.classList.remove('active');
+  });
+}
+
+function showCipherControls(cipherType) {
+  hideAllControls();
+  switch(cipherType) {
+    case 'caesar':
+      document.getElementById('caesarControls').classList.add('active');
+      document.getElementById('instruction').textContent = 'Use the buttons to shift letters';
+      break;
+    case 'substitution':
+      document.getElementById('substitutionControls').classList.add('active');
+      document.getElementById('instruction').textContent = 'Click letters to substitute them';
+      break;
+    case 'hash':
+      document.getElementById('hashControls').classList.add('active');
+      document.getElementById('instruction').textContent = 'Match the plaintext to hash';
+      break;
+  }
+}
+
+function calculateLevelXP() {
+  return 100 + (gameState.currentLevel * 20);
+}
+
+// ============================================
+// PUZZLE GENERATION
+// ============================================
+
+function generatePuzzle(cipherType) {
+  switch(cipherType) {
+    case 'caesar':
+      generateCaesarPuzzle();
+      break;
+    case 'substitution':
+      generateSubstitutionPuzzle();
+      break;
+    case 'hash':
+      generateHashPuzzle();
+      break;
+  }
+}
+
+// ============================================
+// CAESAR CIPHER
+// ============================================
+
+function generateCaesarPuzzle() {
+  // Pick random message
+  const plaintext = messages.caesar[Math.floor(Math.random() * messages.caesar.length)];
+  gameState.currentPlaintext = plaintext;
+  
+  // Random shift (1-25)
+  const correctShift = Math.floor(Math.random() * 25) + 1;
+  
+  // Encrypt with correct shift
+  const encrypted = encryptCaesar(plaintext, correctShift);
+  gameState.currentMessage = encrypted;
+  gameState.caesarShift = 0;
+  
+  // Display
+  document.getElementById('encryptedText').textContent = encrypted;
+  document.getElementById('decryptedText').textContent = decryptCaesar(encrypted, 0);
+  document.getElementById('currentShift').textContent = 0;
+}
+
+function encryptCaesar(text, shift) {
+  return text.split('').map(char => {
+    if (char.match(/[A-Z]/)) {
+      return String.fromCharCode(((char.charCodeAt(0) - 65 + shift) % 26) + 65);
+    }
+    return char;
+  }).join('');
+}
+
+function decryptCaesar(text, shift) {
+  return encryptCaesar(text, -shift);
+}
+
+function adjustCaesarShift(amount) {
+  gameState.caesarShift = (gameState.caesarShift + amount + 26) % 26;
+  
+  const decrypted = decryptCaesar(gameState.currentMessage, gameState.caesarShift);
+  document.getElementById('decryptedText').textContent = decrypted;
+  document.getElementById('currentShift').textContent = gameState.caesarShift;
+  
+  // Check if solved
+  if (decrypted === gameState.currentPlaintext) {
+    solvePuzzle();
+  }
+}
+
+// ============================================
+// SUBSTITUTION CIPHER
+// ============================================
+
+function generateSubstitutionPuzzle() {
+  // Pick random message (shorter for substitution)
+  const plaintext = messages.substitution[Math.floor(Math.random() * messages.substitution.length)];
+  gameState.currentPlaintext = plaintext;
+  
+  // Generate random substitution map
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  const shuffled = [...alphabet].sort(() => Math.random() - 0.5);
+  const encryptionMap = {};
+  alphabet.forEach((letter, i) => encryptionMap[letter] = shuffled[i]);
+  
+  // Encrypt message
+  const encrypted = plaintext.split('').map(char => {
+    if (char.match(/[A-Z]/)) {
+      return encryptionMap[char];
+    }
+    return char;
+  }).join('');
+  
+  gameState.currentMessage = encrypted;
+  gameState.substitutionMap = {};
+  
+  // Display
+  document.getElementById('encryptedText').textContent = encrypted;
+  document.getElementById('decryptedText').textContent = encrypted;
+  
+  // Create substitution grid
+  createSubstitutionGrid(encrypted);
+}
+
+function createSubstitutionGrid(encrypted) {
+  const grid = document.getElementById('substitutionGrid');
+  grid.innerHTML = '';
+  
+  // Get unique letters in encrypted message
+  const uniqueLetters = [...new Set(encrypted.split('').filter(c => c.match(/[A-Z]/)))];
+  
+  uniqueLetters.forEach(letter => {
+    const btn = document.createElement('button');
+    btn.className = 'sub-letter-btn';
+    btn.innerHTML = `
+      <span class="original">${letter}</span>
+      <span class="substituted">→ ?</span>
+    `;
+    btn.addEventListener('click', () => openLetterPicker(letter, btn));
+    btn.dataset.letter = letter;
+    grid.appendChild(btn);
+  });
+}
+
+function openLetterPicker(originalLetter, buttonElement) {
+  const modal = document.getElementById('letterPicker');
+  const pickerLetter = document.getElementById('pickerLetter');
+  const letterGrid = document.getElementById('letterGrid');
+  
+  pickerLetter.textContent = originalLetter;
+  letterGrid.innerHTML = '';
+  
+  // Create alphabet buttons
+  const alphabet = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'.split('');
+  alphabet.forEach(letter => {
+    const btn = document.createElement('button');
+    btn.textContent = letter;
+    btn.addEventListener('click', () => {
+      substituteLetterGlobal(originalLetter, letter, buttonElement);
+      modal.classList.remove('active');
+    });
+    letterGrid.appendChild(btn);
+  });
+  
+  modal.classList.add('active');
+  
+  // Close on background click
+  modal.addEventListener('click', (e) => {
+    if (e.target === modal) {
+      modal.classList.remove('active');
+    }
+  });
+}
+
+function substituteLetterGlobal(original, substitution, buttonElement) {
+  gameState.substitutionMap[original] = substitution;
+  
+  // Update button
+  buttonElement.querySelector('.substituted').textContent = `→ ${substitution}`;
+  buttonElement.classList.add('mapped');
+  
+  // Update decrypted text
+  const decrypted = applySubstitution(gameState.currentMessage, gameState.substitutionMap);
+  document.getElementById('decryptedText').textContent = decrypted;
+  
+  // Check if solved
+  if (decrypted === gameState.currentPlaintext) {
+    solvePuzzle();
+  }
+}
+
+function applySubstitution(text, map) {
+  return text.split('').map(char => {
+    if (char.match(/[A-Z]/)) {
+      return map[char] || char;
+    }
+    return char;
+  }).join('');
+}
+
+function showFrequencyHint() {
+  const hint = document.getElementById('frequencyHint');
+  if (hint.textContent) {
+    hint.textContent = '';
+  } else {
+    hint.textContent = '💡 English: E(12%) T(9%) A(8%) O(7.5%) I(7%) N(6.7%)';
+  }
+}
+
+// ============================================
+// HASH CHALLENGE
+// ============================================
+
+function generateHashPuzzle() {
+  // Pick random word
+  const correctWord = messages.hash[Math.floor(Math.random() * messages.hash.length)];
+  gameState.correctHashInput = correctWord;
+  gameState.currentPlaintext = correctWord;
+  
+  // Generate fake hash (simulated)
+  const hash = simpleHash(correctWord);
+  gameState.currentHash = hash;
+  
+  // Display hash
+  document.getElementById('encryptedText').textContent = '(Hidden plaintext)';
+  document.getElementById('decryptedText').textContent = '???';
+  document.getElementById('hashValue').textContent = hash;
+  
+  // Generate options (3 wrong + 1 correct)
+  const options = generateHashOptions(correctWord);
+  createHashOptions(options);
+}
+
+function simpleHash(text) {
+  // Simple hash simulation (not cryptographically secure, just for education)
+  let hash = 0;
+  for (let i = 0; i < text.length; i++) {
+    const char = text.charCodeAt(i);
+    hash = ((hash << 5) - hash) + char;
+    hash = hash & hash; // Convert to 32bit integer
+  }
+  return Math.abs(hash).toString(16).toUpperCase().padStart(8, '0');
+}
+
+function generateHashOptions(correctWord) {
+  const allWords = messages.hash;
+  const wrongWords = allWords.filter(w => w !== correctWord);
+  
+  // Pick 3 random wrong words
+  const shuffled = wrongWords.sort(() => Math.random() - 0.5);
+  const options = shuffled.slice(0, 3);
+  options.push(correctWord);
+  
+  // Shuffle again so correct isn't always last
+  return options.sort(() => Math.random() - 0.5);
+}
+
+function createHashOptions(options) {
+  const container = document.getElementById('hashOptions');
+  container.innerHTML = '';
+  
+  options.forEach(word => {
+    const btn = document.createElement('button');
+    btn.className = 'hash-option-btn';
+    btn.textContent = word;
+    btn.addEventListener('click', () => validateHashGuess(word, btn));
+    container.appendChild(btn);
+  });
+}
+
+function validateHashGuess(guess, buttonElement) {
+  if (guess === gameState.correctHashInput) {
+    buttonElement.classList.add('correct');
+    document.getElementById('decryptedText').textContent = guess;
+    setTimeout(() => solvePuzzle(), 1000);
+  } else {
+    buttonElement.classList.add('wrong');
+    buttonElement.disabled = true;
+  }
+}
+
+// ============================================
+// PUZZLE COMPLETION
+// ============================================
+
+function solvePuzzle() {
+  const earnedXP = calculateLevelXP();
+  gameState.totalXP += earnedXP;
+  gameState.masteryLevel = Math.floor(gameState.totalXP / 500);
+  
+  // Save progress
+  localStorage.setItem('cryptoCrackXP', gameState.totalXP);
+  localStorage.setItem('cryptoCrackMastery', gameState.masteryLevel);
+  
+  // Show success screen
+  document.getElementById('successMessage').textContent = gameState.currentPlaintext;
+  document.getElementById('educationText').textContent = education[gameState.currentCipher];
+  document.getElementById('earnedXP').textContent = `+${earnedXP}`;
+  
+  showScreen('successScreen');
+  updateStats();
+}
+
+// ============================================
+// UTILITY FUNCTIONS
+// ============================================
+
+console.log('🔐 Crypto Crack initialized');

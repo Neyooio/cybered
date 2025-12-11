@@ -37,9 +37,73 @@
 }
 .mission-header{ background: linear-gradient(180deg, rgba(57,91,230,.95), rgba(40,75,210,.95)); padding:.6rem 1rem; border-bottom:1px solid var(--indigo-700); border-top-left-radius:1rem; border-top-right-radius:1rem; text-align:center; font-weight:700; }
 .mission-body{ padding:5.25rem; }
-.xp-bonus{ color: var(--yellow-400); font-weight:800; font-size:1.25rem; text-shadow:0 1px 0 rgba(0,0,0,.35); }
+.xp-bonus{ color: var(--yellow-400); font-weight:800; font-size:1.25rem; text-shadow:0 1px 0 rgba(0,0,0,.35); font-family: 'Press Start 2P', monospace; }
+.mission-completed-text{ color: var(--yellow-400); font-weight:700; font-size:1rem; text-shadow:0 1px 0 rgba(0,0,0,.35); }
+
+/* Daily Mission Button */
+.daily-mission-btn {
+  background: linear-gradient(160deg, rgba(249,115,22,.85) 0%, rgba(234,88,12,.85) 100%);
+  border: 3px solid rgba(251,146,60,.9);
+  border-radius: 1rem;
+  padding: 1.5rem;
+  width: 100%;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: 0 6px 16px rgba(249,115,22,.4), 0 0 12px rgba(249,115,22,.2);
+  color: white;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  font-family: 'Press Start 2P', monospace;
+}
+
+.daily-mission-btn:hover:not(:disabled) {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 20px rgba(249,115,22,.5), 0 0 16px rgba(249,115,22,.3);
+  background: linear-gradient(160deg, rgba(249,115,22,1) 0%, rgba(234,88,12,1) 100%);
+}
+
+.daily-mission-btn:active:not(:disabled) {
+  transform: translateY(0);
+  box-shadow: 0 4px 12px rgba(249,115,22,.4);
+}
+
+.daily-mission-btn.completed {
+  background: linear-gradient(160deg, rgba(249,115,22,.7) 0%, rgba(234,88,12,.7) 100%);
+  border: 3px solid rgba(251,146,60,.75);
+  cursor: not-allowed;
+  box-shadow: 0 6px 16px rgba(249,115,22,.3), 0 0 12px rgba(249,115,22,.15);
+}
+
+.daily-mission-btn:disabled {
+  opacity: 0.8;
+  cursor: not-allowed;
+}
+
 .dark-button{ background-color:#0a2a74; color:#fff; border:1px solid rgba(255,255,255,.08); border-radius:1rem; padding:.7rem 1.25rem; font-weight:700; text-align:center; box-shadow:0 4px 0 rgba(0,0,0,.35); text-decoration:none; display:block; }
 .dark-button + .dark-button{ margin-top:.75rem; }
+
+/* Notification animations */
+@keyframes slideIn {
+  from {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+  to {
+    transform: translateX(0);
+    opacity: 1;
+  }
+}
+
+@keyframes slideOut {
+  from {
+    transform: translateX(0);
+    opacity: 1;
+  }
+  to {
+    transform: translateX(100%);
+    opacity: 0;
+  }
+}
 
 /* Mobile adjustments */
 @media (max-width: 900px){

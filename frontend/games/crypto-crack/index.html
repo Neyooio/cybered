@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Crypto Crack - Cipher Wheel</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div id="gameContainer">
+    <!-- HUD Elements -->
+    <div id="score" class="hud-element">Level: <span id="currentLevel">1</span></div>
+    <div id="xpDisplay" class="hud-element">XP: <span id="totalXP">0</span></div>
+    <div id="masteryDisplay" class="hud-element">Mastery: <span id="masteryLevel">0</span></div>
+
+    <!-- Title Screen -->
+    <div id="titleScreen" class="screen active">
+      <h1>CRYPTO CRACK</h1>
+      <p class="subtitle">Decode the Caesar Cipher!</p>
+      <button id="playBtn" class="game-btn">PLAY</button>
+    </div>
+
+    <!-- Game Screen -->
+    <div id="gameScreen" class="screen">
+      <div class="game-panel">
+        <!-- Shift Number Display (Fixed) -->
+        <div class="shift-display-fixed">
+          <div class="shift-label">SHIFT NUMBER</div>
+          <div class="shift-number" id="shiftNumberDisplay">0</div>
+          <div class="shift-hint">Shift each letter BACKWARDS by this number</div>
+        </div>
+
+        <!-- Encrypted Message -->
+        <div class="encrypted-text-section">
+          <div class="text-label">ENCRYPTED MESSAGE</div>
+          <div id="encryptedText" class="encrypted-text"></div>
+        </div>
+
+        <!-- Answer Input Boxes -->
+        <div class="answer-input-section">
+          <div class="text-label">YOUR ANSWER</div>
+          <div id="answerInputBoxes" class="answer-input-boxes"></div>
+        </div>
+
+        <!-- Letter Ruler (Alphabet Keyboard) -->
+        <div class="letter-ruler-section">
+          <div class="ruler-label">CLICK LETTERS TO INPUT</div>
+          <div id="letterRuler" class="letter-ruler"></div>
+        </div>
+
+        <!-- Submit Button -->
+        <button class="submit-btn" id="submitAnswerBtn">CHECK ANSWER</button>
+        <div id="feedbackMessage" class="feedback-message"></div>
+      </div>
+    </div>
+
+    <!-- Success Screen -->
+    <div id="successScreen" class="screen">
+      <div class="success-icon">🎉</div>
+      <h2 id="successTitle">CODE CRACKED!</h2>
+      <div class="decrypted-message" id="successMessage"></div>
+      <div class="education-box" id="solutionInfo"></div>
+      <div class="xp-earned">
+        <span class="xp-label">XP EARNED:</span>
+        <span class="xp-value" id="xpAwarded">+100</span>
+      </div>
+      <div class="xp-earned">
+        <span class="xp-label" id="totalXP">Total XP: 0</span>
+      </div>
+      <button class="game-btn" id="nextBtn">Next Puzzle</button>
+      <button class="game-btn secondary" id="backToMenuBtn">Main Menu</button>
+    </div>
+  </div>
+
+  <script src="game.js"></script>
+</body>
+</html>

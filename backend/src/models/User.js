@@ -15,6 +15,11 @@ const userSchema = new mongoose.Schema({
   // XP System
   experience: { type: Number, default: 0 },
   level: { type: Number, default: 1 },
+  // Streak System
+  streak: { type: Number, default: 0 },
+  lastLoginDate: { type: Date },
+  dailyMissionCompleted: { type: Boolean, default: false },
+  dailyMissionDate: { type: Date },
   // Challenge Completions
   challengeProgress: [{
     challengeId: { type: String, required: true },
@@ -24,6 +29,22 @@ const userSchema = new mongoose.Schema({
     lastPlayed: { type: Date },
     completedAt: { type: Date }
   }],
+  // Module & Quiz Progress
+  moduleProgress: [{
+    moduleId: { type: String, required: true }, // cryptography, web-security, network-defense, malware-defense
+    lessonNumber: { type: Number, required: true },
+    completed: { type: Boolean, default: false },
+    quizScore: { type: Number, default: 0 },
+    quizPassed: { type: Boolean, default: false },
+    completedAt: { type: Date }
+  }],
+  // Badges & Achievements
+  badges: [{
+    badgeId: { type: String, required: true },
+    earnedAt: { type: Date, default: Date.now },
+    progress: { type: Number, default: 0 }
+  }],
+  achievementCount: { type: Number, default: 0 },
   // Notification Management
   deletedNotifications: [{ type: String }],
   readNotifications: [{ type: String }]

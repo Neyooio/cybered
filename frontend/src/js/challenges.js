@@ -4,7 +4,7 @@ const challengesIndex = [
     title: 'Cyber Runner', 
     icon: '../../assets/images/C2.png', 
     difficulty: 'Easy', 
-    blurb: 'Solo or Multiplayer! Dodge viruses and answer questions!',
+    blurb: 'Jump over cyber threats in this endless runner! Answer quiz questions to keep playing. Compete solo or battle friends in multiplayer mode.',
     gameUrl: '../../games/cyber-runner/index.html' // Local HTML5 game with multiplayer mode
   },
   { 
@@ -12,15 +12,15 @@ const challengesIndex = [
     title: 'Crypto Crack', 
     icon: '../../assets/images/C3.png', 
     difficulty: 'Medium', 
-    blurb: 'Solve ciphers with earned hints.',
-    gameUrl: 'https://example.com/unity-games/crypto-crack' // Replace with actual Unity WebGL URL
+    blurb: 'Decode encrypted messages using Caesar cipher! The shift number shows how far to move backwards in the alphabet. Use the letter ruler to input your answer and watch boxes turn green for correct letters!',
+    gameUrl: '../../games/crypto-crack/index.html' // Caesar cipher puzzle game
   },
   { 
     id: 'intrusion-intercept', 
     title: 'Intrusion Intercept', 
     icon: '../../assets/images/C4.png', 
     difficulty: 'Hard', 
-    blurb: 'Outsmart stealthy hacker NPCs before they breach the core.',
+    blurb: 'Navigate real-world security breaches through branching scenarios! Your decisions shape the outcome across 60+ unique cybersecurity challenges.',
     gameUrl: '../../games/intrusion-intercept/index.html' // Interactive branching scenario game
   },
   { 
@@ -28,7 +28,7 @@ const challengesIndex = [
     title: 'Header Check', 
     icon: '../../assets/images/C1.png', 
     difficulty: 'Easy', 
-    blurb: 'Spot phishing clues in mail headers.',
+    blurb: 'Multiplayer card elimination game! Identify infected emails, answer security questions, and be the last player standing.',
     gameUrl: '../../games/header-check/index.html' // Local multiplayer card game
   }
 ];
