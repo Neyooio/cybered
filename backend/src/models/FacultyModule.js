@@ -15,10 +15,18 @@ const facultySpaceSchema = new mongoose.Schema({
   enrolledStudents: [{ type: mongoose.Schema.Types.ObjectId, ref: 'User' }],
   modules: [{
     title: { type: String, required: true },
-    description: { type: String, required: true },
+    description: { type: String, default: '' },
     iconUrl: { type: String },
     color: { type: String, default: '#1d4ed8' },
     order: { type: Number, default: 0 },
+    content: {
+      text: { type: String, default: '' },
+      images: [{
+        name: { type: String },
+        data: { type: String },
+        size: { type: String }
+      }]
+    },
     materials: [{
       type: { type: String, enum: ['pdf', 'link', 'video', 'document'], required: true },
       title: { type: String, required: true },

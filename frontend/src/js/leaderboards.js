@@ -1,6 +1,16 @@
 // Leaderboards Page JavaScript
 console.log('[leaderboards.js] Loading...');
 
+const API_BASE_URL = window.API_BASE_URL || 'http://localhost:4000';
+
+// Challenge names mapping
+const CHALLENGES = {
+  'cyber-runner': 'Cyber Runner',
+  'cyber-runner-mp': 'Cyber Runner MP',
+  'intrusion-intercept': 'Intrusion Intercept',
+  'crypto-crack': 'Crypto Crack'
+};
+
 let currentGame = 'cyber-runner';
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -43,111 +53,86 @@ function initializeGameTabs() {
 }
 
 // Load leaderboard data
-function getApiBase() {
-  // Use global config if available
-  if (window.API_BASE_URL) return window.API_BASE_URL;
-  
-  const hostname = window.location.hostname;
-  
-  // Production environments
-  if (hostname.includes('netlify.app') || hostname.includes('github.io') || hostname.includes('onrender.com')) {
-    return 'https://cybered-backend.onrender.com';
-  }
-  
-  // Local development
-  if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return 'http://localhost:4000';
-  }
-  
-  // Network access (LAN)
-  return `${window.location.protocol}//${hostname}:4000`;
-}
-
 async function loadLeaderboard(gameId) {
   const leaderboardBody = document.getElementById('leaderboardBody');
-  leaderboardBody.innerHTML = '<div class="loading">Loading leaderboard</div>';
+  if (!leaderboardBody) {
+    console.error('Leaderboard body element not found');
+    return;
+  }
+  
+  leaderboardBody.innerHTML = '<div class="loading">Loading leaderboard...</div>';
   
   try {
-    const token = localStorage.getItem('authToken');
-    const apiBase = getApiBase();
-    
-    // List of supported games
-    const supportedGames = ['cyber-runner', 'cyber-runner-multiplayer', 'header-check', 'intrusion-intercept'];
-    
-    if (supportedGames.includes(gameId)) {
-      // Fetch real player data from backend
-      const response = await fetch(`${apiBase}/api/challenges/leaderboard?challengeId=${gameId}&limit=50`, {
-        headers: {
-          'Authorization': `Bearer ${token}`
-        }
-      });
-      
-      if (!response.ok) {
-        throw new Error('Failed to fetch leaderboard');
-      }
-      
-      const data = await response.json();
-      const leaderboard = data.leaderboard || [];
-      
-      if (leaderboard.length === 0) {
-        leaderboardBody.innerHTML = `
-          <div class="empty-state">
-            <div class="empty-state-icon">📊</div>
-            <p>No scores yet for this game!</p>
-            <p style="margin-top: 1rem; font-size: 0.9rem;">Be the first to play and set a record.</p>
-          </div>
-        `;
-        return;
-      }
-      
-      // Transform data for display - only show players from backend
-      const leaderboardData = leaderboard.map((entry, index) => ({
-        rank: index + 1,
-        name: entry.username || entry.name || 'Anonymous',
-        score: entry.score || 0,
-        level: entry.level || Math.floor((entry.score || 0) / 100) + 1,
-        userId: entry._id
-      }));
-      
-      displayLeaderboard(leaderboardData);
-    } else {
-      // Unsupported games - show empty state
-      leaderboardBody.innerHTML = `
-        <div class="empty-state">
-          <div class="empty-state-icon">🎮</div>
-          <p>Leaderboard for this game is coming soon!</p>
-          <p style="margin-top: 1rem; font-size: 0.9rem;">Check back later for updates.</p>
-        </div>
-      `;
+    const challengeName = CHALLENGES[gameId];
+    if (!challengeName) {
+      console.error('Unknown game ID:', gameId);
+      showEmptyState('Game not found');
+      return;
     }
+    
+    const response = await fetch(`${API_BASE_URL}/api/leaderboard/challenge/${encodeURIComponent(challengeName)}`);
+    
+    if (!response.ok) {
+      throw new Error('Failed to fetch leaderboard');
+    }
+    
+    const leaderboard = await response.json();
+    
+    if (leaderboard.length === 0) {
+      showEmptyState('No scores yet for this game! Be the first to play and set a record.');
+      return;
+    }
+    
+    displayLeaderboard(leaderboard);
+    
   } catch (error) {
     console.error('Error loading leaderboard:', error);
-    leaderboardBody.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-state-icon">⚠️</div>
-        <p>Failed to load leaderboard</p>
-        <p style="margin-top: 1rem;">Please try again later.</p>
-      </div>
-    `;
+    showError('Failed to load leaderboard. Please try again.');
   }
+}
+
+// Show empty state
+function showEmptyState(message) {
+  const leaderboardBody = document.getElementById('leaderboardBody');
+  if (!leaderboardBody) return;
+  
+  leaderboardBody.innerHTML = `
+    <div class="empty-state">
+      <div class="empty-state-icon">📊</div>
+      <p>${message}</p>
+    </div>
+  `;
+}
+
+// Show error
+function showError(message) {
+  const leaderboardBody = document.getElementById('leaderboardBody');
+  if (!leaderboardBody) return;
+  
+  leaderboardBody.innerHTML = `
+    <div class="empty-state" style="color: #ef4444;">
+      <div class="empty-state-icon">⚠️</div>
+      <p>${message}</p>
+    </div>
+  `;
 }
 
 // Display leaderboard data
 function displayLeaderboard(data) {
   const leaderboardBody = document.getElementById('leaderboardBody');
   
-  if (data.length === 0) {
-    leaderboardBody.innerHTML = `
-      <div class="empty-state">
-        <div class="empty-state-icon">📊</div>
-        <p>No scores yet!</p>
-        <p style="margin-top: 1rem;">Be the first to play and set a record.</p>
-      </div>
-    `;
+  if (!leaderboardBody) {
+    console.error('Leaderboard body element not found');
     return;
   }
   
-  const currentUserId = localStorage.getItem('authUserId');
+  if (data.length === 0) {
+    showEmptyState('No scores yet!');
+    return;
+  }
+  
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const currentUsername = user.username;
   
   leaderboardBody.innerHTML = data.map(player => {
     let rankClass = 'normal';
@@ -155,43 +140,31 @@ function displayLeaderboard(data) {
     else if (player.rank === 2) rankClass = 'silver';
     else if (player.rank === 3) rankClass = 'bronze';
     
-    const isCurrentUser = player.userId === currentUserId;
+    const isCurrentUser = player.username === currentUsername;
     const highlightClass = isCurrentUser ? 'style="background: rgba(59, 130, 246, 0.1); border-left: 4px solid #3b82f6;"' : '';
     
     // Generate avatar emoji based on name
-    const avatarEmoji = getAvatarEmoji(player.name);
+    const avatarEmoji = getAvatarEmoji(player.username);
     
     return `
       <div class="table-row" ${highlightClass}>
         <div class="rank ${rankClass}">${player.rank === 1 ? '🥇' : player.rank === 2 ? '🥈' : player.rank === 3 ? '🥉' : player.rank}</div>
         <div class="player-info">
           <div class="player-avatar">${avatarEmoji}</div>
-          <div class="player-name">${player.name}${isCurrentUser ? ' (You)' : ''}</div>
+          <div class="player-name">${escapeHtml(player.username)}${isCurrentUser ? ' (You)' : ''}</div>
         </div>
-        <div class="score">${player.score}</div>
+        <div class="score">${player.score.toLocaleString()}</div>
         <div class="level">Lv ${player.level}</div>
       </div>
     `;
   }).join('');
 }
 
-// Get current user's username from backend
-async function getCurrentUsername(token, apiBase) {
-  try {
-    const response = await fetch(`${apiBase}/api/auth/profile`, {
-      headers: {
-        'Authorization': `Bearer ${token}`
-      }
-    });
-    
-    if (response.ok) {
-      const data = await response.json();
-      return data.username || 'Player';
-    }
-  } catch (error) {
-    console.error('Error fetching username:', error);
-  }
-  return localStorage.getItem('authUser') || 'Player';
+// Escape HTML to prevent XSS
+function escapeHtml(text) {
+  const div = document.createElement('div');
+  div.textContent = text;
+  return div.innerHTML;
 }
 
 // Get avatar emoji based on player name

@@ -44,7 +44,14 @@ const fullscreenBtn = document.getElementById('fullscreenBtn');
 
 let currentGameUrl = '';
 
-function openGame(challengeId) {
+async function openGame(challengeId) {
+  // Check if challenge is enabled
+  const enabled = await isChallengeEnabled(challengeId);
+  if (!enabled) {
+    alert('This challenge is currently under maintenance. Please check back later.');
+    return;
+  }
+  
   const challenge = challengesIndex.find(c => c.id === challengeId);
   if (!challenge) return;
 
@@ -240,10 +247,45 @@ document.addEventListener('fullscreenchange', () => {
   }
 });
 
-function renderChallenges() {
+// Check if challenge is enabled via website management API
+async function isChallengeEnabled(challengeId) {
+  try {
+    // Determine API base URL using centralized config
+    function getApiBase() {
+      if (window.API_BASE_URL) return window.API_BASE_URL;
+      const hostname = window.location.hostname;
+      if (hostname.includes('netlify.app') || hostname.includes('github.io') || hostname.includes('onrender.com')) {
+        return 'https://cybered-backend.onrender.com';
+      }
+      if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:4000';
+      }
+      return `${window.location.protocol}//${hostname}:4000`;
+    }
+    
+    const apiBase = getApiBase();
+    const response = await fetch(`${apiBase}/api/website/config`);
+    const data = await response.json();
+    
+    if (data.success) {
+      const challenge = data.config.challenges?.find(c => c.id === challengeId);
+      return challenge ? challenge.enabled : true;
+    }
+    return true;
+  } catch {
+    return true; // Default to enabled on error
+  }
+}
+
+async function renderChallenges() {
   const grid = document.getElementById('challengesGrid');
-  grid.innerHTML = challengesIndex.map(c => `
-    <div class='challenge-card'>
+  const markup = await Promise.all(challengesIndex.map(async (c) => {
+    const enabled = await isChallengeEnabled(c.id);
+    const disabledClass = !enabled ? 'challenge-disabled' : '';
+    const maintenanceBadge = !enabled ? '<span style="display: inline-block; background: rgba(239,68,68,.2); border: 1px solid #ef4444; border-radius: 0.375rem; padding: 0.25rem 0.625rem; font-size: 0.75rem; color: #ef4444; margin-top: 0.5rem;">⚠️ Under Maintenance</span>' : '';
+    
+    return `
+    <div class='challenge-card ${disabledClass}' ${!enabled ? 'style="opacity: 0.6;"' : ''}>
       <div class='challenge-card-header'>
         <div class='challenge-icon'>
           <img src='${c.icon}' alt='${c.title}'>
@@ -253,24 +295,32 @@ function renderChallenges() {
         </div>
       </div>
       <p class='challenge-description'>${c.blurb}</p>
+      ${maintenanceBadge}
       <div class='challenge-actions'>
-        <button onclick="openGame('${c.id}')" class='challenge-play'>Play</button>
+        <button onclick="openGame('${c.id}')" class='challenge-play' ${!enabled ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+          ${enabled ? 'Play' : 'Under Maintenance'}
+        </button>
       </div>
-    </div>`).join('');
+    </div>`;
+  }));
+  
+  grid.innerHTML = markup.join('');
 }
 
-renderChallenges();
+(async () => {
+  await renderChallenges();
+})();
 
 // Search functionality
 const searchInput = document.getElementById('challengeSearch');
 if (searchInput) {
-  searchInput.addEventListener('input', (e) => {
+  searchInput.addEventListener('input', async (e) => {
     const searchTerm = e.target.value.toLowerCase().trim();
     const grid = document.getElementById('challengesGrid');
     
     if (!searchTerm) {
       // Show all challenges if search is empty
-      renderChallenges();
+      await renderChallenges();
       return;
     }
     
@@ -289,8 +339,13 @@ if (searchInput) {
         </div>
       `;
     } else {
-      grid.innerHTML = filteredChallenges.map(c => `
-        <div class='challenge-card'>
+      const markup = await Promise.all(filteredChallenges.map(async (c) => {
+        const enabled = await isChallengeEnabled(c.id);
+        const disabledClass = !enabled ? 'challenge-disabled' : '';
+        const maintenanceBadge = !enabled ? '<span style="display: inline-block; background: rgba(239,68,68,.2); border: 1px solid #ef4444; border-radius: 0.375rem; padding: 0.25rem 0.625rem; font-size: 0.75rem; color: #ef4444; margin-top: 0.5rem;">⚠️ Under Maintenance</span>' : '';
+        
+        return `
+        <div class='challenge-card ${disabledClass}' ${!enabled ? 'style="opacity: 0.6;"' : ''}>
           <div class='challenge-card-header'>
             <div class='challenge-icon'>
               <img src='${c.icon}' alt='${c.title}'>
@@ -300,10 +355,16 @@ if (searchInput) {
             </div>
           </div>
           <p class='challenge-description'>${c.blurb}</p>
+          ${maintenanceBadge}
           <div class='challenge-actions'>
-            <button onclick="openGame('${c.id}')" class='challenge-play'>Play</button>
+            <button onclick="openGame('${c.id}')" class='challenge-play' ${!enabled ? 'disabled style="opacity: 0.5; cursor: not-allowed;"' : ''}>
+              ${enabled ? 'Play' : 'Under Maintenance'}
+            </button>
           </div>
-        </div>`).join('');
+        </div>`;
+      }));
+      
+      grid.innerHTML = markup.join('');
     }
   });
 }

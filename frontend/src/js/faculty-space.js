@@ -959,6 +959,10 @@ function formatDate(dateString) {
 
 // Open add module modal
 function openAddModuleModal() {
+  // Reset module content for new module
+  moduleContent = { text: '', images: [] };
+  moduleMaterials = [];
+  
   const modal = createModal({
     title: 'Add Module',
     icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -980,7 +984,13 @@ function openAddModuleModal() {
       <div class="modal-form-group">
         <label class="modal-label">Add Materials</label>
         <div class="material-type-tabs">
-          <button type="button" class="material-tab active" data-type="pdf" onclick="switchMaterialTab('pdf', event)">
+          <button type="button" class="material-tab active" data-type="content" onclick="switchMaterialTab('content', event)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Content
+          </button>
+          <button type="button" class="material-tab" data-type="pdf" onclick="switchMaterialTab('pdf', event)">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
             </svg>
@@ -1002,8 +1012,30 @@ function openAddModuleModal() {
         </div>
         
         <div class="material-input-container">
+          <!-- Content Editor -->
+          <div class="material-input active" id="contentInput">
+            <div class="rich-text-toolbar">
+              <button type="button" class="toolbar-btn" data-command="bold" onmousedown="formatText('bold', event)" title="Bold (Select text first)">
+                <strong>B</strong>
+              </button>
+              <button type="button" class="toolbar-btn" data-command="italic" onmousedown="formatText('italic', event)" title="Italic (Select text first)">
+                <em>I</em>
+              </button>
+              <button type="button" class="toolbar-btn" data-command="underline" onmousedown="formatText('underline', event)" title="Underline (Select text first)">
+                <u>U</u>
+              </button>
+              <div class="toolbar-divider"></div>
+              <button type="button" class="toolbar-btn toolbar-btn-img" onclick="insertImage(event)" title="Insert Image">
+                <img src="https://cdn-icons-png.flaticon.com/128/3342/3342137.png" alt="Image" class="toolbar-icon" />
+              </button>
+              <input type="file" id="contentImageInput" accept="image/*,image/jpeg,image/jpg,image/png,image/gif,image/webp" style="display: none;" onchange="handleContentImageUpload(event)" />
+            </div>
+            <div id="contentEditor" class="content-editor" contenteditable="true" placeholder="Write your module content here..."></div>
+            <div class="modal-input-hint">Add text content with formatting and images. Images will appear at the bottom.</div>
+          </div>
+          
           <!-- PDF Upload -->
-          <div class="material-input active" id="pdfInput">
+          <div class="material-input" id="pdfInput">
             <input type="file" id="pdfFile" class="file-input" accept=".pdf" />
             <label for="pdfFile" class="file-input-label">
               <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1045,8 +1077,23 @@ function openAddModuleModal() {
           return;
         }
         
+        // Capture content from editor before saving
+        const editor = document.getElementById('contentEditor');
+        if (editor) {
+          moduleContent.text = editor.innerHTML;
+        }
+        
         await addModule(name, description);
         closeModal(modal);
+      }
+    },
+    secondaryButton: {
+      text: 'Assessment',
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+      </svg>`,
+      onClick: () => {
+        alert('Assessment feature coming soon!');
       }
     }
   });
@@ -1062,8 +1109,8 @@ function openAddModuleModal() {
   }, 100);
 }
 
-// Switch between material type tabs
-function switchMaterialTab(type, event) {
+// Switch between material type tabs - Attach to window for inline event handlers
+window.switchMaterialTab = function(type, event) {
   if (event) event.preventDefault();
   
   // Update tab active states
@@ -1076,7 +1123,14 @@ function switchMaterialTab(type, event) {
     input.classList.remove('active');
   });
   
-  if (type === 'pdf') {
+  if (type === 'content') {
+    document.getElementById('contentInput').classList.add('active');
+    // Focus the editor after a short delay to ensure it's visible
+    setTimeout(() => {
+      const editor = document.getElementById('contentEditor');
+      if (editor) editor.focus();
+    }, 100);
+  } else if (type === 'pdf') {
     document.getElementById('pdfInput').classList.add('active');
   } else if (type === 'youtube') {
     document.getElementById('youtubeInput').classList.add('active');
@@ -1085,18 +1139,176 @@ function switchMaterialTab(type, event) {
   }
 }
 
+// Rich text editor functions - Attach to window for inline event handlers
+window.formatText = function(command, event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  
+  const editor = document.getElementById('contentEditor');
+  if (!editor) return;
+  
+  // Execute the formatting command
+  try {
+    const success = document.execCommand(command, false, null);
+    if (!success) {
+      console.warn('Format command not supported or failed:', command);
+    }
+    
+    // Update button active states
+    updateToolbarButtonStates();
+  } catch (error) {
+    console.error('Format command failed:', error);
+  }
+  
+  // Keep focus on editor
+  editor.focus();
+}
+
+// Update toolbar button active states based on current selection
+function updateToolbarButtonStates() {
+  const commands = ['bold', 'italic', 'underline'];
+  
+  commands.forEach(command => {
+    const button = document.querySelector(`.toolbar-btn[data-command="${command}"]`);
+    if (button) {
+      const isActive = document.queryCommandState(command);
+      if (isActive) {
+        button.classList.add('active');
+      } else {
+        button.classList.remove('active');
+      }
+    }
+  });
+}
+
+// Listen for selection changes to update button states
+document.addEventListener('selectionchange', () => {
+  const editor = document.getElementById('contentEditor');
+  if (editor && document.activeElement === editor) {
+    updateToolbarButtonStates();
+  }
+});
+
+window.insertImage = function(event) {
+  if (event) {
+    event.preventDefault();
+    event.stopPropagation();
+  }
+  
+  const fileInput = document.getElementById('contentImageInput');
+  if (fileInput) {
+    // Trigger file input click
+    fileInput.click();
+  }
+}
+
+// Store module content and images
+let moduleContent = {
+  text: '',
+  images: []
+};
+
+window.handleContentImageUpload = function(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  
+  const maxSize = 5 * 1024 * 1024; // 5MB
+  if (file.size > maxSize) {
+    alert('Image size must be less than 5MB');
+    return;
+  }
+  
+  if (!file.type.startsWith('image/')) {
+    alert('Please upload an image file');
+    return;
+  }
+  
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    moduleContent.images.push({
+      name: file.name,
+      data: e.target.result,
+      size: formatFileSize(file.size)
+    });
+    
+    // Show image in preview at bottom
+    updateContentPreview();
+    event.target.value = '';
+  };
+  reader.readAsDataURL(file);
+}
+
+function updateContentPreview() {
+  const editor = document.getElementById('contentEditor');
+  if (!editor) return;
+  
+  // Store text content
+  moduleContent.text = editor.innerHTML;
+  
+  // Show images at bottom
+  let imagesHtml = '';
+  if (moduleContent.images.length > 0) {
+    imagesHtml = '<div class="content-images-preview"><div class="preview-label">Images:</div>';
+    moduleContent.images.forEach((img, index) => {
+      imagesHtml += `
+        <div class="image-preview-item">
+          <img src="${img.data}" alt="Image" />
+          <button type="button" class="remove-image-btn" onmousedown="removeContentImage(${index}, event)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#ef4444" stroke-width="3">
+              <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      `;
+    });
+    imagesHtml += '</div>';
+  }
+  
+  const previewContainer = document.querySelector('#contentInput .modal-input-hint');
+  if (previewContainer && moduleContent.images.length > 0) {
+    previewContainer.insertAdjacentHTML('afterend', imagesHtml);
+  }
+}
+
+window.removeContentImage = function(index, event) {
+  if (event) event.preventDefault();
+  moduleContent.images.splice(index, 1);
+  
+  // Remove the preview
+  const preview = document.querySelector('.content-images-preview');
+  if (preview) preview.remove();
+  
+  // Re-render if there are still images
+  if (moduleContent.images.length > 0) {
+    updateContentPreview();
+  }
+}
+
 // Global materials array
 let moduleMaterials = [];
 
 // Initialize material upload handlers
-function initializeMaterialHandlers() {
-  moduleMaterials = [];
+function initializeMaterialHandlers(preserveMaterials = false) {
+  if (!preserveMaterials) {
+    moduleMaterials = [];
+  }
   
   const pdfInput = document.getElementById('pdfFile');
   const pdfLabel = document.getElementById('pdfFileName');
   
+  if (!pdfInput || !pdfLabel) {
+    console.error('PDF input elements not found');
+    return;
+  }
+  
+  // Remove existing listeners to avoid duplicates
+  const newPdfInput = pdfInput.cloneNode(true);
+  pdfInput.parentNode.replaceChild(newPdfInput, pdfInput);
+  
   // PDF file upload
-  pdfInput.addEventListener('change', (e) => {
+  newPdfInput.addEventListener('change', (e) => {
     const file = e.target.files[0];
     if (file) {
       if (file.size > 10 * 1024 * 1024) { // 10MB limit
@@ -1124,7 +1336,7 @@ function initializeMaterialHandlers() {
           description: ''
         });
         updateMaterialsPreview();
-        pdfInput.value = '';
+        newPdfInput.value = '';
         pdfLabel.textContent = 'Choose PDF file or drag here';
       };
       reader.readAsDataURL(file);
@@ -1134,25 +1346,27 @@ function initializeMaterialHandlers() {
   // Drag and drop for PDF
   const pdfDropZone = document.querySelector('#pdfInput .file-input-label');
   
-  pdfDropZone.addEventListener('dragover', (e) => {
-    e.preventDefault();
-    pdfDropZone.classList.add('drag-over');
-  });
-  
-  pdfDropZone.addEventListener('dragleave', () => {
-    pdfDropZone.classList.remove('drag-over');
-  });
-  
-  pdfDropZone.addEventListener('drop', (e) => {
-    e.preventDefault();
-    pdfDropZone.classList.remove('drag-over');
+  if (pdfDropZone) {
+    pdfDropZone.addEventListener('dragover', (e) => {
+      e.preventDefault();
+      pdfDropZone.classList.add('drag-over');
+    });
     
-    const file = e.dataTransfer.files[0];
-    if (file) {
-      pdfInput.files = e.dataTransfer.files;
-      pdfInput.dispatchEvent(new Event('change'));
-    }
-  });
+    pdfDropZone.addEventListener('dragleave', () => {
+      pdfDropZone.classList.remove('drag-over');
+    });
+    
+    pdfDropZone.addEventListener('drop', (e) => {
+      e.preventDefault();
+      pdfDropZone.classList.remove('drag-over');
+      
+      const file = e.dataTransfer.files[0];
+      if (file) {
+        newPdfInput.files = e.dataTransfer.files;
+        newPdfInput.dispatchEvent(new Event('change'));
+      }
+    });
+  }
   
   // YouTube URL handler
   const youtubeUrl = document.getElementById('youtubeUrl');
@@ -1370,13 +1584,22 @@ function openModuleView(moduleId) {
   }
   
   console.log('[Module View] Found module:', module);
+  console.log('[Module View] Module content:', module.content);
+  console.log('[Module View] Module materials:', module.materials);
   
   const isFacultyOrAdmin = userRole === 'faculty' || userRole === 'admin';
   const moduleName = module.name || module.title;
   const moduleDesc = module.description || '';
   const materials = module.materials || [];
-  const lessons = module.lessons || [];
-  const quizzes = module.quizzes || [];
+  const content = module.content || {};
+  const contentText = content.text || '';
+  const contentImages = content.images || [];
+  const hasContent = contentText.trim().length > 0 || contentImages.length > 0;
+  
+  console.log('[Module View] Content text length:', contentText.length);
+  console.log('[Module View] Content text HTML:', contentText);
+  console.log('[Module View] Content images count:', contentImages.length);
+  console.log('[Module View] Has content:', hasContent);
   
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay module-view-overlay';
@@ -1386,7 +1609,7 @@ function openModuleView(moduleId) {
       <div class="module-view-header">
         <div class="module-view-title-section">
           <h2 class="module-view-title">${moduleName}</h2>
-          <p class="module-view-description">${moduleDesc}</p>
+          ${moduleDesc ? `<p class="module-view-description">${moduleDesc}</p>` : ''}
         </div>
         <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -1396,6 +1619,29 @@ function openModuleView(moduleId) {
       </div>
       
       <div class="module-view-body">
+        ${contentText || contentImages.length > 0 ? `
+          <div class="module-section">
+            <h3 class="module-section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Content
+            </h3>
+            <div class="module-content-display">
+              ${contentText ? `<div class="module-content-text">${contentText}</div>` : ''}
+              ${contentImages.length > 0 ? `
+                <div class="module-content-images">
+                  ${contentImages.map(img => `
+                    <div class="module-content-image-item">
+                      <img src="${img.data}" alt="${img.name || 'Module image'}" onclick="window.open('${img.data}', '_blank')" />
+                    </div>
+                  `).join('')}
+                </div>
+              ` : ''}
+            </div>
+          </div>
+        ` : ''}
+        
         ${materials.length > 0 ? `
           <div class="module-section">
             <h3 class="module-section-title">
@@ -1410,41 +1656,13 @@ function openModuleView(moduleId) {
           </div>
         ` : ''}
         
-        ${lessons.length > 0 ? `
-          <div class="module-section">
-            <h3 class="module-section-title">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
-              </svg>
-              Lessons (${lessons.length})
-            </h3>
-            <div class="module-items-grid">
-              ${lessons.map((lesson, index) => renderLessonCard(lesson, index + 1)).join('')}
-            </div>
-          </div>
-        ` : ''}
-        
-        ${quizzes.length > 0 ? `
-          <div class="module-section">
-            <h3 class="module-section-title">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
-              </svg>
-              Quizzes (${quizzes.length})
-            </h3>
-            <div class="module-items-grid">
-              ${quizzes.map((quiz, index) => renderQuizCard(quiz, index + 1)).join('')}
-            </div>
-          </div>
-        ` : ''}
-        
-        ${materials.length === 0 && lessons.length === 0 && quizzes.length === 0 ? `
+        ${!hasContent && materials.length === 0 ? `
           <div class="module-empty-state">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
             </svg>
             <p>No content yet</p>
-            <p class="module-empty-hint">${isFacultyOrAdmin ? 'Start adding materials, lessons, or quizzes' : 'Your teacher will add content soon'}</p>
+            <p class="module-empty-hint">${isFacultyOrAdmin ? 'Click "Edit Module" to add content and materials' : 'Your teacher will add content soon'}</p>
           </div>
         ` : ''}
       </div>
@@ -1680,11 +1898,11 @@ window.editModuleAddPDF = function() {
   if (pdfInput) pdfInput.click();
 };
 
-window.editModuleAddVideo = function() {
-  const url = prompt('Enter YouTube video URL:');
+window.editModuleAddVideo = async function() {
+  const url = await showCustomPrompt('Enter YouTube video URL:', 'https://www.youtube.com/watch?v=...');
   if (!url) return;
   
-  const title = prompt('Enter video title:') || `YouTube Video ${moduleMaterials.filter(m => m.type === 'video').length + 1}`;
+  const title = await showCustomPrompt('Enter video title:', 'My Video') || `YouTube Video ${moduleMaterials.filter(m => m.type === 'video').length + 1}`;
   
   moduleMaterials.push({
     type: 'video',
@@ -1695,11 +1913,11 @@ window.editModuleAddVideo = function() {
   updateEditMaterialsPreview();
 };
 
-window.editModuleAddLink = function() {
-  const url = prompt('Enter link URL:');
+window.editModuleAddLink = async function() {
+  const url = await showCustomPrompt('Enter link URL:', 'https://example.com');
   if (!url) return;
   
-  const title = prompt('Enter link title:') || `Link ${moduleMaterials.filter(m => m.type === 'link').length + 1}`;
+  const title = await showCustomPrompt('Enter link title:', 'My Link') || `Link ${moduleMaterials.filter(m => m.type === 'link').length + 1}`;
   
   moduleMaterials.push({
     type: 'link',
@@ -1710,15 +1928,15 @@ window.editModuleAddLink = function() {
   updateEditMaterialsPreview();
 };
 
-window.editRemoveMaterial = function(index) {
-  if (confirm('Are you sure you want to remove this material?')) {
+window.editRemoveMaterial = async function(index) {
+  if (await showCustomConfirm('Are you sure you want to remove this material?')) {
     moduleMaterials.splice(index, 1);
     updateEditMaterialsPreview();
   }
 };
 
 function updateEditMaterialsPreview() {
-  const preview = document.getElementById('editMaterialsPreview');
+  const preview = document.getElementById('materialsList');
   if (!preview) return;
   
   if (moduleMaterials.length === 0) {
@@ -1771,6 +1989,7 @@ async function addModule(name, description) {
       body: JSON.stringify({ 
         title: name,
         description: description,
+        content: moduleContent,
         materials: moduleMaterials
       })
     });
@@ -1790,7 +2009,8 @@ async function addModule(name, description) {
     const data = await response.json();
     console.log('Module added:', data);
     
-    // Clear materials array
+    // Clear content and materials arrays
+    moduleContent = { text: '', images: [] };
     moduleMaterials = [];
     
     // Reload space data to show the new module
@@ -2260,8 +2480,12 @@ function editModule(moduleId) {
   
   console.log('[Edit Module] Found module:', module);
   
-  // Store existing materials for editing
+  // Store existing materials and content for editing
   moduleMaterials = [...(module.materials || [])];
+  moduleContent = {
+    text: module.content?.text || '',
+    images: [...(module.content?.images || [])]
+  };
   
   const modal = createModal({
     title: 'Edit Module',
@@ -2271,44 +2495,96 @@ function editModule(moduleId) {
     content: `
       <div class="modal-form-group">
         <label class="modal-label required">Module Name</label>
-        <input type="text" id="editModuleName" class="modal-input" value="${module.name || module.title || ''}" placeholder="Enter module name" required />
+        <input type="text" id="editModuleName" class="modal-input" value="${module.name || module.title || ''}" placeholder="Enter module name" maxlength="100" required />
+        <div class="modal-input-hint">Max 100 characters</div>
       </div>
       
       <div class="modal-form-group">
         <label class="modal-label">Description</label>
-        <textarea id="editModuleDescription" class="modal-textarea" placeholder="Enter module description">${module.description || ''}</textarea>
+        <textarea id="editModuleDescription" class="modal-textarea" placeholder="Enter module description" maxlength="500">${module.description || ''}</textarea>
+        <div class="modal-input-hint">Max 500 characters</div>
       </div>
       
       <div class="modal-form-group">
-        <label class="modal-label">Materials</label>
-        
-        <div class="material-buttons">
-          <button type="button" class="material-btn" onclick="editModuleAddPDF()">
+        <label class="modal-label">Add Materials</label>
+        <div class="material-type-tabs">
+          <button type="button" class="material-tab active" data-type="content" onclick="switchMaterialTab('content', event)">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
             </svg>
-            Add PDF
+            Content
           </button>
-          
-          <button type="button" class="material-btn" onclick="editModuleAddVideo()">
+          <button type="button" class="material-tab" data-type="pdf" onclick="switchMaterialTab('pdf', event)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            PDF
+          </button>
+          <button type="button" class="material-tab" data-type="youtube" onclick="switchMaterialTab('youtube', event)">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            Add Video
+            YouTube
           </button>
-          
-          <button type="button" class="material-btn" onclick="editModuleAddLink()">
+          <button type="button" class="material-tab" data-type="link" onclick="switchMaterialTab('link', event)">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
             </svg>
-            Add Link
+            Link
           </button>
         </div>
         
-        <div id="editMaterialsPreview" class="materials-preview"></div>
+        <div class="material-input-container">
+          <!-- Content Editor -->
+          <div class="material-input active" id="contentInput">
+            <div class="rich-text-toolbar">
+              <button type="button" class="toolbar-btn" data-command="bold" onmousedown="formatText('bold', event)" title="Bold (Select text first)">
+                <strong>B</strong>
+              </button>
+              <button type="button" class="toolbar-btn" data-command="italic" onmousedown="formatText('italic', event)" title="Italic (Select text first)">
+                <em>I</em>
+              </button>
+              <button type="button" class="toolbar-btn" data-command="underline" onmousedown="formatText('underline', event)" title="Underline (Select text first)">
+                <u>U</u>
+              </button>
+              <div class="toolbar-divider"></div>
+              <button type="button" class="toolbar-btn toolbar-btn-img" onclick="insertImage(event)" title="Insert Image">
+                <img src="https://cdn-icons-png.flaticon.com/128/3342/3342137.png" alt="Image" class="toolbar-icon" />
+              </button>
+              <input type="file" id="contentImageInput" accept="image/*,image/jpeg,image/jpg,image/png,image/gif,image/webp" style="display: none;" onchange="handleContentImageUpload(event)" />
+            </div>
+            <div id="contentEditor" class="content-editor" contenteditable="true" placeholder="Write your module content here..."></div>
+            <div class="modal-input-hint">Add text content with formatting and images. Images will appear at the bottom.</div>
+          </div>
+          
+          <!-- PDF Upload -->
+          <div class="material-input" id="pdfInput">
+            <input type="file" id="pdfFile" class="file-input" accept=".pdf" />
+            <label for="pdfFile" class="file-input-label">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <span id="pdfFileName">Choose PDF file or drag here</span>
+            </label>
+            <div class="modal-input-hint">Max 10MB - PDF files only</div>
+          </div>
+          
+          <!-- YouTube URL -->
+          <div class="material-input" id="youtubeInput">
+            <input type="url" id="youtubeUrl" class="modal-input" placeholder="https://youtube.com/watch?v=..." />
+            <div class="modal-input-hint">Paste YouTube video URL</div>
+          </div>
+          
+          <!-- External Link -->
+          <div class="material-input" id="linkInput">
+            <input type="url" id="externalUrl" class="modal-input" placeholder="https://example.com" />
+            <input type="text" id="linkTitle" class="modal-input" placeholder="Link title (optional)" maxlength="100" style="margin-top: 0.75rem;" />
+            <div class="modal-input-hint">Add any website or resource link</div>
+          </div>
+        </div>
         
-        <input type="file" id="editPdfInput" accept="application/pdf" style="display: none;" />
+        <div id="materialsList" class="materials-preview"></div>
       </div>
     `,
     primaryButton: {
@@ -2325,6 +2601,12 @@ function editModule(moduleId) {
           return false;
         }
         
+        // Capture content from editor before saving
+        const editor = document.getElementById('contentEditor');
+        if (editor) {
+          moduleContent.text = editor.innerHTML;
+        }
+        
         try {
           await updateModule(moduleId, name, description);
           return true;
@@ -2332,16 +2614,33 @@ function editModule(moduleId) {
           return false;
         }
       }
+    },
+    secondaryButton: {
+      text: 'Assessment',
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+      </svg>`,
+      onClick: () => {
+        alert('Assessment feature coming soon!');
+      }
     }
   });
   
   document.body.appendChild(modal);
   
-  // Setup PDF input handler for editing
-  setupEditPDFInput();
+  // Initialize file upload handlers and material inputs (preserve existing materials)
+  initializeMaterialHandlers(true);
+  
+  // Populate content editor with existing content
+  setTimeout(() => {
+    const editor = document.getElementById('contentEditor');
+    if (editor && module.content) {
+      editor.innerHTML = module.content;
+    }
+  }, 100);
   
   // Initial materials preview
-  updateEditMaterialsPreview();
+  updateMaterialsPreview();
 }
 
 // Update module
@@ -2370,6 +2669,9 @@ async function updateModule(moduleId, name, description) {
     console.log('[Update Module] Updating module:', moduleId);
     console.log('[Update Module] Space ID:', currentSpace._id);
     console.log('[Update Module] Materials:', moduleMaterials);
+    console.log('[Update Module] Module Content:', moduleContent);
+    console.log('[Update Module] Content Text Length:', moduleContent?.text?.length || 0);
+    console.log('[Update Module] Content Images Count:', moduleContent?.images?.length || 0);
     
     const updateUrl = `${API_URL}/faculty-modules/${currentSpace._id}/modules/${moduleId}`;
     console.log('[Update Module] Full URL:', updateUrl);
@@ -2380,6 +2682,7 @@ async function updateModule(moduleId, name, description) {
       name: name,
       title: name,
       description: description,
+      content: moduleContent,
       materials: moduleMaterials
     };
     console.log('[Update Module] Request body:', JSON.stringify(requestBody, null, 2));
@@ -2778,4 +3081,141 @@ async function performDeletion(password) {
     console.error('Error deleting space:', error);
     showDeleteNotification('Failed to delete space. Please try again.', 'error');
   }
+}
+
+// ============================================
+// CUSTOM MODAL DIALOGS
+// ============================================
+
+function showCustomPrompt(message, placeholder = '') {
+  return new Promise((resolve) => {
+    // Create modal overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'custom-modal-overlay';
+    
+    // Create modal container
+    const modal = document.createElement('div');
+    modal.className = 'custom-modal';
+    
+    modal.innerHTML = `
+      <div class="custom-modal-content">
+        <div class="custom-modal-message">${message}</div>
+        <input type="text" class="custom-modal-input" placeholder="${placeholder}" autofocus>
+        <div class="custom-modal-actions">
+          <button class="custom-modal-btn custom-modal-ok">OK</button>
+          <button class="custom-modal-btn custom-modal-cancel">Cancel</button>
+        </div>
+      </div>
+    `;
+    
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    
+    const input = modal.querySelector('.custom-modal-input');
+    const okBtn = modal.querySelector('.custom-modal-ok');
+    const cancelBtn = modal.querySelector('.custom-modal-cancel');
+    
+    // Focus input
+    setTimeout(() => input.focus(), 100);
+    
+    const cleanup = () => {
+      overlay.remove();
+    };
+    
+    const handleOk = () => {
+      const value = input.value.trim();
+      cleanup();
+      resolve(value || null);
+    };
+    
+    const handleCancel = () => {
+      cleanup();
+      resolve(null);
+    };
+    
+    okBtn.addEventListener('click', handleOk);
+    cancelBtn.addEventListener('click', handleCancel);
+    
+    // Enter key submits
+    input.addEventListener('keypress', (e) => {
+      if (e.key === 'Enter') {
+        handleOk();
+      }
+    });
+    
+    // Escape key cancels
+    document.addEventListener('keydown', function escHandler(e) {
+      if (e.key === 'Escape') {
+        handleCancel();
+        document.removeEventListener('keydown', escHandler);
+      }
+    });
+    
+    // Click outside to cancel
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        handleCancel();
+      }
+    });
+  });
+}
+
+function showCustomConfirm(message) {
+  return new Promise((resolve) => {
+    // Create modal overlay
+    const overlay = document.createElement('div');
+    overlay.className = 'custom-modal-overlay';
+    
+    // Create modal container
+    const modal = document.createElement('div');
+    modal.className = 'custom-modal';
+    
+    modal.innerHTML = `
+      <div class="custom-modal-content">
+        <div class="custom-modal-message">${message}</div>
+        <div class="custom-modal-actions">
+          <button class="custom-modal-btn custom-modal-ok">OK</button>
+          <button class="custom-modal-btn custom-modal-cancel">Cancel</button>
+        </div>
+      </div>
+    `;
+    
+    overlay.appendChild(modal);
+    document.body.appendChild(overlay);
+    
+    const okBtn = modal.querySelector('.custom-modal-ok');
+    const cancelBtn = modal.querySelector('.custom-modal-cancel');
+    
+    const cleanup = () => {
+      overlay.remove();
+    };
+    
+    const handleOk = () => {
+      cleanup();
+      resolve(true);
+    };
+    
+    const handleCancel = () => {
+      cleanup();
+      resolve(false);
+    };
+    
+    okBtn.addEventListener('click', handleOk);
+    cancelBtn.addEventListener('click', handleCancel);
+    
+    // Escape key cancels
+    document.addEventListener('keydown', function escHandler(e) {
+      if (e.key === 'Escape') {
+        handleCancel();
+        document.removeEventListener('keydown', escHandler);
+      }
+    });
+    
+    // Click outside to cancel
+    overlay.addEventListener('click', (e) => {
+      if (e.target === overlay) {
+        handleCancel();
+      }
+    });
+  });
 }

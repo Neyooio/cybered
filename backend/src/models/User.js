@@ -17,9 +17,14 @@ const userSchema = new mongoose.Schema({
   level: { type: Number, default: 1 },
   // Streak System
   streak: { type: Number, default: 0 },
+  plantStreak: { type: Number, default: 0 }, // Plant streak days (same as streak)
   lastLoginDate: { type: Date },
   dailyMissionCompleted: { type: Boolean, default: false },
   dailyMissionDate: { type: Date },
+  streakHistory: [{
+    date: { type: Date, default: Date.now },
+    streakCount: { type: Number, default: 0 }
+  }],
   // Challenge Completions
   challengeProgress: [{
     challengeId: { type: String, required: true },

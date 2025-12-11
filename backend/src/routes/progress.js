@@ -312,4 +312,108 @@ function getProgressTowards(user, badgeId) {
   }
 }
 
+// @route   POST /api/progress/plant-streak
+// @desc    Update plant streak
+// @access  Private
+router.post('/plant-streak', requireAuth, async (req, res) => {
+  try {
+    const userId = req.user.sub;
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    // Update plant streak (same as regular streak)
+    user.plantStreak = user.streak || 0;
+    
+    // Add to streak history
+    if (!user.streakHistory) {
+      user.streakHistory = [];
+    }
+    
+    user.streakHistory.push({
+      date: new Date(),
+      streakCount: user.streak || 0
+    });
+    
+    // Keep only last 365 days of history
+    if (user.streakHistory.length > 365) {
+      user.streakHistory = user.streakHistory.slice(-365);
+    }
+    
+    await user.save();
+    
+    res.json({
+      streak: user.streak || 0,
+      plantStreak: user.plantStreak || 0,
+      message: 'Plant streak updated successfully'
+    });
+  } catch (error) {
+    console.error('Error updating plant streak:', error);
+    res.status(500).json({ error: 'Failed to update plant streak' });
+  }
+});
+
+// @route   GET /api/progress/achievements
+// @desc    Get all achievements with detailed progress
+// @access  Private
+router.get('/achievements', requireAuth, async (req, res) => {
+  try {
+    const userId = req.user.sub;
+    const user = await User.findById(userId);
+    
+    if (!user) {
+      return res.status(404).json({ error: 'User not found' });
+    }
+    
+    const earnedBadges = user.badges || [];
+    const earnedBadgeIds = new Set(earnedBadges.map(b => b.badgeId));
+    
+    // Calculate progress for all badges
+    const allBadges = Object.values(BADGES).map(badge => {
+      const isEarned = earnedBadgeIds.has(badge.id);
+      const earnedBadge = earnedBadges.find(b => b.badgeId === badge.id);
+      const progress = isEarned ? 100 : Math.round(getProgressTowards(user, badge.id));
+      
+      return {
+        id: badge.id,
+        name: badge.name,
+        description: badge.description,
+        icon: badge.icon,
+        earned: isEarned,
+        earnedAt: earnedBadge?.earnedAt || null,
+        progress: progress
+      };
+    });
+    
+    // Calculate total achievements
+    const completedLessons = user.moduleProgress?.filter(p => p.completed).length || 0;
+    const completedChallenges = user.challengeProgress?.filter(p => p.completed).length || 0;
+    const totalAchievements = completedLessons + completedChallenges + earnedBadges.length;
+    const maxAchievements = 16 + 5 + Object.keys(BADGES).length; // 16 lessons + 5 challenges + 7 badges
+    
+    res.json({
+      achievements: {
+        current: totalAchievements,
+        max: maxAchievements,
+        percentage: Math.round((totalAchievements / maxAchievements) * 100)
+      },
+      badges: allBadges,
+      plantStreak: {
+        current: user.streak || 0,
+        display: `${user.streak || 0} Days`
+      },
+      stats: {
+        completedLessons,
+        completedChallenges,
+        earnedBadges: earnedBadges.length
+      }
+    });
+  } catch (error) {
+    console.error('Error fetching achievements:', error);
+    res.status(500).json({ error: 'Failed to fetch achievements' });
+  }
+});
+
 export default router;

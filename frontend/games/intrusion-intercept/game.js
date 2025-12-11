@@ -873,6 +873,7 @@ async function submitScore(finalScore) {
     try {
         const leaderboardScore = calculateLeaderboardScore(finalScore);
         
+        // Submit to challenges endpoint
         const response = await fetch(`${getBackendUrl()}/api/challenges/complete`, {
             method: 'POST',
             headers: {
@@ -893,6 +894,11 @@ async function submitScore(finalScore) {
             console.log('Score submitted successfully:', leaderboardScore);
         } else {
             console.error('Failed to submit score:', response.status);
+        }
+        
+        // Submit to leaderboard
+        if (typeof submitToLeaderboard === 'function') {
+            submitToLeaderboard('Intrusion Intercept', leaderboardScore, 1, 0);
         }
     } catch (error) {
         console.error('Error submitting score:', error);

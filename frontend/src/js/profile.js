@@ -611,7 +611,9 @@ async function loadProgressStats() {
 		}
 		
 		const apiBase = getApiBase();
-		const response = await fetch(`${apiBase}/progress/stats`, {
+		
+		// Fetch achievements data with detailed progress
+		const achievementsResponse = await fetch(`${apiBase}/progress/achievements`, {
 			method: 'GET',
 			headers: {
 				'Authorization': `Bearer ${token}`,
@@ -619,31 +621,48 @@ async function loadProgressStats() {
 			}
 		});
 		
-		if (!response.ok) {
-			console.warn('Failed to load progress stats');
-			return;
+		if (achievementsResponse.ok) {
+			const achievementsData = await achievementsResponse.json();
+			
+			// Update achievements count
+			const achievementsEl = document.getElementById('achievements');
+			if (achievementsEl && achievementsData.achievements) {
+				achievementsEl.textContent = `${achievementsData.achievements.current} / ${achievementsData.achievements.max}`;
+			}
+			
+			// Update plant streak
+			const plantStreakEl = document.getElementById('plantStreak');
+			if (plantStreakEl && achievementsData.plantStreak) {
+				plantStreakEl.textContent = achievementsData.plantStreak.display;
+			}
+			
+			// Update badges display with progress
+			if (achievementsData.badges) {
+				updateBadgesDisplay(achievementsData.badges);
+			}
+			
+			console.log('✅ Achievements loaded:', achievementsData);
 		}
 		
-		const stats = await response.json();
+		// Also fetch general stats for next goal
+		const statsResponse = await fetch(`${apiBase}/progress/stats`, {
+			method: 'GET',
+			headers: {
+				'Authorization': `Bearer ${token}`,
+				'Content-Type': 'application/json'
+			}
+		});
 		
-		// Update achievements
-		const achievementsEl = document.getElementById('achievements');
-		if (achievementsEl && stats.achievements) {
-			achievementsEl.textContent = stats.achievements.display;
+		if (statsResponse.ok) {
+			const stats = await statsResponse.json();
+			
+			// Update next goal if needed
+			const nextGoalEl = document.getElementById('nextGoal');
+			if (nextGoalEl && stats.nextGoal) {
+				nextGoalEl.textContent = stats.nextGoal;
+			}
 		}
 		
-		// Update next goal
-		const nextGoalEl = document.getElementById('nextGoal');
-		if (nextGoalEl && stats.nextGoal) {
-			nextGoalEl.textContent = stats.nextGoal;
-		}
-		
-		// Update badges
-		if (stats.badges && stats.badges.available) {
-			updateBadgesDisplay(stats.badges.available);
-		}
-		
-		console.log('✅ Progress stats loaded:', stats);
 	} catch (error) {
 		console.error('Error loading progress stats:', error);
 	}
@@ -665,7 +684,14 @@ function updateBadgesDisplay(badges) {
 		'security-pro': '🛡️',
 		'challenge-champion': '🏆',
 		'master-hacker': '👑',
-    'streak-warrior': '🔥'
+		'streak-warrior': '🔥'
+	};
+	
+	// Render each badge
+	badges.forEach(badge => {
+		const badgeItem = document.createElement('div');
+		badgeItem.className = badge.earned ? 'badge-item badge-earned' : 'badge-item badge-locked';
+		
 		if (badge.earned) {
 			badgeItem.innerHTML = `
 				<div class="badge-icon">${badgeIcons[badge.id] || '🏅'}</div>

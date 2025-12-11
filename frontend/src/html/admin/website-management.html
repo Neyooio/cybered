@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - Website Management</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../../css/global.css">
+  <link rel="stylesheet" href="../../css/modules.css">
+  <style>
+    .admin-container { 
+      padding: 1.5rem; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 1.5rem; 
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    /* Header */
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .admin-title {
+      font-size: 2rem;
+      margin: 0;
+      background: linear-gradient(135deg, var(--orange-500), var(--orange-400));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      border-radius: 0.5rem;
+      font-size: 0.875rem;
+      font-weight: 600;
+    }
+    
+    .status-badge.operational {
+      background: rgba(34, 197, 94, 0.2);
+      border: 2px solid var(--green-500);
+      color: var(--green-400);
+    }
+    
+    .status-badge.maintenance {
+      background: rgba(239, 68, 68, 0.2);
+      border: 2px solid var(--red-500);
+      color: var(--red-500);
+    }
+    
+    .status-indicator {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: currentColor;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    /* Section Cards */
+    .section-card {
+      background: linear-gradient(135deg, rgba(15,23,42,.85) 0%, rgba(15,23,42,.75) 100%);
+      border: 2px solid rgba(249,115,22,.5);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .section-card:hover {
+      border-color: rgba(249,115,22,.75);
+      box-shadow: 0 8px 24px rgba(249,115,22,.2);
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid rgba(249,115,22,.3);
+    }
+    
+    .section-title {
+      font-size: 1.5rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .section-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(249,115,22,.2);
+      border-radius: 0.5rem;
+      font-size: 1.25rem;
+    }
+    
+    /* Feature Grid */
+    .features-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 1rem;
+    }
+    
+    /* Feature Card */
+    .feature-card {
+      background: rgba(30,27,75,.6);
+      border: 2px solid rgba(79,70,229,.4);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .feature-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 3px;
+      background: linear-gradient(90deg, var(--indigo-600), var(--blue-600));
+      opacity: 0;
+      transition: opacity 0.3s ease;
+    }
+    
+    .feature-card:hover {
+      border-color: rgba(79,70,229,.7);
+      transform: translateY(-2px);
+    }
+    
+    .feature-card:hover::before {
+      opacity: 1;
+    }
+    
+    .feature-card.disabled {
+      opacity: 0.6;
+      border-color: rgba(148,163,184,.4);
+    }
+    
+    .feature-card.disabled::before {
+      background: linear-gradient(90deg, var(--slate-400), var(--slate-700));
+    }
+    
+    .feature-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 0.75rem;
+    }
+    
+    .feature-info {
+      flex: 1;
+    }
+    
+    .feature-name {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0 0 0.25rem 0;
+      color: var(--white);
+    }
+    
+    .feature-id {
+      font-size: 0.75rem;
+      color: var(--slate-400);
+      font-family: 'Courier New', monospace;
+    }
+    
+    .feature-description {
+      font-size: 0.875rem;
+      color: var(--slate-300);
+      margin: 0.5rem 0 1rem 0;
+      line-height: 1.4;
+    }
+    
+    /* Toggle Switch */
+    .toggle-container {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .toggle-switch {
+      position: relative;
+      width: 50px;
+      height: 26px;
+      background: rgba(148,163,184,.3);
+      border-radius: 13px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+      border: 2px solid rgba(148,163,184,.5);
+    }
+    
+    .toggle-switch.active {
+      background: rgba(34,197,94,.3);
+      border-color: var(--green-500);
+    }
+    
+    .toggle-slider {
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 18px;
+      height: 18px;
+      background: var(--slate-400);
+      border-radius: 50%;
+      transition: all 0.3s ease;
+      box-shadow: 0 2px 4px rgba(0,0,0,.3);
+    }
+    
+    .toggle-switch.active .toggle-slider {
+      left: 26px;
+      background: var(--green-400);
+    }
+    
+    .toggle-label {
+      font-size: 0.875rem;
+      font-weight: 600;
+      min-width: 70px;
+    }
+    
+    .toggle-label.enabled {
+      color: var(--green-400);
+    }
+    
+    .toggle-label.disabled {
+      color: var(--slate-400);
+    }
+    
+    /* Maintenance Badge */
+    .maintenance-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.25rem 0.625rem;
+      background: rgba(239,68,68,.2);
+      border: 1px solid var(--red-500);
+      border-radius: 0.375rem;
+      font-size: 0.75rem;
+      color: var(--red-500);
+      font-weight: 600;
+      margin-top: 0.5rem;
+    }
+    
+    /* Action Buttons */
+    .action-buttons {
+      display: flex;
+      gap: 0.75rem;
+      margin-top: 1.5rem;
+    }
+    
+    .btn {
+      padding: 0.625rem 1.25rem;
+      border-radius: 0.5rem;
+      border: 2px solid;
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Share Tech Mono', monospace;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .btn-primary {
+      background: var(--indigo-600);
+      border-color: var(--indigo-700);
+      color: var(--white);
+    }
+    
+    .btn-primary:hover {
+      background: var(--indigo-500);
+      border-color: var(--indigo-600);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(79,70,229,.3);
+    }
+    
+    .btn-success {
+      background: var(--green-600);
+      border-color: var(--green-700);
+      color: var(--white);
+    }
+    
+    .btn-success:hover {
+      background: var(--green-500);
+      border-color: var(--green-600);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(34,197,94,.3);
+    }
+    
+    .btn-danger {
+      background: var(--red-600);
+      border-color: var(--red-700);
+      color: var(--white);
+    }
+    
+    .btn-danger:hover {
+      background: var(--red-500);
+      border-color: var(--red-600);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(220,38,38,.3);
+    }
+    
+    /* Stats Summary */
+    .stats-summary {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+      margin-bottom: 1rem;
+    }
+    
+    .stat-card {
+      background: rgba(30,27,75,.6);
+      border: 2px solid rgba(79,70,229,.4);
+      border-radius: 0.75rem;
+      padding: 1rem;
+      text-align: center;
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0;
+      background: linear-gradient(135deg, var(--orange-500), var(--orange-400));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .stat-label {
+      font-size: 0.875rem;
+      color: var(--slate-300);
+      margin: 0.25rem 0 0 0;
+    }
+    
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: rgba(15,23,42,.95);
+      border: 2px solid;
+      border-radius: 0.75rem;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,.5);
+      transform: translateY(150%);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 10000;
+      min-width: 300px;
+    }
+    
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    .toast.success {
+      border-color: var(--green-500);
+    }
+    
+    .toast.error {
+      border-color: var(--red-500);
+    }
+    
+    .toast-icon {
+      font-size: 1.5rem;
+    }
+    
+    .toast-message {
+      flex: 1;
+      font-size: 0.875rem;
+    }
+    
+    /* Loading Overlay */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(11,17,49,.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .loading-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(249,115,22,.2);
+      border-top-color: var(--orange-500);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .admin-container {
+        padding: 1rem;
+      }
+      
+      .features-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+    }
+  </style>
+</head>
+<body class="site-background">
+  <div class="layout-shell">
+    <div data-include="../partials/navbar.html"></div>
+    <main class="main-wrapper">
+      <div data-include="../partials/topbar.html"></div>
+      <section class="content-section">
+        <div class="admin-container">
+          <!-- Header -->
+          <div class="admin-header">
+            <h1 class="admin-title">Website Management</h1>
+            <div id="systemStatus" class="status-badge operational">
+              <span class="status-indicator"></span>
+              <span>All Systems Operational</span>
+            </div>
+          </div>
+          
+          <!-- Stats Summary -->
+          <div class="stats-summary">
+            <div class="stat-card">
+              <p class="stat-value" id="totalModules">0</p>
+              <p class="stat-label">Total Modules</p>
+            </div>
+            <div class="stat-card">
+              <p class="stat-value" id="activeModules">0</p>
+              <p class="stat-label">Active Modules</p>
+            </div>
+            <div class="stat-card">
+              <p class="stat-value" id="totalChallenges">0</p>
+              <p class="stat-label">Total Challenges</p>
+            </div>
+            <div class="stat-card">
+              <p class="stat-value" id="activeChallenges">0</p>
+              <p class="stat-label">Active Challenges</p>
+            </div>
+          </div>
+
+          <!-- Modules Section -->
+          <div class="section-card">
+            <div class="section-header">
+              <h2 class="section-title">
+                <span class="section-icon">📚</span>
+                Learning Modules
+              </h2>
+            </div>
+            <div id="modulesGrid" class="features-grid"></div>
+          </div>
+
+          <!-- Challenges Section -->
+          <div class="section-card">
+            <div class="section-header">
+              <h2 class="section-title">
+                <span class="section-icon">🎮</span>
+                Challenges & Games
+              </h2>
+            </div>
+            <div id="challengesGrid" class="features-grid"></div>
+          </div>
+
+          <!-- Action Buttons -->
+          <div class="action-buttons">
+            <button class="btn btn-success" id="saveChangesBtn">
+              <span>💾</span>
+              Save All Changes
+            </button>
+            <button class="btn btn-primary" id="refreshBtn">
+              <span>🔄</span>
+              Refresh Status
+            </button>
+            <button class="btn btn-danger" id="resetBtn">
+              <span>⚠️</span>
+              Reset to Defaults
+            </button>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">
+    <span class="toast-icon"></span>
+    <span class="toast-message"></span>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <script src="../../js/includes.js"></script>
+  <script type="module" src="../../js/admin-website-management.js"></script>
+</body>
+</html>

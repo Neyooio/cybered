@@ -151,15 +151,18 @@ router.post('/:spaceId/modules', requireAuth, async (req, res) => {
       return res.status(403).json({ success: false, error: 'Access denied' });
     }
     
-    // Create new module with materials
+    // Create new module with content and materials
     const newModule = {
       title: moduleData.title || moduleData.name,
       description: moduleData.description || '',
+      content: moduleData.content || { text: '', images: [] },
       order: space.modules.length,
       materials: moduleData.materials || [],
       lessons: [],
       quizzes: []
     };
+    
+    console.log('[Add Module] Creating module with content:', newModule.content);
     
     space.modules.push(newModule);
     
@@ -176,12 +179,13 @@ router.post('/:spaceId/modules', requireAuth, async (req, res) => {
 router.put('/:spaceId/modules/:moduleId', requireAuth, async (req, res) => {
   try {
     const { spaceId, moduleId } = req.params;
-    const { name, title, description, materials, lessons, quizzes } = req.body;
+    const { name, title, description, content, materials, lessons, quizzes } = req.body;
     
     console.log('[Update Module] Received request');
     console.log('[Update Module] Space ID:', spaceId);
     console.log('[Update Module] Module ID:', moduleId);
-    console.log('[Update Module] Request body:', { name, title, description, materials: materials?.length });
+    console.log('[Update Module] Request body:', { name, title, description, content: content ? 'present' : 'absent', materials: materials?.length });
+    console.log('[Update Module] Content:', content);
     console.log('[Update Module] User:', req.user?.sub);
     
     const space = await FacultySpace.findById(spaceId);
@@ -214,6 +218,7 @@ router.put('/:spaceId/modules/:moduleId', requireAuth, async (req, res) => {
     // Update module fields
     if (name || title) module.title = name || title;
     if (description !== undefined) module.description = description;
+    if (content !== undefined) module.content = content;
     if (materials !== undefined) module.materials = materials;
     if (lessons !== undefined) module.lessons = lessons;
     if (quizzes !== undefined) module.quizzes = quizzes;

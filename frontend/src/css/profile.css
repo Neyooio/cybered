@@ -752,12 +752,21 @@
   transition: all 0.3s ease;
   position: relative;
   overflow: hidden;
+  /* Pixelated/retro GameBoy style border */
+  box-shadow: 
+    inset -2px -2px 0px rgba(0, 0, 0, 0.5),
+    inset 2px 2px 0px rgba(255, 255, 255, 0.1),
+    0 4px 8px rgba(0, 0, 0, 0.3);
 }
 
 .badge-item:hover {
   transform: translateY(-5px);
   border-color: var(--indigo-500);
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+  box-shadow: 
+    inset -2px -2px 0px rgba(0, 0, 0, 0.5),
+    inset 2px 2px 0px rgba(255, 255, 255, 0.1),
+    0 10px 25px rgba(0, 0, 0, 0.4),
+    0 0 20px rgba(99, 102, 241, 0.3);
 }
 
 .badge-icon {
@@ -767,12 +776,27 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  /* Pixelated/retro GameBoy style */
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  -ms-interpolation-mode: nearest-neighbor;
+  /* Add pixelated text effect for emojis */
+  text-shadow: 
+    2px 2px 0px rgba(0, 0, 0, 0.8),
+    -1px -1px 0px rgba(255, 255, 255, 0.1);
+  font-family: monospace;
 }
 
 .badge-lock-img {
   width: 3rem;
   height: 3rem;
   object-fit: contain;
+  /* Pixelated rendering for images */
+  image-rendering: pixelated;
+  image-rendering: -moz-crisp-edges;
+  image-rendering: crisp-edges;
+  -ms-interpolation-mode: nearest-neighbor;
 }
 
 .badge-item:hover .badge-icon {
@@ -783,6 +807,9 @@
   font-size: 0.875rem;
   font-weight: 600;
   color: var(--slate-300);
+  /* Pixelated text style */
+  font-family: 'Press Start 2P', monospace;
+  text-shadow: 1px 1px 0px rgba(0, 0, 0, 0.5);
 }
 
 .badge-locked {
@@ -798,11 +825,21 @@
   background: linear-gradient(135deg, rgba(251, 191, 36, 0.2) 0%, rgba(245, 158, 11, 0.2) 100%);
   border-color: var(--yellow-500);
   opacity: 1;
+  /* Pixelated glow effect */
+  box-shadow: 
+    inset -2px -2px 0px rgba(0, 0, 0, 0.5),
+    inset 2px 2px 0px rgba(255, 255, 255, 0.2),
+    0 4px 8px rgba(0, 0, 0, 0.3),
+    0 0 20px rgba(251, 191, 36, 0.4);
 }
 
 .badge-earned:hover {
   border-color: var(--yellow-400);
-  box-shadow: 0 10px 30px rgba(251, 191, 36, 0.3);
+  box-shadow: 
+    inset -2px -2px 0px rgba(0, 0, 0, 0.5),
+    inset 2px 2px 0px rgba(255, 255, 255, 0.2),
+    0 10px 30px rgba(251, 191, 36, 0.3),
+    0 0 30px rgba(251, 191, 36, 0.5);
 }
 
 .badge-earned .badge-name {

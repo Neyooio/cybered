@@ -871,6 +871,11 @@ function endGame() {
   const gameOverTitle = document.getElementById('gameOverTitle');
   const gameOverMessage = document.getElementById('gameOverMessage');
   
+  // Submit score to leaderboard
+  if (typeof submitToLeaderboard === 'function') {
+    submitToLeaderboard('Cyber Runner', finalScore, currentLevel, 0);
+  }
+  
   if (finalScore > highScore) {
     highScore = finalScore;
     localStorage.setItem(getHighScoreKey(), highScore);

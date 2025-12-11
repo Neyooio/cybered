@@ -45,11 +45,31 @@ function getModuleProgress(moduleId) {
   }
 }
 
-function renderModules(grid) {
-  const markup = modulesIndex.map(module => {
+// Check if module is enabled via website management API
+async function isModuleEnabled(moduleId) {
+  try {
+    const response = await fetch(`${API_URL}/website/config`);
+    const data = await response.json();
+    
+    if (data.success) {
+      const module = data.config.modules?.find(m => m.id === moduleId);
+      return module ? module.enabled : true;
+    }
+    return true;
+  } catch {
+    return true; // Default to enabled on error
+  }
+}
+
+async function renderModules(grid) {
+  const markup = await Promise.all(modulesIndex.map(async (module) => {
     const progressPercent = getModuleProgress(module.id);
+    const enabled = await isModuleEnabled(module.id);
+    const disabledClass = !enabled ? 'module-disabled' : '';
+    const maintenanceBadge = !enabled ? '<span style="display: inline-block; background: rgba(239,68,68,.2); border: 1px solid #ef4444; border-radius: 0.375rem; padding: 0.25rem 0.625rem; font-size: 0.75rem; color: #ef4444; margin-top: 0.5rem;">⚠️ Under Maintenance</span>' : '';
+    
     return `
-    <article class="module-card" data-module="${module.id}">
+    <article class="module-card ${disabledClass}" data-module="${module.id}" ${!enabled ? 'style="opacity: 0.6; pointer-events: none;"' : ''}>
       <div class="module-card-header">
         <div class="module-icon">
           <img src="${module.icon}" alt="${module.title}">
@@ -57,24 +77,34 @@ function renderModules(grid) {
         <h2 class="module-title">${module.title}</h2>
       </div>
       <p class="module-description">${module.description}</p>
+      ${maintenanceBadge}
       <div class="module-progress-bar">
         <div class="module-progress-fill" style="width: ${progressPercent}%"></div>
       </div>
       <div class="module-actions">
-        <button type="button" class="module-start" data-module="${module.id}">Start Module</button>
+        <button type="button" class="module-start" data-module="${module.id}" ${!enabled ? 'disabled' : ''}>
+          ${enabled ? 'Start Module' : 'Under Maintenance'}
+        </button>
       </div>
     </article>
   `;
-  }).join('');
+  }));
 
-  grid.innerHTML = markup;
+  grid.innerHTML = markup.join('');
 }
 
 function getModuleById(id){
   return modulesIndex.find(m => m.id === id);
 }
 
-function startModule(id) {
+async function startModule(id) {
+  // Check if module is enabled
+  const enabled = await isModuleEnabled(id);
+  if (!enabled) {
+    alert('This module is currently under maintenance. Please check back later.');
+    return;
+  }
+  
   const pages = {
     'web-security': 'module-web-security.html',
     'network-defense': 'module-network-defense.html',
@@ -250,7 +280,9 @@ function setupDropdownHandlers(menuElement, btnId, menuId) {
     if (view === 'modules') {
       currentView = 'modules';
       if (modulesGrid) {
-        renderModules(modulesGrid);
+        (async () => {
+          await renderModules(modulesGrid);
+        })();
       }
     } else if (view === 'space' && spaceId) {
       window.location.href = `faculty-space.html?id=${spaceId}`;
@@ -260,7 +292,9 @@ function setupDropdownHandlers(menuElement, btnId, menuId) {
 
 const modulesGrid = document.getElementById('modulesGrid');
 if (modulesGrid){
-  renderModules(modulesGrid);
+  (async () => {
+    await renderModules(modulesGrid);
+  })();
   
   // Load user spaces and populate dropdown
   loadUserSpaces();
@@ -343,7 +377,9 @@ if (searchInput) {
     
     if (!searchTerm) {
       // Show all modules if search is empty
-      renderModules(modulesGrid);
+      (async () => {
+        await renderModules(modulesGrid);
+      })();
       return;
     }
     
