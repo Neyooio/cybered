@@ -1,5 +1,17 @@
 import mongoose from 'mongoose';
 
+/**
+ * Leaderboard Model - Separate leaderboards for each challenge
+ * 
+ * Each challenge game (except Header Check) has its own leaderboard:
+ * - Cyber Runner: Solo endless runner with score tracking
+ * - Cyber Runner MP: Multiplayer runner with competitive scores
+ * - Intrusion Intercept: Defense game with rating-based scoring
+ * - Crypto Crack: Puzzle game with XP-based scoring
+ * 
+ * Header Check does NOT have a leaderboard as it has no scoring system.
+ * Only students can appear on leaderboards (verified via middleware).
+ */
 const leaderboardSchema = new mongoose.Schema({
   userId: {
     type: mongoose.Schema.Types.ObjectId,
@@ -13,7 +25,7 @@ const leaderboardSchema = new mongoose.Schema({
   challengeName: {
     type: String,
     required: true,
-    enum: ['Cyber Runner', 'Cyber Runner MP', 'Header Check', 'Intrusion Intercept', 'Crypto Crack']
+    enum: ['Cyber Runner', 'Cyber Runner MP', 'Intrusion Intercept', 'Crypto Crack']
   },
   score: {
     type: Number,

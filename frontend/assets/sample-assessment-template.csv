@@ -1,0 +1,11 @@
+question,answer,options,correctIndex
+What is the full form of HTTP?,HyperText Transfer Protocol,"HyperText Transfer Protocol|HyperText Transmission Protocol|High Transfer Text Protocol|Home Tool Transfer Protocol",0
+Which port does HTTPS use by default?,443,"80|443|8080|3000",1
+What does SSL stand for?,Secure Sockets Layer,"Secure Server Layer|Secure Sockets Layer|Secure System Link|Secure Software Layer",1
+What is a firewall used for?,To block unauthorized access,"To speed up internet|To store data|To block unauthorized access|To create websites",2
+What is phishing?,A social engineering attack to steal sensitive information,"A type of virus|A social engineering attack to steal sensitive information|A hardware component|A network protocol",1
+What does VPN stand for?,Virtual Private Network,"Virtual Public Network|Virtual Private Network|Verified Private Network|Visual Private Network",1
+What is encryption?,Converting data into a coded format,"Deleting data|Copying data|Converting data into a coded format|Compressing data",2
+Which of these is a strong password practice?,Using a combination of letters numbers and symbols,"Using your name|Using 12345|Using a combination of letters numbers and symbols|Using the same password everywhere",2
+What is malware?,Malicious software,"A hardware device|Malicious software|A type of network|A programming language",1
+What is two-factor authentication?,A security process requiring two forms of identification,"Using two passwords|A security process requiring two forms of identification|Having two email accounts|Using two browsers",1

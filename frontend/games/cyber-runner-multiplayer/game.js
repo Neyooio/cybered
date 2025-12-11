@@ -22,6 +22,10 @@ const getBackendUrl = () => {
   // Network access (LAN)
   return `http://${hostname}:4000`;
 };
+
+// Set API URL globally for leaderboard-utils
+window.API_BASE_URL = getBackendUrl();
+
 const socket = io(getBackendUrl());
 
 // Audio elements
@@ -782,6 +786,11 @@ async function submitScore(results) {
     
     if (response.ok) {
       console.log('Score submitted successfully');
+    }
+    
+    // Submit to leaderboard
+    if (typeof submitToLeaderboard === 'function') {
+      submitToLeaderboard('Cyber Runner MP', myResult.finalScore, myResult.rank, 0);
     }
   } catch (error) {
     console.error('Failed to submit score:', error);

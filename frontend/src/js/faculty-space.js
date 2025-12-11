@@ -27,6 +27,14 @@ let currentSpace = null;
 let currentTab = 'modules';
 let userRole = null;
 
+// Expose currentSpace globally for assessment-builder.js
+window.getCurrentSpace = () => currentSpace;
+window.reloadCurrentSpace = async () => {
+  if (currentSpace) {
+    await loadSpaceData(currentSpace._id || currentSpace.id);
+  }
+};
+
 // Debug function to test API connectivity
 window.testModuleUpdateAPI = async function() {
   console.log('=== API Test ===');
@@ -1093,7 +1101,8 @@ function openAddModuleModal() {
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
       </svg>`,
       onClick: () => {
-        alert('Assessment feature coming soon!');
+        openAssessmentBuilder(null);
+        return false;
       }
     }
   });
@@ -1247,14 +1256,20 @@ function updateContentPreview() {
   // Store text content
   moduleContent.text = editor.innerHTML;
   
+  // Remove existing preview first
+  const existingPreview = document.querySelector('.content-images-preview');
+  if (existingPreview) {
+    existingPreview.remove();
+  }
+  
   // Show images at bottom
-  let imagesHtml = '';
   if (moduleContent.images.length > 0) {
-    imagesHtml = '<div class="content-images-preview"><div class="preview-label">Images:</div>';
+    let imagesHtml = '<div class="content-images-preview"><div class="preview-label">Images:</div>';
     moduleContent.images.forEach((img, index) => {
+      const imgSrc = img.data || img; // Handle both object and string formats
       imagesHtml += `
         <div class="image-preview-item">
-          <img src="${img.data}" alt="Image" />
+          <img src="${imgSrc}" alt="Image" />
           <button type="button" class="remove-image-btn" onmousedown="removeContentImage(${index}, event)">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="#ef4444" stroke-width="3">
               <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
@@ -1264,11 +1279,11 @@ function updateContentPreview() {
       `;
     });
     imagesHtml += '</div>';
-  }
-  
-  const previewContainer = document.querySelector('#contentInput .modal-input-hint');
-  if (previewContainer && moduleContent.images.length > 0) {
-    previewContainer.insertAdjacentHTML('afterend', imagesHtml);
+    
+    const previewContainer = document.querySelector('#contentInput .modal-input-hint');
+    if (previewContainer) {
+      previewContainer.insertAdjacentHTML('afterend', imagesHtml);
+    }
   }
 }
 
@@ -1512,6 +1527,11 @@ function formatFileSize(bytes) {
 function updateMaterialsPreview() {
   const container = document.getElementById('materialsList');
   
+  if (!container) {
+    console.error('Materials list container not found');
+    return;
+  }
+  
   if (moduleMaterials.length === 0) {
     container.innerHTML = '';
     return;
@@ -1531,7 +1551,7 @@ function updateMaterialsPreview() {
             <div class="material-preview-title">${material.title}</div>
             ${material.fileSize ? `<div class="material-preview-meta">${material.fileSize}</div>` : ''}
           </div>
-          <button type="button" class="material-preview-remove" onclick="removeMaterial(${index})" title="Remove">
+          <button type="button" class="material-preview-remove" data-index="${index}" title="Remove">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -1540,6 +1560,17 @@ function updateMaterialsPreview() {
       `).join('')}
     </div>
   `;
+  
+  // Add event listeners for remove buttons using event delegation
+  const removeButtons = container.querySelectorAll('.material-preview-remove');
+  removeButtons.forEach(button => {
+    button.addEventListener('click', function(e) {
+      e.preventDefault();
+      e.stopPropagation();
+      const index = parseInt(this.getAttribute('data-index'));
+      removeMaterial(index);
+    });
+  });
 }
 
 // Remove material from list
@@ -1586,6 +1617,8 @@ function openModuleView(moduleId) {
   console.log('[Module View] Found module:', module);
   console.log('[Module View] Module content:', module.content);
   console.log('[Module View] Module materials:', module.materials);
+  console.log('[Module View] Module assessment:', module.assessment);
+  console.log('[Module View] Module quizzes:', module.quizzes);
   
   const isFacultyOrAdmin = userRole === 'faculty' || userRole === 'admin';
   const moduleName = module.name || module.title;
@@ -1656,7 +1689,58 @@ function openModuleView(moduleId) {
           </div>
         ` : ''}
         
-        ${!hasContent && materials.length === 0 ? `
+        ${(module.quizzes && module.quizzes.length > 0) || (module.assessment) ? `
+          <div class="module-section">
+            <h3 class="module-section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+              </svg>
+              Quizzes & Assessments
+            </h3>
+            <div class="module-items-grid">
+              ${module.assessment ? `
+                <div class="module-item-card quiz-card" onclick="openQuiz('${moduleId}')">
+                  <div class="module-item-icon quiz">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                  </div>
+                  <div class="module-item-content">
+                    <h4 class="module-item-title">${module.assessment.title || 'Assessment'}</h4>
+                    <p class="module-item-meta">${module.assessment.questions?.length || 0} questions</p>
+                    <div class="module-item-type">${module.assessment.gameTemplate?.toUpperCase() || 'QUIZ'}</div>
+                  </div>
+                  <div class="module-item-arrow">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              ` : ''}
+              ${module.quizzes ? module.quizzes.map(quiz => `
+                <div class="module-item-card quiz-card" onclick="openQuiz('${quiz._id || quiz.id}')">
+                  <div class="module-item-icon quiz">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
+                    </svg>
+                  </div>
+                  <div class="module-item-content">
+                    <h4 class="module-item-title">${quiz.title || 'Quiz'}</h4>
+                    <p class="module-item-meta">${quiz.questions?.length || 0} questions</p>
+                    <div class="module-item-type">QUIZ</div>
+                  </div>
+                  <div class="module-item-arrow">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+                    </svg>
+                  </div>
+                </div>
+              `).join('') : ''}
+            </div>
+          </div>
+        ` : ''}
+        
+        ${!hasContent && materials.length === 0 && !(module.quizzes && module.quizzes.length > 0) && !module.assessment ? `
           <div class="module-empty-state">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
@@ -2411,6 +2495,9 @@ function createModal({ title, icon, content, primaryButton, secondaryButton }) {
   return overlay;
 }
 
+// Expose createModal globally for assessment-builder.js
+window.createModal = createModal;
+
 // Close modal with animation
 function closeModal(modal) {
   modal.classList.add('closing');
@@ -2418,6 +2505,9 @@ function closeModal(modal) {
     modal.remove();
   }, 300);
 }
+
+// Expose closeModal globally for assessment-builder.js
+window.closeModal = closeModal;
 
 // Show notification
 function showNotification(message, type = 'success') {
@@ -2621,7 +2711,8 @@ function editModule(moduleId) {
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-6 9l2 2 4-4" />
       </svg>`,
       onClick: () => {
-        alert('Assessment feature coming soon!');
+        openAssessmentBuilder(moduleId);
+        return false;
       }
     }
   });
@@ -2634,8 +2725,13 @@ function editModule(moduleId) {
   // Populate content editor with existing content
   setTimeout(() => {
     const editor = document.getElementById('contentEditor');
-    if (editor && module.content) {
-      editor.innerHTML = module.content;
+    if (editor && moduleContent.text) {
+      editor.innerHTML = moduleContent.text;
+    }
+    
+    // Display existing images in the preview
+    if (moduleContent.images && moduleContent.images.length > 0) {
+      updateContentPreview();
     }
   }, 100);
   
@@ -2776,41 +2872,125 @@ async function removeStudent(studentId, studentName) {
 function createConfirmDialog({ title, message, confirmText, cancelText, onConfirm, onCancel, isDangerous }) {
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
-  
-  const iconColor = isDangerous ? '#ef4444' : '#f97316';
+  overlay.style.cssText = `
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.2s ease;
+  `;
   
   overlay.innerHTML = `
-    <div class="confirm-dialog">
-      <div class="confirm-header">
-        <div class="confirm-icon" style="color: ${iconColor};">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+    <div class="confirm-dialog-card" style="
+      background: white;
+      border-radius: 12px;
+      padding: 2rem;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      animation: scaleIn 0.2s ease;
+    ">
+      <div style="display: flex; align-items: flex-start; gap: 1rem; margin-bottom: 1.5rem;">
+        <div style="
+          width: 48px;
+          height: 48px;
+          border-radius: 50%;
+          border: 3px solid #ef4444;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        ">
+          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" fill="none" viewBox="0 0 24 24" stroke="#ef4444" stroke-width="2">
+            <path stroke-linecap="round" stroke-linejoin="round" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
         </div>
-        <h3 class="confirm-title">${title}</h3>
+        <div style="flex: 1;">
+          <h3 style="
+            margin: 0 0 0.5rem 0;
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: #111827;
+          ">${title}</h3>
+        </div>
       </div>
-      <div class="confirm-body">
-        <p class="confirm-message">${message}</p>
+      
+      <div style="margin-bottom: 2rem; padding-left: 0;">
+        <p style="
+          margin: 0;
+          color: #374151;
+          font-size: 1rem;
+          line-height: 1.5;
+        ">${message}</p>
       </div>
-      <div class="confirm-footer">
-        <button class="modal-btn confirm-btn-cancel">
+      
+      <div style="
+        display: flex;
+        gap: 0.75rem;
+        justify-content: flex-end;
+      ">
+        <button class="confirm-btn-cancel" style="
+          padding: 0.625rem 1.5rem;
+          border: 1px solid #d1d5db;
+          background: white;
+          color: #374151;
+          border-radius: 6px;
+          font-size: 1rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        ">
           ${cancelText || 'Cancel'}
         </button>
-        <button class="modal-btn ${isDangerous ? 'confirm-btn-danger' : 'confirm-btn-success'}">
-          ${confirmText || 'Confirm'}
+        <button class="confirm-btn-action" style="
+          padding: 0.625rem 1.5rem;
+          border: none;
+          background: #ef4444;
+          color: white;
+          border-radius: 6px;
+          font-size: 1rem;
+          font-weight: 500;
+          cursor: pointer;
+          transition: all 0.2s;
+        ">
+          ${confirmText || 'Delete'}
         </button>
       </div>
     </div>
   `;
   
-  // Add event listeners
+  // Add hover effects via JavaScript
   const cancelBtn = overlay.querySelector('.confirm-btn-cancel');
+  const confirmBtn = overlay.querySelector('.confirm-btn-action');
+  
+  cancelBtn.addEventListener('mouseenter', () => {
+    cancelBtn.style.background = '#f9fafb';
+    cancelBtn.style.borderColor = '#9ca3af';
+  });
+  cancelBtn.addEventListener('mouseleave', () => {
+    cancelBtn.style.background = 'white';
+    cancelBtn.style.borderColor = '#d1d5db';
+  });
+  
+  confirmBtn.addEventListener('mouseenter', () => {
+    confirmBtn.style.background = '#dc2626';
+  });
+  confirmBtn.addEventListener('mouseleave', () => {
+    confirmBtn.style.background = '#ef4444';
+  });
+  
+  // Add event listeners
   cancelBtn.addEventListener('click', () => {
     if (onCancel) onCancel();
     closeModal(overlay);
   });
   
-  const confirmBtn = overlay.querySelector('.confirm-btn-danger');
   confirmBtn.addEventListener('click', async () => {
     if (onConfirm) await onConfirm();
     closeModal(overlay);
@@ -3219,3 +3399,7 @@ function showCustomConfirm(message) {
     });
   });
 }
+
+// ==================== Assessment Builder ====================
+
+// openAssessmentBuilder is now in assessment-builder.js

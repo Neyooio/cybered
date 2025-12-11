@@ -225,6 +225,17 @@
   }
 }
 
+@keyframes scaleIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
 @keyframes fadeOut {
   from {
     opacity: 1;
@@ -1202,6 +1213,9 @@
   background: rgba(15, 23, 42, 0.8);
   border-color: rgba(249, 115, 22, 0.3);
   color: rgba(255, 255, 255, 0.9);
+  display: inline-flex !important;
+  visibility: visible !important;
+  opacity: 1 !important;
 }
 
 .modal-btn-secondary:hover {

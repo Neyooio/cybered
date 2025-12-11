@@ -75,6 +75,9 @@ function getBackendUrl() {
     : `http://${hostname}:4000`;
 }
 
+// Set API URL globally for leaderboard-utils
+window.API_BASE_URL = getBackendUrl();
+
 // Get user-specific high score key
 function getHighScoreKey() {
   const userId = new URLSearchParams(window.location.search).get('token')?.split('.')[1];
@@ -873,7 +876,7 @@ function endGame() {
   
   // Submit score to leaderboard
   if (typeof submitToLeaderboard === 'function') {
-    submitToLeaderboard('Cyber Runner', finalScore, currentLevel, 0);
+    submitToLeaderboard('Cyber Runner', finalScore, 1, 0);
   }
   
   if (finalScore > highScore) {

@@ -234,6 +234,84 @@ router.put('/:spaceId/modules/:moduleId', requireAuth, async (req, res) => {
   }
 });
 
+// Create assessment for module
+router.post('/:spaceId/modules/:moduleId/assessment', requireAuth, async (req, res) => {
+  try {
+    const { spaceId, moduleId } = req.params;
+    const { title, description, gameTemplate, questions } = req.body;
+    const userId = req.user.sub;
+
+    // Validate input
+    if (!title || !gameTemplate || !questions || questions.length === 0) {
+      return res.status(400).json({ 
+        success: false, 
+        error: 'Title, game template, and at least one question are required' 
+      });
+    }
+
+    // Find the space
+    const space = await FacultySpace.findById(spaceId);
+    if (!space) {
+      return res.status(404).json({ success: false, error: 'Space not found' });
+    }
+
+    // Check ownership
+    if (space.creatorId.toString() !== userId) {
+      return res.status(403).json({ success: false, error: 'Not authorized to modify this space' });
+    }
+
+    // Find the module
+    const module = space.modules.id(moduleId);
+    if (!module) {
+      return res.status(404).json({ success: false, error: 'Module not found' });
+    }
+
+    // Create assessment
+    const assessment = {
+      title,
+      description,
+      gameTemplate,
+      questions,
+      createdAt: new Date()
+    };
+
+    // Add assessment to module
+    module.assessments.push(assessment);
+    await space.save();
+
+    res.json({ 
+      success: true, 
+      assessment: module.assessments[module.assessments.length - 1],
+      message: 'Assessment created successfully' 
+    });
+  } catch (error) {
+    console.error('[Create Assessment] Error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Get assessments for module
+router.get('/:spaceId/modules/:moduleId/assessments', requireAuth, async (req, res) => {
+  try {
+    const { spaceId, moduleId } = req.params;
+
+    const space = await FacultySpace.findById(spaceId);
+    if (!space) {
+      return res.status(404).json({ success: false, error: 'Space not found' });
+    }
+
+    const module = space.modules.id(moduleId);
+    if (!module) {
+      return res.status(404).json({ success: false, error: 'Module not found' });
+    }
+
+    res.json({ success: true, assessments: module.assessments || [] });
+  } catch (error) {
+    console.error('[Get Assessments] Error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Delete module from space
 router.delete('/:spaceId/modules/:moduleId', requireAuth, async (req, res) => {
   try {

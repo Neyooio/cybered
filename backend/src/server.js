@@ -15,6 +15,7 @@ import challengesRouter from './routes/challenges.js';
 import progressRouter from './routes/progress.js';
 import leaderboardRouter from './routes/leaderboard.js';
 import websiteConfigRouter from './routes/websiteConfig.js';
+import systemLogRouter from './routes/systemLog.js';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { createServer } from 'http';
@@ -129,6 +130,7 @@ app.use('/api/challenges', challengesRouter);
 app.use('/api/progress', progressRouter);
 app.use('/api/leaderboard', leaderboardRouter);
 app.use('/api/website', websiteConfigRouter);
+app.use('/api/system', systemLogRouter);
 
 const PORT = process.env.PORT || 4000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/CyberEdCapstone';

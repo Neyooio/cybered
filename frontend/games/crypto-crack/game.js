@@ -1,5 +1,18 @@
 console.log('[game.js] Loading Crypto Crack game...');
 
+// Set API URL globally for leaderboard-utils
+const getBackendUrl = () => {
+  const hostname = window.location.hostname;
+  if (hostname.includes('netlify.app') || hostname.includes('github.io') || hostname.includes('onrender.com')) {
+    return 'https://cybered-backend.onrender.com';
+  }
+  if (hostname === 'localhost' || hostname === '127.0.0.1') {
+    return 'http://localhost:4000';
+  }
+  return `http://${hostname}:4000`;
+};
+window.API_BASE_URL = getBackendUrl();
+
 // Game State
 const gameState = {
   currentShift: 0,
@@ -341,6 +354,11 @@ function checkAnswer() {
     // Save to localStorage
     localStorage.setItem('cyberedCrackXP', gameState.totalXP);
     localStorage.setItem('cyberedCrackSolved', gameState.puzzlesSolved);
+    
+    // Submit to leaderboard (use total XP as score)
+    if (typeof submitToLeaderboard === 'function') {
+      submitToLeaderboard('Crypto Crack', gameState.totalXP, gameState.level, 0);
+    }
     
     // Update HUD
     updateHUD();

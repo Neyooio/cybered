@@ -52,11 +52,11 @@
 
     .game-selector {
       display: grid;
-      grid-template-columns: repeat(3, 1fr);
+      grid-template-columns: repeat(2, 1fr);
       gap: 1rem;
       justify-content: center;
       margin-bottom: 2rem;
-      max-width: 900px;
+      max-width: 700px;
       margin-left: auto;
       margin-right: auto;
     }
@@ -108,7 +108,7 @@
     .table-row {
       padding: 1.25rem 1.5rem;
       display: grid;
-      grid-template-columns: 80px 1fr 150px 150px;
+      grid-template-columns: 80px 1fr 150px;
       gap: 1rem;
       border-bottom: 1px solid #334155;
       transition: all 0.3s;
@@ -165,13 +165,6 @@
       font-family: 'Press Start 2P', monospace;
     }
 
-    .level {
-      color: #60a5fa;
-      font-size: 1rem;
-      text-align: center;
-      font-family: 'Press Start 2P', monospace;
-    }
-
     .empty-state {
       text-align: center;
       padding: 4rem 2rem;
@@ -211,14 +204,6 @@
         grid-template-columns: 60px 1fr 100px;
         gap: 0.5rem;
         padding: 1rem;
-      }
-
-      .level {
-        display: none;
-      }
-
-      .table-header .level-header {
-        display: none;
       }
 
       .rank {
@@ -270,6 +255,7 @@
             <button class="game-tab active" data-game="cyber-runner">Cyber Runner</button>
             <button class="game-tab" data-game="cyber-runner-multiplayer">Cyber Runner MP</button>
             <button class="game-tab" data-game="intrusion-intercept">Intrusion Intercept</button>
+            <button class="game-tab" data-game="crypto-crack">Crypto Crack</button>
           </div>
 
           <div class="leaderboard-table">
@@ -277,7 +263,6 @@
               <div>Rank</div>
               <div>Player</div>
               <div>Score</div>
-              <div class="level-header">Level</div>
             </div>
             <div id="leaderboardBody">
               <div class="loading">Loading leaderboard</div>

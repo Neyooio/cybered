@@ -5,20 +5,33 @@
 
 // Submit score to leaderboard
 async function submitToLeaderboard(challengeName, score, level = 1, completionTime = 0) {
+  console.log('[Leaderboard] Attempting to submit:', { challengeName, score, level, completionTime });
+  
   try {
     const token = localStorage.getItem('authToken');
     if (!token) {
-      console.log('[Leaderboard] User not logged in - score not submitted');
+      console.warn('[Leaderboard] ❌ User not logged in - score not submitted');
       return { success: false, reason: 'not_logged_in' };
     }
 
     const user = JSON.parse(localStorage.getItem('user') || '{}');
+    console.log('[Leaderboard] User data:', user);
+    
     if (user.role !== 'student') {
-      console.log('[Leaderboard] Only students can submit to leaderboard');
+      console.warn('[Leaderboard] ❌ Only students can submit to leaderboard. Current role:', user.role);
       return { success: false, reason: 'not_student' };
     }
 
     const API_BASE_URL = window.API_BASE_URL || 'http://localhost:4000';
+    console.log('[Leaderboard] API URL:', API_BASE_URL);
+    
+    const submitData = {
+      challengeName,
+      score,
+      level,
+      completionTime
+    };
+    console.log('[Leaderboard] Submitting data:', submitData);
     
     const response = await fetch(`${API_BASE_URL}/api/leaderboard/submit`, {
       method: 'POST',
@@ -26,31 +39,30 @@ async function submitToLeaderboard(challengeName, score, level = 1, completionTi
         'Content-Type': 'application/json',
         'Authorization': `Bearer ${token}`
       },
-      body: JSON.stringify({
-        challengeName,
-        score,
-        level,
-        completionTime
-      })
+      body: JSON.stringify(submitData)
     });
+
+    console.log('[Leaderboard] Response status:', response.status);
 
     if (!response.ok) {
       const error = await response.json();
-      console.error('[Leaderboard] Submit error:', error);
+      console.error('[Leaderboard] ❌ Submit error:', error);
       return { success: false, reason: error.error };
     }
 
     const data = await response.json();
-    console.log('[Leaderboard] Score submitted:', data);
+    console.log('[Leaderboard] ✅ Score submitted successfully:', data);
     
     // Show notification if new high score
     if (data.isNewHighScore) {
       showLeaderboardNotification('🏆 New High Score!', `Your score: ${score}`);
+    } else {
+      console.log('[Leaderboard] Score submitted but not a new high score');
     }
     
     return { success: true, data };
   } catch (error) {
-    console.error('[Leaderboard] Submit failed:', error);
+    console.error('[Leaderboard] ❌ Submit failed:', error);
     return { success: false, reason: error.message };
   }
 }

@@ -1,0 +1,703 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Admin - System Log</title>
+  <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <link rel="stylesheet" href="../../css/global.css">
+  <link rel="stylesheet" href="../../css/modules.css">
+  <style>
+    .admin-container { 
+      padding: 1.5rem; 
+      display: flex; 
+      flex-direction: column; 
+      gap: 1.5rem; 
+      max-width: 1400px;
+      margin: 0 auto;
+    }
+    
+    /* Header */
+    .admin-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1rem;
+    }
+    
+    .admin-title {
+      font-size: 2rem;
+      margin: 0;
+      font-family: 'Press Start 2P', monospace;
+      color: white;
+    }
+    
+    .refresh-button {
+      padding: 0.625rem 1.25rem;
+      border-radius: 0.5rem;
+      border: 2px solid var(--indigo-700);
+      background: var(--indigo-600);
+      color: var(--white);
+      font-size: 0.875rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      font-family: 'Share Tech Mono', monospace;
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .refresh-button:hover {
+      background: var(--indigo-500);
+      border-color: var(--indigo-600);
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(79,70,229,.3);
+    }
+    
+    /* Stats Grid */
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+      gap: 1rem;
+    }
+    
+    .stat-card {
+      background: linear-gradient(135deg, rgba(15,23,42,.85) 0%, rgba(15,23,42,.75) 100%);
+      border: 2px solid rgba(249,115,22,.5);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      transition: all 0.3s ease;
+    }
+    
+    .stat-card:hover {
+      border-color: rgba(249,115,22,.75);
+      box-shadow: 0 8px 24px rgba(249,115,22,.2);
+      transform: translateY(-2px);
+    }
+    
+    .stat-header {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      margin-bottom: 0.75rem;
+    }
+    
+    .stat-icon {
+      width: 40px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(249,115,22,.2);
+      border-radius: 0.5rem;
+      font-size: 1.25rem;
+      color: var(--orange-400);
+    }
+    
+    .stat-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin: 0.5rem 0 0.25rem 0;
+      background: linear-gradient(135deg, var(--orange-500), var(--orange-400));
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+    }
+    
+    .stat-label {
+      font-size: 0.875rem;
+      color: var(--slate-300);
+      margin: 0;
+    }
+    
+    .stat-trend {
+      font-size: 0.75rem;
+      margin-top: 0.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.25rem;
+    }
+    
+    .stat-trend.positive {
+      color: var(--green-400);
+    }
+    
+    .stat-trend.negative {
+      color: var(--red-400);
+    }
+    
+    /* Section Cards */
+    .section-card {
+      background: linear-gradient(135deg, rgba(15,23,42,.85) 0%, rgba(15,23,42,.75) 100%);
+      border: 2px solid rgba(249,115,22,.5);
+      border-radius: 1rem;
+      padding: 1.5rem;
+      transition: all 0.3s ease;
+    }
+    
+    .section-card:hover {
+      border-color: rgba(249,115,22,.75);
+      box-shadow: 0 8px 24px rgba(249,115,22,.2);
+    }
+    
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 1.5rem;
+      padding-bottom: 1rem;
+      border-bottom: 2px solid rgba(249,115,22,.3);
+    }
+    
+    .section-title {
+      font-size: 1.5rem;
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+    }
+    
+    .section-icon {
+      width: 32px;
+      height: 32px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(249,115,22,.2);
+      border-radius: 0.5rem;
+      font-size: 1.25rem;
+      color: var(--orange-400);
+    }
+    
+    /* Charts Grid */
+    .charts-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+      gap: 1.5rem;
+    }
+    
+    .chart-container {
+      background: rgba(30,27,75,.6);
+      border: 2px solid rgba(79,70,229,.4);
+      border-radius: 0.75rem;
+      padding: 1.25rem;
+      position: relative;
+    }
+    
+    .chart-title {
+      font-size: 1rem;
+      font-weight: 600;
+      margin: 0 0 1rem 0;
+      color: var(--white);
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .chart-canvas {
+      max-height: 300px;
+    }
+    
+    /* Logs Section */
+    .logs-controls {
+      display: flex;
+      gap: 1rem;
+      margin-bottom: 1rem;
+      flex-wrap: wrap;
+    }
+    
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    
+    .filter-label {
+      font-size: 0.875rem;
+      color: var(--slate-300);
+      font-weight: 600;
+    }
+    
+    .filter-select {
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.375rem;
+      border: 2px solid rgba(79,70,229,.4);
+      background: rgba(30,27,75,.8);
+      color: var(--white);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.875rem;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+    
+    .filter-select:hover {
+      border-color: rgba(79,70,229,.7);
+    }
+    
+    .filter-select:focus {
+      outline: none;
+      border-color: var(--indigo-500);
+    }
+    
+    .search-input {
+      flex: 1;
+      min-width: 200px;
+      padding: 0.5rem 0.75rem;
+      border-radius: 0.375rem;
+      border: 2px solid rgba(79,70,229,.4);
+      background: rgba(30,27,75,.8);
+      color: var(--white);
+      font-family: 'Share Tech Mono', monospace;
+      font-size: 0.875rem;
+      transition: all 0.2s ease;
+    }
+    
+    .search-input:focus {
+      outline: none;
+      border-color: var(--indigo-500);
+    }
+    
+    .search-input::placeholder {
+      color: var(--slate-400);
+    }
+    
+    /* Log Entries */
+    .logs-container {
+      max-height: 500px;
+      overflow-y: auto;
+      background: rgba(11,17,49,.6);
+      border-radius: 0.5rem;
+      padding: 1rem;
+    }
+    
+    .logs-container::-webkit-scrollbar {
+      width: 8px;
+    }
+    
+    .logs-container::-webkit-scrollbar-track {
+      background: rgba(30,27,75,.4);
+      border-radius: 4px;
+    }
+    
+    .logs-container::-webkit-scrollbar-thumb {
+      background: rgba(79,70,229,.6);
+      border-radius: 4px;
+    }
+    
+    .logs-container::-webkit-scrollbar-thumb:hover {
+      background: rgba(79,70,229,.8);
+    }
+    
+    .log-entry {
+      padding: 0.75rem;
+      border-left: 3px solid;
+      background: rgba(30,27,75,.5);
+      border-radius: 0.375rem;
+      margin-bottom: 0.75rem;
+      transition: all 0.2s ease;
+      font-family: 'Courier New', monospace;
+      font-size: 0.875rem;
+    }
+    
+    .log-entry:hover {
+      background: rgba(30,27,75,.7);
+      transform: translateX(2px);
+    }
+    
+    .log-entry.error {
+      border-left-color: var(--red-500);
+    }
+    
+    .log-entry.warning {
+      border-left-color: var(--yellow-500);
+    }
+    
+    .log-entry.info {
+      border-left-color: var(--blue-500);
+    }
+    
+    .log-entry.success {
+      border-left-color: var(--green-500);
+    }
+    
+    .log-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.5rem;
+    }
+    
+    .log-type {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.375rem;
+      padding: 0.25rem 0.5rem;
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+      font-weight: 600;
+      text-transform: uppercase;
+    }
+    
+    .log-type.error {
+      background: rgba(239,68,68,.2);
+      color: var(--red-400);
+    }
+    
+    .log-type.warning {
+      background: rgba(234,179,8,.2);
+      color: var(--yellow-400);
+    }
+    
+    .log-type.info {
+      background: rgba(59,130,246,.2);
+      color: var(--blue-400);
+    }
+    
+    .log-type.success {
+      background: rgba(34,197,94,.2);
+      color: var(--green-400);
+    }
+    
+    .log-timestamp {
+      font-size: 0.75rem;
+      color: var(--slate-400);
+    }
+    
+    .log-feature {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      background: rgba(79,70,229,.2);
+      border: 1px solid rgba(79,70,229,.4);
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+      color: var(--indigo-300);
+      margin-right: 0.5rem;
+    }
+    
+    .log-message {
+      color: var(--slate-200);
+      line-height: 1.5;
+      margin: 0.5rem 0 0 0;
+    }
+    
+    .log-stack {
+      margin-top: 0.5rem;
+      padding: 0.5rem;
+      background: rgba(11,17,49,.8);
+      border-radius: 0.25rem;
+      font-size: 0.75rem;
+      color: var(--slate-400);
+      white-space: pre-wrap;
+      word-break: break-all;
+    }
+    
+    .empty-state {
+      text-align: center;
+      padding: 3rem;
+      color: var(--slate-400);
+    }
+    
+    .empty-state i {
+      font-size: 3rem;
+      margin-bottom: 1rem;
+      opacity: 0.5;
+    }
+    
+    /* Toast Notification */
+    .toast {
+      position: fixed;
+      bottom: 2rem;
+      right: 2rem;
+      background: rgba(15,23,42,.95);
+      border: 2px solid;
+      border-radius: 0.75rem;
+      padding: 1rem 1.5rem;
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,.5);
+      transform: translateY(150%);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 10000;
+      min-width: 300px;
+    }
+    
+    .toast.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+    
+    .toast.success {
+      border-color: var(--green-500);
+    }
+    
+    .toast.error {
+      border-color: var(--red-500);
+    }
+    
+    .toast-message {
+      flex: 1;
+      font-size: 0.875rem;
+    }
+    
+    /* Loading Overlay */
+    .loading-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(11,17,49,.85);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 9999;
+      opacity: 0;
+      visibility: hidden;
+      transition: all 0.3s ease;
+    }
+    
+    .loading-overlay.active {
+      opacity: 1;
+      visibility: visible;
+    }
+    
+    .loading-spinner {
+      width: 50px;
+      height: 50px;
+      border: 4px solid rgba(249,115,22,.2);
+      border-top-color: var(--orange-500);
+      border-radius: 50%;
+      animation: spin 1s linear infinite;
+    }
+    
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .admin-container {
+        padding: 1rem;
+      }
+      
+      .charts-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .admin-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+      }
+      
+      .logs-controls {
+        flex-direction: column;
+      }
+      
+      .filter-group {
+        width: 100%;
+      }
+      
+      .search-input {
+        width: 100%;
+      }
+    }
+  </style>
+</head>
+<body class="site-background">
+  <div class="layout-shell">
+    <div data-include="../partials/navbar.html"></div>
+    <main class="main-wrapper">
+      <div data-include="../partials/topbar.html"></div>
+      <section class="content-section">
+        <div class="admin-container">
+          <!-- Header -->
+          <div class="admin-header">
+            <h1 class="admin-title">System Log</h1>
+            <button class="refresh-button" id="refreshBtn">
+              <i class="fas fa-sync-alt"></i>
+              Refresh Data
+            </button>
+          </div>
+          
+          <!-- Stats Grid -->
+          <div class="stats-grid">
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon">
+                  <i class="fas fa-exclamation-circle"></i>
+                </div>
+              </div>
+              <p class="stat-value" id="totalErrors">0</p>
+              <p class="stat-label">Total Errors</p>
+              <p class="stat-trend negative" id="errorTrend">
+                <i class="fas fa-arrow-down"></i>
+                <span>0% from last hour</span>
+              </p>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon">
+                  <i class="fas fa-exclamation-triangle"></i>
+                </div>
+              </div>
+              <p class="stat-value" id="totalWarnings">0</p>
+              <p class="stat-label">Total Warnings</p>
+              <p class="stat-trend positive" id="warningTrend">
+                <i class="fas fa-arrow-up"></i>
+                <span>0% from last hour</span>
+              </p>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon">
+                  <i class="fas fa-tachometer-alt"></i>
+                </div>
+              </div>
+              <p class="stat-value" id="avgResponseTime">0ms</p>
+              <p class="stat-label">Avg Response Time</p>
+              <p class="stat-trend positive" id="responseTrend">
+                <i class="fas fa-arrow-down"></i>
+                <span>0% faster</span>
+              </p>
+            </div>
+            
+            <div class="stat-card">
+              <div class="stat-header">
+                <div class="stat-icon">
+                  <i class="fas fa-server"></i>
+                </div>
+              </div>
+              <p class="stat-value" id="uptime">99.9%</p>
+              <p class="stat-label">System Uptime</p>
+              <p class="stat-trend positive" id="uptimeTrend">
+                <i class="fas fa-check"></i>
+                <span>Stable</span>
+              </p>
+            </div>
+          </div>
+
+          <!-- Performance Charts -->
+          <div class="section-card">
+            <div class="section-header">
+              <h2 class="section-title">
+                <span class="section-icon"><i class="fas fa-chart-line"></i></span>
+                Performance Metrics
+              </h2>
+            </div>
+            <div class="charts-grid">
+              <div class="chart-container">
+                <h3 class="chart-title">
+                  <i class="fas fa-clock"></i>
+                  Response Time (Last 24 Hours)
+                </h3>
+                <canvas id="responseTimeChart" class="chart-canvas"></canvas>
+              </div>
+              <div class="chart-container">
+                <h3 class="chart-title">
+                  <i class="fas fa-bug"></i>
+                  Error Distribution
+                </h3>
+                <canvas id="errorDistributionChart" class="chart-canvas"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- System Stability -->
+          <div class="section-card">
+            <div class="section-header">
+              <h2 class="section-title">
+                <span class="section-icon"><i class="fas fa-heartbeat"></i></span>
+                System Stability
+              </h2>
+            </div>
+            <div class="charts-grid">
+              <div class="chart-container">
+                <h3 class="chart-title">
+                  <i class="fas fa-memory"></i>
+                  Memory Usage
+                </h3>
+                <canvas id="memoryChart" class="chart-canvas"></canvas>
+              </div>
+              <div class="chart-container">
+                <h3 class="chart-title">
+                  <i class="fas fa-microchip"></i>
+                  CPU Usage
+                </h3>
+                <canvas id="cpuChart" class="chart-canvas"></canvas>
+              </div>
+            </div>
+          </div>
+
+          <!-- Error Logs -->
+          <div class="section-card">
+            <div class="section-header">
+              <h2 class="section-title">
+                <span class="section-icon"><i class="fas fa-file-alt"></i></span>
+                System Logs
+              </h2>
+            </div>
+            
+            <!-- Filters -->
+            <div class="logs-controls">
+              <div class="filter-group">
+                <label class="filter-label">Type:</label>
+                <select id="typeFilter" class="filter-select">
+                  <option value="all">All Types</option>
+                  <option value="error">Errors</option>
+                  <option value="warning">Warnings</option>
+                  <option value="info">Info</option>
+                  <option value="success">Success</option>
+                </select>
+              </div>
+              
+              <div class="filter-group">
+                <label class="filter-label">Feature:</label>
+                <select id="featureFilter" class="filter-select">
+                  <option value="all">All Features</option>
+                  <option value="auth">Authentication</option>
+                  <option value="quiz">Quiz System</option>
+                  <option value="challenges">Challenges</option>
+                  <option value="leaderboard">Leaderboard</option>
+                  <option value="modules">Modules</option>
+                  <option value="chatbot">Chatbot</option>
+                  <option value="database">Database</option>
+                  <option value="api">API</option>
+                </select>
+              </div>
+              
+              <input 
+                type="text" 
+                id="searchInput" 
+                class="search-input" 
+                placeholder="Search logs..."
+              />
+            </div>
+            
+            <!-- Logs Container -->
+            <div id="logsContainer" class="logs-container"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <!-- Toast Notification -->
+  <div id="toast" class="toast">
+    <i class="fas fa-check-circle"></i>
+    <span class="toast-message"></span>
+  </div>
+
+  <!-- Loading Overlay -->
+  <div id="loadingOverlay" class="loading-overlay">
+    <div class="loading-spinner"></div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <script src="../../js/includes.js"></script>
+  <script type="module" src="../../js/admin-system-log.js"></script>
+</body>
+</html>

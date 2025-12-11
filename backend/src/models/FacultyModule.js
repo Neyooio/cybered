@@ -51,6 +51,18 @@ const facultySpaceSchema = new mongoose.Schema({
         explanation: { type: String }
       }],
       passingScore: { type: Number, default: 70 }
+    }],
+    assessments: [{
+      title: { type: String, required: true },
+      description: { type: String },
+      gameTemplate: { type: String, required: true },
+      questions: [{
+        question: { type: String, required: true },
+        answer: { type: String, required: true },
+        options: [{ type: String }],
+        correctIndex: { type: Number }
+      }],
+      createdAt: { type: Date, default: Date.now }
     }]
   }],
   announcements: [{

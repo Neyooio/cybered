@@ -7,24 +7,36 @@ const router = express.Router();
 
 // Submit score to leaderboard (only students)
 router.post('/submit', requireAuth, async (req, res) => {
+  console.log('[Leaderboard] Received submission request');
+  console.log('[Leaderboard] User from token:', req.user);
+  console.log('[Leaderboard] Body:', req.body);
+  
   try {
     const { challengeName, score, level, completionTime } = req.body;
     
+    const userId = req.user.sub || req.user.userId || req.user._id;
+    console.log('[Leaderboard] Extracted userId:', userId);
+    
     // Verify user is a student
-    const user = await User.findById(req.userId);
+    const user = await User.findById(userId);
+    console.log('[Leaderboard] Found user:', user ? { id: user._id, username: user.username, role: user.role } : 'NOT FOUND');
+    
     if (!user) {
       return res.status(404).json({ error: 'User not found' });
     }
     
     if (user.role !== 'student') {
+      console.log('[Leaderboard] User is not a student, role:', user.role);
       return res.status(403).json({ error: 'Only students can submit scores to the leaderboard' });
     }
     
     // Check if user already has a score for this challenge
     const existingEntry = await Leaderboard.findOne({
-      userId: req.userId,
+      userId: userId,
       challengeName: challengeName
     });
+    
+    console.log('[Leaderboard] Existing entry:', existingEntry);
     
     if (existingEntry) {
       // Only update if new score is higher
@@ -35,12 +47,14 @@ router.post('/submit', requireAuth, async (req, res) => {
         existingEntry.date = new Date();
         await existingEntry.save();
         
+        console.log('[Leaderboard] Updated existing entry with new high score');
         return res.json({
           message: 'New high score! Leaderboard updated.',
           entry: existingEntry,
           isNewHighScore: true
         });
       } else {
+        console.log('[Leaderboard] Score not higher than existing:', existingEntry.score);
         return res.json({
           message: 'Score submitted but not a new high score.',
           entry: existingEntry,
@@ -51,7 +65,7 @@ router.post('/submit', requireAuth, async (req, res) => {
     
     // Create new leaderboard entry
     const leaderboardEntry = new Leaderboard({
-      userId: req.userId,
+      userId: userId,
       username: user.username,
       challengeName,
       score,
@@ -60,6 +74,7 @@ router.post('/submit', requireAuth, async (req, res) => {
     });
     
     await leaderboardEntry.save();
+    console.log('[Leaderboard] Created new entry:', leaderboardEntry);
     
     res.status(201).json({
       message: 'Score submitted to leaderboard!',
@@ -67,13 +82,15 @@ router.post('/submit', requireAuth, async (req, res) => {
       isNewHighScore: true
     });
   } catch (error) {
-    console.error('Error submitting score:', error);
+    console.error('[Leaderboard] Error submitting score:', error);
     res.status(500).json({ error: error.message });
   }
 });
 
 // Get leaderboard for a specific challenge
 router.get('/challenge/:challengeName', async (req, res) => {
+  console.log('[Leaderboard GET] Request for challenge:', req.params.challengeName);
+  
   try {
     const { challengeName } = req.params;
     const limit = parseInt(req.query.limit) || 100;
@@ -84,10 +101,15 @@ router.get('/challenge/:challengeName', async (req, res) => {
       .populate('userId', 'username role')
       .lean();
     
+    console.log('[Leaderboard GET] Found entries:', leaderboard.length);
+    console.log('[Leaderboard GET] Sample entry:', leaderboard[0]);
+    
     // Filter out any non-students (extra safety check)
     const studentLeaderboard = leaderboard.filter(entry => 
       entry.userId && entry.userId.role === 'student'
     );
+    
+    console.log('[Leaderboard GET] After filtering students:', studentLeaderboard.length);
     
     // Add rank to each entry
     const rankedLeaderboard = studentLeaderboard.map((entry, index) => ({
@@ -99,9 +121,11 @@ router.get('/challenge/:challengeName', async (req, res) => {
       date: entry.date
     }));
     
+    console.log('[Leaderboard GET] Sending ranked leaderboard with', rankedLeaderboard.length, 'entries');
+    
     res.json(rankedLeaderboard);
   } catch (error) {
-    console.error('Error fetching leaderboard:', error);
+    console.error('[Leaderboard GET] Error fetching leaderboard:', error);
     res.status(500).json({ error: error.message });
   }
 });
@@ -152,10 +176,48 @@ router.get('/overall', async (req, res) => {
   }
 });
 
+// Get all challenge leaderboards (separate leaderboard for each challenge)
+router.get('/all-challenges', async (req, res) => {
+  try {
+    const limit = parseInt(req.query.limit) || 10;
+    const challenges = ['Cyber Runner', 'Cyber Runner MP', 'Intrusion Intercept', 'Crypto Crack'];
+    
+    const allLeaderboards = {};
+    
+    for (const challengeName of challenges) {
+      const leaderboard = await Leaderboard.find({ challengeName })
+        .sort({ score: -1, completionTime: 1 })
+        .limit(limit)
+        .populate('userId', 'username role')
+        .lean();
+      
+      // Filter out any non-students
+      const studentLeaderboard = leaderboard.filter(entry => 
+        entry.userId && entry.userId.role === 'student'
+      );
+      
+      // Add rank to each entry
+      allLeaderboards[challengeName] = studentLeaderboard.map((entry, index) => ({
+        rank: index + 1,
+        username: entry.username,
+        score: entry.score,
+        level: entry.level,
+        completionTime: entry.completionTime,
+        date: entry.date
+      }));
+    }
+    
+    res.json(allLeaderboards);
+  } catch (error) {
+    console.error('Error fetching all challenge leaderboards:', error);
+    res.status(500).json({ error: error.message });
+  }
+});
+
 // Get user's personal stats
 router.get('/my-stats', requireAuth, async (req, res) => {
   try {
-    const userEntries = await Leaderboard.find({ userId: req.userId })
+    const userEntries = await Leaderboard.find({ userId: req.user.sub })
       .sort({ score: -1 })
       .lean();
     
@@ -184,7 +246,7 @@ router.get('/my-rank/:challengeName', requireAuth, async (req, res) => {
     const { challengeName } = req.params;
     
     const userEntry = await Leaderboard.findOne({
-      userId: req.userId,
+      userId: req.user.sub,
       challengeName
     });
     

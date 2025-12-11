@@ -3,10 +3,10 @@ console.log('[leaderboards.js] Loading...');
 
 const API_BASE_URL = window.API_BASE_URL || 'http://localhost:4000';
 
-// Challenge names mapping
+// Challenge names mapping (excluding Header Check - no scores)
 const CHALLENGES = {
   'cyber-runner': 'Cyber Runner',
-  'cyber-runner-mp': 'Cyber Runner MP',
+  'cyber-runner-multiplayer': 'Cyber Runner MP',
   'intrusion-intercept': 'Intrusion Intercept',
   'crypto-crack': 'Crypto Crack'
 };
@@ -54,9 +54,11 @@ function initializeGameTabs() {
 
 // Load leaderboard data
 async function loadLeaderboard(gameId) {
+  console.log('[Leaderboards] Loading leaderboard for game:', gameId);
+  
   const leaderboardBody = document.getElementById('leaderboardBody');
   if (!leaderboardBody) {
-    console.error('Leaderboard body element not found');
+    console.error('[Leaderboards] Leaderboard body element not found');
     return;
   }
   
@@ -64,21 +66,29 @@ async function loadLeaderboard(gameId) {
   
   try {
     const challengeName = CHALLENGES[gameId];
+    console.log('[Leaderboards] Challenge name:', challengeName);
+    
     if (!challengeName) {
-      console.error('Unknown game ID:', gameId);
+      console.error('[Leaderboards] Unknown game ID:', gameId);
       showEmptyState('Game not found');
       return;
     }
     
-    const response = await fetch(`${API_BASE_URL}/api/leaderboard/challenge/${encodeURIComponent(challengeName)}`);
+    const url = `${API_BASE_URL}/api/leaderboard/challenge/${encodeURIComponent(challengeName)}`;
+    console.log('[Leaderboards] Fetching from:', url);
+    
+    const response = await fetch(url);
+    console.log('[Leaderboards] Response status:', response.status);
     
     if (!response.ok) {
-      throw new Error('Failed to fetch leaderboard');
+      throw new Error(`Failed to fetch leaderboard: ${response.status}`);
     }
     
     const leaderboard = await response.json();
+    console.log('[Leaderboards] Received data:', leaderboard);
     
     if (leaderboard.length === 0) {
+      console.log('[Leaderboards] No scores found for this game');
       showEmptyState('No scores yet for this game! Be the first to play and set a record.');
       return;
     }
@@ -86,7 +96,7 @@ async function loadLeaderboard(gameId) {
     displayLeaderboard(leaderboard);
     
   } catch (error) {
-    console.error('Error loading leaderboard:', error);
+    console.error('[Leaderboards] Error loading leaderboard:', error);
     showError('Failed to load leaderboard. Please try again.');
   }
 }
@@ -154,7 +164,6 @@ function displayLeaderboard(data) {
           <div class="player-name">${escapeHtml(player.username)}${isCurrentUser ? ' (You)' : ''}</div>
         </div>
         <div class="score">${player.score.toLocaleString()}</div>
-        <div class="level">Lv ${player.level}</div>
       </div>
     `;
   }).join('');

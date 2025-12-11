@@ -23,6 +23,9 @@ const getBackendUrl = () => {
     return `http://${hostname}:4000`;
 };
 
+// Set API URL globally for leaderboard-utils
+window.API_BASE_URL = getBackendUrl();
+
 // Get player data from localStorage
 function getPlayerData() {
     const token = localStorage.getItem('authToken') || new URLSearchParams(window.location.search).get('token');
