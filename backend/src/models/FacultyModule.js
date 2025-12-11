@@ -19,6 +19,14 @@ const facultySpaceSchema = new mongoose.Schema({
     iconUrl: { type: String },
     color: { type: String, default: '#1d4ed8' },
     order: { type: Number, default: 0 },
+    materials: [{
+      type: { type: String, enum: ['pdf', 'link', 'video', 'document'], required: true },
+      title: { type: String, required: true },
+      url: { type: String, required: true },
+      description: { type: String },
+      fileSize: { type: String },
+      uploadedAt: { type: Date, default: Date.now }
+    }],
     lessons: [{
       title: { type: String, required: true },
       content: { type: String, required: true },

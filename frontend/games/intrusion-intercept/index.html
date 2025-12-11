@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Intrusion Intercept - Cybersecurity Challenge</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div id="gameContainer">
+        <canvas id="gameCanvas"></canvas>
+        
+        <!-- HUD Overlays -->
+        <div id="score">Score: 100</div>
+        <div id="scenario">Scenario 1/10</div>
+        <div id="timer">20</div>
+        
+        <!-- Start Screen -->
+        <div id="startScreen">
+            <h1>INTRUSION INTERCEPT</h1>
+            <p class="subtitle">Defend Against Cyber Threats</p>
+            <button id="startBtn" class="game-btn">Play</button>
+            <div class="instructions">
+                <p>Make the right security decisions</p>
+                <p>Maintain your security score above 0</p>
+                <p>Complete all 10 scenarios to win!</p>
+            </div>
+        </div>
+        
+        <!-- Game Over Screen -->
+        <div id="gameOver" style="display: none;">
+            <div class="game-over-content">
+                <h2 id="gameOverTitle">Mission Complete!</h2>
+                <p id="gameOverMessage"></p>
+                <div class="final-score">
+                    <span>Final Security Score: </span>
+                    <span id="finalScore">100</span>
+                </div>
+                <button id="restartBtn" class="game-btn">Play Again</button>
+            </div>
+        </div>
+        
+        <!-- Choice Panel Overlay -->
+        <div id="choicePanel" style="display: none;">
+            <div class="choice-content">
+                <h3 id="scenarioTitle"></h3>
+                <p id="scenarioDescription"></p>
+                <div id="choicesContainer"></div>
+            </div>
+        </div>
+        
+        <!-- Feedback Panel -->
+        <div id="feedbackPanel" style="display: none;">
+            <div class="feedback-content">
+                <h3 id="feedbackTitle"></h3>
+                <p id="feedbackMessage"></p>
+                <button id="continueBtn" class="game-btn">Continue</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="game.js"></script>
+</body>
+</html>

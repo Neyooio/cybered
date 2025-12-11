@@ -1,13 +1,3 @@
-/**
- * Emergency Fix Script for CyberEd Login Issues
- * 
- * INSTRUCTIONS:
- * 1. Open your browser's Developer Console (Press F12)
- * 2. Copy and paste this entire script into the Console
- * 3. Press Enter to run it
- * 4. The page will automatically reload with the correct settings
- */
-
 (function() {
   console.log('🔧 CyberEd Emergency Fix Starting...');
   

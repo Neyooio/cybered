@@ -671,8 +671,12 @@ function showDeleteNotification(message, type = 'success') {
   }
 }
 
-// Make kickStudent global
+// Make functions globally accessible for inline event handlers
 window.kickStudent = kickStudent;
+window.editModule = editModule;
+window.deleteModule = deleteModule;
+window.removeStudent = removeStudent;
+window.openModuleView = openModuleView;
 
 // Copy space code to clipboard
 function copySpaceCode() {
@@ -724,7 +728,7 @@ function renderModules() {
 
   container.innerHTML = currentSpace.modules.map(module => {
     const actionsHTML = isFacultyOrAdmin ? `
-      <div class="module-actions">
+      <div class="module-actions" onclick="event.stopPropagation()">
         <button class="module-action" onclick="editModule('${module._id || module.id}')" title="Edit">
           <svg fill="currentColor" viewBox="0 0 20 20">
             <path d="M17.414 2.586a2 2 0 00-2.828 0L7 10.172V13h2.828l7.586-7.586a2 2 0 000-2.828z"/>
@@ -740,13 +744,14 @@ function renderModules() {
     ` : '';
     
     return `
-      <div class="module-card" data-module-id="${module._id || module.id}">
+      <div class="module-card" data-module-id="${module._id || module.id}" onclick="openModuleView('${module._id || module.id}')">
         <div class="module-info">
-          <div class="module-title">${module.name}</div>
+          <div class="module-title">${module.name || module.title}</div>
           <div class="module-description">${module.description || 'No description'}</div>
           <div class="module-stats">
-            <span>${module.lessons?.length || 0} Lessons</span>
-            <span>${module.quizzes?.length || 0} Quizzes</span>
+            ${module.materials?.length ? `<span><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" /></svg>${module.materials.length} Materials</span>` : ''}
+            <span><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" /></svg>${module.lessons?.length || 0} Lessons</span>
+            <span><svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" /></svg>${module.quizzes?.length || 0} Quizzes</span>
           </div>
         </div>
         ${actionsHTML}
@@ -794,6 +799,7 @@ function renderAnnouncements() {
 // Render students list
 function renderStudents() {
   const container = document.getElementById('studentsList');
+  const isFacultyOrAdmin = userRole === 'faculty' || userRole === 'admin';
   
   if (!currentSpace?.enrolledStudents || currentSpace.enrolledStudents.length === 0) {
     container.innerHTML = `
@@ -812,9 +818,19 @@ function renderStudents() {
     // Handle different possible field names
     const displayName = student.username || student.name || 'Student';
     const displayEmail = student.email || 'No email';
+    const studentId = student._id || student.id;
     
     // Get avatar
     const avatarHtml = getStudentAvatarForTab(student);
+    
+    // Remove button for faculty/admin
+    const removeButtonHtml = isFacultyOrAdmin ? `
+      <button class="student-remove-btn" onclick="removeStudent('${studentId}', '${displayName}')" title="Remove student">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+        </svg>
+      </button>
+    ` : '';
     
     return `
       <div class="student-card">
@@ -825,6 +841,7 @@ function renderStudents() {
             <p>${displayEmail}</p>
           </div>
         </div>
+        ${removeButtonHtml}
       </div>
     `;
   }).join('');
@@ -885,12 +902,911 @@ function formatDate(dateString) {
 
 // Open add module modal
 function openAddModuleModal() {
+  const modal = createModal({
+    title: 'Add Module',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+    </svg>`,
+    content: `
+      <div class="modal-form-group">
+        <label class="modal-label required">Module Name</label>
+        <input type="text" id="moduleName" class="modal-input" placeholder="Enter module name" maxlength="100" required />
+        <div class="modal-input-hint">Max 100 characters</div>
+      </div>
+      
+      <div class="modal-form-group">
+        <label class="modal-label">Description</label>
+        <textarea id="moduleDescription" class="modal-textarea" placeholder="Enter module description" maxlength="500"></textarea>
+        <div class="modal-input-hint">Max 500 characters</div>
+      </div>
+      
+      <div class="modal-form-group">
+        <label class="modal-label">Add Materials</label>
+        <div class="material-type-tabs">
+          <button type="button" class="material-tab active" data-type="pdf" onclick="switchMaterialTab('pdf', event)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" />
+            </svg>
+            PDF
+          </button>
+          <button type="button" class="material-tab" data-type="youtube" onclick="switchMaterialTab('youtube', event)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" />
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            YouTube
+          </button>
+          <button type="button" class="material-tab" data-type="link" onclick="switchMaterialTab('link', event)">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" />
+            </svg>
+            Link
+          </button>
+        </div>
+        
+        <div class="material-input-container">
+          <!-- PDF Upload -->
+          <div class="material-input active" id="pdfInput">
+            <input type="file" id="pdfFile" class="file-input" accept=".pdf" />
+            <label for="pdfFile" class="file-input-label">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12" />
+              </svg>
+              <span id="pdfFileName">Choose PDF file or drag here</span>
+            </label>
+            <div class="modal-input-hint">Max 10MB - PDF files only</div>
+          </div>
+          
+          <!-- YouTube URL -->
+          <div class="material-input" id="youtubeInput">
+            <input type="url" id="youtubeUrl" class="modal-input" placeholder="https://youtube.com/watch?v=..." />
+            <div class="modal-input-hint">Paste YouTube video URL</div>
+          </div>
+          
+          <!-- External Link -->
+          <div class="material-input" id="linkInput">
+            <input type="url" id="externalUrl" class="modal-input" placeholder="https://example.com" />
+            <input type="text" id="linkTitle" class="modal-input" placeholder="Link title (optional)" maxlength="100" style="margin-top: 0.75rem;" />
+            <div class="modal-input-hint">Add any website or resource link</div>
+          </div>
+        </div>
+        
+        <div id="materialsList" class="materials-preview"></div>
+      </div>
+    `,
+    primaryButton: {
+      text: 'Add Module',
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+      </svg>`,
+      onClick: async () => {
+        const name = document.getElementById('moduleName').value.trim();
+        const description = document.getElementById('moduleDescription').value.trim();
+        
+        if (!name) {
+          alert('Please enter a module name');
+          return;
+        }
+        
+        await addModule(name, description);
+        closeModal(modal);
+      }
+    }
+  });
+  
+  document.body.appendChild(modal);
+  
+  // Initialize file upload handlers
+  initializeMaterialHandlers();
+  
+  // Focus on first input
+  setTimeout(() => {
+    document.getElementById('moduleName').focus();
+  }, 100);
+}
+
+// Switch between material type tabs
+function switchMaterialTab(type, event) {
+  if (event) event.preventDefault();
+  
+  // Update tab active states
+  document.querySelectorAll('.material-tab').forEach(tab => {
+    tab.classList.toggle('active', tab.dataset.type === type);
+  });
+  
+  // Update input visibility
+  document.querySelectorAll('.material-input').forEach(input => {
+    input.classList.remove('active');
+  });
+  
+  if (type === 'pdf') {
+    document.getElementById('pdfInput').classList.add('active');
+  } else if (type === 'youtube') {
+    document.getElementById('youtubeInput').classList.add('active');
+  } else if (type === 'link') {
+    document.getElementById('linkInput').classList.add('active');
+  }
+}
+
+// Global materials array
+let moduleMaterials = [];
+
+// Initialize material upload handlers
+function initializeMaterialHandlers() {
+  moduleMaterials = [];
+  
+  const pdfInput = document.getElementById('pdfFile');
+  const pdfLabel = document.getElementById('pdfFileName');
+  
+  // PDF file upload
+  pdfInput.addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (file) {
+      if (file.size > 10 * 1024 * 1024) { // 10MB limit
+        alert('File size exceeds 10MB limit');
+        e.target.value = '';
+        return;
+      }
+      
+      if (file.type !== 'application/pdf') {
+        alert('Please upload a PDF file');
+        e.target.value = '';
+        return;
+      }
+      
+      pdfLabel.textContent = file.name;
+      
+      // Convert to base64 for storage (in production, upload to cloud storage)
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        moduleMaterials.push({
+          type: 'pdf',
+          title: file.name,
+          url: e.target.result, // Base64 data URL
+          fileSize: formatFileSize(file.size),
+          description: ''
+        });
+        updateMaterialsPreview();
+        pdfInput.value = '';
+        pdfLabel.textContent = 'Choose PDF file or drag here';
+      };
+      reader.readAsDataURL(file);
+    }
+  });
+  
+  // Drag and drop for PDF
+  const pdfDropZone = document.querySelector('#pdfInput .file-input-label');
+  
+  pdfDropZone.addEventListener('dragover', (e) => {
+    e.preventDefault();
+    pdfDropZone.classList.add('drag-over');
+  });
+  
+  pdfDropZone.addEventListener('dragleave', () => {
+    pdfDropZone.classList.remove('drag-over');
+  });
+  
+  pdfDropZone.addEventListener('drop', (e) => {
+    e.preventDefault();
+    pdfDropZone.classList.remove('drag-over');
+    
+    const file = e.dataTransfer.files[0];
+    if (file) {
+      pdfInput.files = e.dataTransfer.files;
+      pdfInput.dispatchEvent(new Event('change'));
+    }
+  });
+  
+  // YouTube URL handler
+  const youtubeUrl = document.getElementById('youtubeUrl');
+  youtubeUrl.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addYouTubeMaterial();
+    }
+  });
+  
+  // Add button for YouTube
+  const youtubeContainer = document.getElementById('youtubeInput');
+  const addYoutubeBtn = document.createElement('button');
+  addYoutubeBtn.type = 'button';
+  addYoutubeBtn.className = 'add-material-btn';
+  addYoutubeBtn.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+    </svg>
+    Add Video
+  `;
+  addYoutubeBtn.onclick = (e) => {
+    e.preventDefault();
+    addYouTubeMaterial();
+  };
+  youtubeContainer.appendChild(addYoutubeBtn);
+  
+  // External link handler
+  const linkUrl = document.getElementById('externalUrl');
+  linkUrl.addEventListener('keypress', (e) => {
+    if (e.key === 'Enter') {
+      e.preventDefault();
+      addLinkMaterial();
+    }
+  });
+  
+  // Add button for links
+  const linkContainer = document.getElementById('linkInput');
+  const addLinkBtn = document.createElement('button');
+  addLinkBtn.type = 'button';
+  addLinkBtn.className = 'add-material-btn';
+  addLinkBtn.innerHTML = `
+    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4" />
+    </svg>
+    Add Link
+  `;
+  addLinkBtn.onclick = (e) => {
+    e.preventDefault();
+    addLinkMaterial();
+  };
+  linkContainer.appendChild(addLinkBtn);
+}
+
+// Add YouTube material
+function addYouTubeMaterial() {
+  const url = document.getElementById('youtubeUrl').value.trim();
+  
+  if (!url) {
+    alert('Please enter a YouTube URL');
+    return;
+  }
+  
+  if (!isValidYouTubeUrl(url)) {
+    alert('Please enter a valid YouTube URL');
+    return;
+  }
+  
+  const videoId = extractYouTubeId(url);
+  const title = `YouTube Video ${moduleMaterials.filter(m => m.type === 'video').length + 1}`;
+  
+  moduleMaterials.push({
+    type: 'video',
+    title: title,
+    url: url,
+    description: ''
+  });
+  
+  updateMaterialsPreview();
+  document.getElementById('youtubeUrl').value = '';
+}
+
+// Add external link material
+function addLinkMaterial() {
+  const url = document.getElementById('externalUrl').value.trim();
+  const title = document.getElementById('linkTitle').value.trim();
+  
+  if (!url) {
+    alert('Please enter a URL');
+    return;
+  }
+  
+  if (!isValidUrl(url)) {
+    alert('Please enter a valid URL');
+    return;
+  }
+  
+  moduleMaterials.push({
+    type: 'link',
+    title: title || url,
+    url: url,
+    description: ''
+  });
+  
+  updateMaterialsPreview();
+  document.getElementById('externalUrl').value = '';
+  document.getElementById('linkTitle').value = '';
+}
+
+// Validate YouTube URL
+function isValidYouTubeUrl(url) {
+  const pattern = /^(https?:\/\/)?(www\.)?(youtube\.com|youtu\.be)\/.+/;
+  return pattern.test(url);
+}
+
+// Extract YouTube video ID
+function extractYouTubeId(url) {
+  const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+  const match = url.match(regExp);
+  return (match && match[2].length === 11) ? match[2] : null;
+}
+
+// Validate URL
+function isValidUrl(url) {
+  try {
+    new URL(url);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
+// Format file size
+function formatFileSize(bytes) {
+  if (bytes === 0) return '0 Bytes';
+  const k = 1024;
+  const sizes = ['Bytes', 'KB', 'MB', 'GB'];
+  const i = Math.floor(Math.log(bytes) / Math.log(k));
+  return Math.round(bytes / Math.pow(k, i) * 100) / 100 + ' ' + sizes[i];
+}
+
+// Update materials preview
+function updateMaterialsPreview() {
+  const container = document.getElementById('materialsList');
+  
+  if (moduleMaterials.length === 0) {
+    container.innerHTML = '';
+    return;
+  }
+  
+  container.innerHTML = `
+    <div class="materials-preview-header">
+      <span>Attached Materials (${moduleMaterials.length})</span>
+    </div>
+    <div class="materials-preview-list">
+      ${moduleMaterials.map((material, index) => `
+        <div class="material-preview-item">
+          <div class="material-preview-icon ${material.type}">
+            ${getMaterialIcon(material.type)}
+          </div>
+          <div class="material-preview-info">
+            <div class="material-preview-title">${material.title}</div>
+            ${material.fileSize ? `<div class="material-preview-meta">${material.fileSize}</div>` : ''}
+          </div>
+          <button type="button" class="material-preview-remove" onclick="removeMaterial(${index})" title="Remove">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+      `).join('')}
+    </div>
+  `;
+}
+
+// Remove material from list
+function removeMaterial(index) {
+  moduleMaterials.splice(index, 1);
+  updateMaterialsPreview();
+}
+
+// Get material icon
+function getMaterialIcon(type) {
+  const icons = {
+    pdf: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 21h10a2 2 0 002-2V9.414a1 1 0 00-.293-.707l-5.414-5.414A1 1 0 0012.586 3H7a2 2 0 00-2 2v14a2 2 0 002 2z" /></svg>',
+    video: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z" /><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>',
+    link: '<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1" /></svg>'
+  };
+  return icons[type] || icons.link;
+}
+
+// Make functions globally accessible
+window.switchMaterialTab = switchMaterialTab;
+window.removeMaterial = removeMaterial;
+window.openMaterial = openMaterial;
+
+// Open module view modal
+function openModuleView(moduleId) {
+  console.log('[Module View] Opening module:', moduleId);
+  console.log('[Module View] Current space:', currentSpace);
+  
+  if (!currentSpace || !currentSpace.modules) {
+    console.error('[Module View] Current space or modules not loaded');
+    alert('Space data not loaded. Please refresh the page.');
+    return;
+  }
+  
+  const module = currentSpace.modules.find(m => (m._id || m.id) === moduleId);
+  
+  if (!module) {
+    console.error('[Module View] Module not found:', moduleId);
+    console.log('[Module View] Available modules:', currentSpace.modules);
+    alert('Module not found');
+    return;
+  }
+  
+  console.log('[Module View] Found module:', module);
+  
+  const isFacultyOrAdmin = userRole === 'faculty' || userRole === 'admin';
+  const moduleName = module.name || module.title;
+  const moduleDesc = module.description || '';
+  const materials = module.materials || [];
+  const lessons = module.lessons || [];
+  const quizzes = module.quizzes || [];
+  
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay module-view-overlay';
+  
+  overlay.innerHTML = `
+    <div class="module-view-container">
+      <div class="module-view-header">
+        <div class="module-view-title-section">
+          <h2 class="module-view-title">${moduleName}</h2>
+          <p class="module-view-description">${moduleDesc}</p>
+        </div>
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      
+      <div class="module-view-body">
+        ${materials.length > 0 ? `
+          <div class="module-section">
+            <h3 class="module-section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+              </svg>
+              Materials (${materials.length})
+            </h3>
+            <div class="module-items-grid">
+              ${materials.map(material => renderMaterialCard(material)).join('')}
+            </div>
+          </div>
+        ` : ''}
+        
+        ${lessons.length > 0 ? `
+          <div class="module-section">
+            <h3 class="module-section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+              </svg>
+              Lessons (${lessons.length})
+            </h3>
+            <div class="module-items-grid">
+              ${lessons.map((lesson, index) => renderLessonCard(lesson, index + 1)).join('')}
+            </div>
+          </div>
+        ` : ''}
+        
+        ${quizzes.length > 0 ? `
+          <div class="module-section">
+            <h3 class="module-section-title">
+              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+              </svg>
+              Quizzes (${quizzes.length})
+            </h3>
+            <div class="module-items-grid">
+              ${quizzes.map((quiz, index) => renderQuizCard(quiz, index + 1)).join('')}
+            </div>
+          </div>
+        ` : ''}
+        
+        ${materials.length === 0 && lessons.length === 0 && quizzes.length === 0 ? `
+          <div class="module-empty-state">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
+            </svg>
+            <p>No content yet</p>
+            <p class="module-empty-hint">${isFacultyOrAdmin ? 'Start adding materials, lessons, or quizzes' : 'Your teacher will add content soon'}</p>
+          </div>
+        ` : ''}
+      </div>
+      
+      ${isFacultyOrAdmin ? `
+        <div class="module-view-footer">
+          <button class="module-view-btn module-view-btn-secondary" onclick="this.closest('.modal-overlay').remove()">
+            Close
+          </button>
+          <button class="module-view-btn module-view-btn-primary" onclick="editModule('${moduleId}'); this.closest('.modal-overlay').remove();">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+            </svg>
+            Edit Module
+          </button>
+        </div>
+      ` : ''}
+    </div>
+  `;
+  
+  document.body.appendChild(overlay);
+  
+  // Close on overlay click
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      closeModal(overlay);
+    }
+  });
+  
+  // Close on Escape key
+  const escapeHandler = (e) => {
+    if (e.key === 'Escape') {
+      closeModal(overlay);
+      document.removeEventListener('keydown', escapeHandler);
+    }
+  };
+  document.addEventListener('keydown', escapeHandler);
+}
+
+// Render material card
+function renderMaterialCard(material) {
+  const iconClass = material.type === 'pdf' ? 'pdf' : material.type === 'video' ? 'video' : 'link';
+  const icon = getMaterialIcon(material.type);
+  const materialUrl = material.url || material.link || '';
+  
+  return `
+    <div class="module-item-card material-card ${iconClass}" onclick="openMaterial(\`${materialUrl}\`, '${material.type}')">
+      <div class="module-item-icon ${iconClass}">
+        ${icon}
+      </div>
+      <div class="module-item-content">
+        <h4 class="module-item-title">${material.title}</h4>
+        ${material.fileSize ? `<p class="module-item-meta">${material.fileSize}</p>` : ''}
+        <div class="module-item-type">${material.type.toUpperCase()}</div>
+      </div>
+      <div class="module-item-arrow">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </div>
+    </div>
+  `;
+}
+
+// Render lesson card
+function renderLessonCard(lesson, number) {
+  return `
+    <div class="module-item-card lesson-card">
+      <div class="module-item-icon lesson">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+        </svg>
+      </div>
+      <div class="module-item-content">
+        <h4 class="module-item-title">Lesson ${number}: ${lesson.title}</h4>
+        ${lesson.videoUrl ? '<p class="module-item-meta">Includes video</p>' : ''}
+        <div class="module-item-type">LESSON</div>
+      </div>
+      <div class="module-item-arrow">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </div>
+    </div>
+  `;
+}
+
+// Render quiz card
+function renderQuizCard(quiz, number) {
+  const questionCount = quiz.questions?.length || 0;
+  return `
+    <div class="module-item-card quiz-card">
+      <div class="module-item-icon quiz">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01" />
+        </svg>
+      </div>
+      <div class="module-item-content">
+        <h4 class="module-item-title">Quiz ${number}: ${quiz.title}</h4>
+        <p class="module-item-meta">${questionCount} questions · Passing score: ${quiz.passingScore || 70}%</p>
+        <div class="module-item-type">QUIZ</div>
+      </div>
+      <div class="module-item-arrow">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7" />
+        </svg>
+      </div>
+    </div>
+  `;
+}
+
+// Open material (PDF, video, or link)
+function openMaterial(url, type) {
+  console.log('[Open Material] URL:', url);
+  console.log('[Open Material] Type:', type);
+  
+  // Clean up the URL - remove any whitespace
+  url = (url || '').trim();
+  
+  if (!url || url === '' || url === 'undefined' || url === 'null') {
+    showNotification('No valid URL provided for this material. Please edit the module and add a proper URL.', 'error');
+    console.error('[Open Material] Invalid URL:', url);
+    return;
+  }
+  
+  // Check if URL is valid
+  let finalUrl = url;
+  
+  // If URL doesn't start with http:// or https://, assume it's a relative path
+  if (!url.startsWith('http://') && !url.startsWith('https://')) {
+    // Try to construct a full URL
+    if (url.startsWith('/')) {
+      finalUrl = window.location.origin + url;
+    } else {
+      finalUrl = window.location.origin + '/' + url;
+    }
+    console.log('[Open Material] Converted to full URL:', finalUrl);
+  }
+  
+  console.log('[Open Material] Opening:', finalUrl);
+  
+  if (type === 'pdf') {
+    // For PDFs, open in new tab with PDF viewer
+    const newWindow = window.open(finalUrl, '_blank', 'noopener,noreferrer');
+    if (!newWindow || newWindow.closed || typeof newWindow.closed === 'undefined') {
+      showNotification('Popup blocked. Please allow popups for this site.', 'error');
+    }
+  } else if (type === 'video') {
+    // For YouTube videos, open in new tab
+    window.open(finalUrl, '_blank', 'noopener,noreferrer');
+  } else if (type === 'link') {
+    // For external links, open in new tab
+    window.open(finalUrl, '_blank', 'noopener,noreferrer');
+  } else {
+    // Default: just open the URL
+    window.open(finalUrl, '_blank', 'noopener,noreferrer');
+  }
+}
+
+// Make functions globally accessible
+window.switchMaterialTab_OLD = switchMaterialTab;
+window.removeMaterial_OLD = removeMaterial;
+
+// Add module to space
+async function addModule(name, description) {
+  try {
+    if (!currentSpace || !currentSpace._id) {
+      console.error('Current space not loaded:', currentSpace);
+      alert('Space data not loaded. Please refresh the page.');
+      return;
+    }
+    
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/faculty-modules/${currentSpace._id}/modules`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ 
+        title: name,
+        description: description,
+        materials: moduleMaterials
+      })
+    });
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('Server response:', errorText);
+      let errorData;
+      try {
+        errorData = JSON.parse(errorText);
+      } catch {
+        errorData = { error: errorText || 'Unknown error' };
+      }
+      throw new Error(errorData.error || `Failed to add module (Status: ${response.status})`);
+    }
+    
+    const data = await response.json();
+    console.log('Module added:', data);
+    
+    // Clear materials array
+    moduleMaterials = [];
+    
+    // Reload space data to show the new module
+    await loadSpaceData(currentSpace._id);
+    
+    // Show success message
+    showNotification('Module added successfully!', 'success');
+  } catch (error) {
+    console.error('Error adding module:', error);
+    showNotification(`Failed to add module: ${error.message}`, 'error');
+  }
+}
+
+// Open add announcement modal
+function openAddAnnouncementModal() {
+  const modal = createModal({
+    title: 'New Announcement',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+    </svg>`,
+    content: `
+      <div class="modal-form-group">
+        <label class="modal-label required">Title</label>
+        <input type="text" id="announcementTitle" class="modal-input" placeholder="Enter announcement title" maxlength="100" required />
+        <div class="modal-input-hint">Max 100 characters</div>
+      </div>
+      
+      <div class="modal-form-group">
+        <label class="modal-label required">Content</label>
+        <textarea id="announcementContent" class="modal-textarea" placeholder="Enter announcement content" maxlength="1000" required></textarea>
+        <div class="modal-input-hint">Max 1000 characters</div>
+      </div>
+    `,
+    primaryButton: {
+      text: 'Post Announcement',
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>`,
+      onClick: async () => {
+        const title = document.getElementById('announcementTitle').value.trim();
+        const content = document.getElementById('announcementContent').value.trim();
+        
+        if (!title || !content) {
+          alert('Please fill in all required fields');
+          return;
+        }
+        
+        await addAnnouncement(title, content);
+        closeModal(modal);
+      }
+    }
+  });
+  
+  document.body.appendChild(modal);
+  
+  // Focus on first input
+  setTimeout(() => {
+    document.getElementById('announcementTitle').focus();
+  }, 100);
+}
+
+// Add announcement to space
+async function addAnnouncement(title, content) {
+  try {
+    if (!currentSpace || !currentSpace._id) {
+      console.error('Current space not loaded:', currentSpace);
+      alert('Space data not loaded. Please refresh the page.');
+      return;
+    }
+    
+    const token = localStorage.getItem('authToken');
+    const response = await fetch(`${API_URL}/faculty-modules/${currentSpace._id}/announcements`, {
+      method: 'POST',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ title, content })
+    });
+    
+    if (!response.ok) {
+      const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+      throw new Error(errorData.error || 'Failed to add announcement');
+    }
+    
+    const data = await response.json();
+    console.log('Announcement added:', data);
+    
+    // Reload space data to show the new announcement
+    await loadSpaceData(currentSpace._id);
+    
+    // Show success message
+    showNotification('Announcement posted successfully!', 'success');
+  } catch (error) {
+    console.error('Error adding announcement:', error);
+    alert('Failed to post announcement. Please try again.');
+  }
+}
+
+// Create a reusable modal
+function createModal({ title, icon, content, primaryButton, secondaryButton }) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  
+  overlay.innerHTML = `
+    <div class="modal-container">
+      <div class="modal-header">
+        <h3 class="modal-title">
+          ${icon || ''}
+          ${title}
+        </h3>
+        <button class="modal-close" onclick="this.closest('.modal-overlay').remove()">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+        </button>
+      </div>
+      <div class="modal-body">
+        ${content}
+      </div>
+      <div class="modal-footer">
+        ${secondaryButton ? `
+          <button class="modal-btn modal-btn-secondary">
+            ${secondaryButton.icon || ''}
+            ${secondaryButton.text || 'Cancel'}
+          </button>
+        ` : `
+          <button class="modal-btn modal-btn-secondary" onclick="this.closest('.modal-overlay').remove()">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+            Cancel
+          </button>
+        `}
+        <button class="modal-btn modal-btn-primary" id="modalPrimaryBtn">
+          ${primaryButton.icon || ''}
+          ${primaryButton.text || 'Submit'}
+        </button>
+      </div>
+    </div>
+  `;
+  
+  // Add event listeners
+  const primaryBtn = overlay.querySelector('#modalPrimaryBtn');
+  if (primaryButton && primaryButton.onClick) {
+    primaryBtn.addEventListener('click', primaryButton.onClick);
+  }
+  
+  if (secondaryButton && secondaryButton.onClick) {
+    const secondaryBtn = overlay.querySelector('.modal-btn-secondary');
+    secondaryBtn.addEventListener('click', secondaryButton.onClick);
+  }
+  
+  // Close on overlay click
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      closeModal(overlay);
+    }
+  });
+  
+  // Close on Escape key
+  const escapeHandler = (e) => {
+    if (e.key === 'Escape') {
+      closeModal(overlay);
+      document.removeEventListener('keydown', escapeHandler);
+    }
+  };
+  document.addEventListener('keydown', escapeHandler);
+  
+  return overlay;
+}
+
+// Close modal with animation
+function closeModal(modal) {
+  modal.classList.add('closing');
+  setTimeout(() => {
+    modal.remove();
+  }, 300);
+}
+
+// Show notification
+function showNotification(message, type = 'success') {
+  const notification = document.createElement('div');
+  notification.className = `notification notification-${type}`;
+  notification.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    padding: 1rem 1.5rem;
+    background: ${type === 'success' ? 'linear-gradient(135deg, #059669 0%, #047857 100%)' : 'linear-gradient(135deg, #ef4444 0%, #dc2626 100%)'};
+    border: 2px solid #000;
+    border-radius: 10px;
+    color: #ffffff;
+    font-family: 'Share Tech Mono', monospace;
+    font-size: 0.95rem;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.3);
+    z-index: 2000;
+    animation: slideInRight 0.3s ease forwards;
+  `;
+  notification.textContent = message;
+  
+  document.body.appendChild(notification);
+  
+  setTimeout(() => {
+    notification.style.animation = 'slideOutRight 0.3s ease forwards';
+    setTimeout(() => notification.remove(), 300);
+  }, 3000);
+}
+
+// Open add module modal
+function openAddModuleModal_OLD() {
   // TODO: Create and show module creation modal
   alert('Module creation modal coming soon!');
 }
 
 // Open add announcement modal
-function openAddAnnouncementModal() {
+function openAddAnnouncementModal_OLD() {
   // TODO: Create and show announcement creation modal
   alert('Announcement creation modal coming soon!');
 }
@@ -902,38 +1818,163 @@ function editModule(moduleId) {
   alert('Module editing coming soon!');
 }
 
+// Remove student from space
+async function removeStudent(studentId, studentName) {
+  const modal = createConfirmDialog({
+    title: 'Remove Student',
+    message: `Are you sure you want to remove <strong>${studentName}</strong> from this space?<br><br>They will lose access to all modules and content.`,
+    confirmText: 'Remove Student',
+    onConfirm: async () => {
+      try {
+        if (!currentSpace || !currentSpace._id) {
+          console.error('Current space not loaded:', currentSpace);
+          alert('Space data not loaded. Please refresh the page.');
+          return;
+        }
+        
+        const token = localStorage.getItem('authToken');
+        const response = await fetch(`${API_URL}/faculty-modules/${currentSpace._id}/students/${studentId}`, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({ error: 'Unknown error' }));
+          throw new Error(errorData.error || 'Failed to remove student');
+        }
+        
+        // Reload space data
+        await loadSpaceData(currentSpace._id);
+        showNotification('Student removed successfully!', 'success');
+      } catch (error) {
+        console.error('Error removing student:', error);
+        alert('Failed to remove student. Please try again.');
+      }
+    }
+  });
+  
+  document.body.appendChild(modal);
+}
+
+// Create confirmation dialog
+function createConfirmDialog({ title, message, confirmText, cancelText, onConfirm, onCancel }) {
+  const overlay = document.createElement('div');
+  overlay.className = 'modal-overlay';
+  
+  overlay.innerHTML = `
+    <div class="confirm-dialog">
+      <div class="confirm-header">
+        <div class="confirm-icon">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+          </svg>
+        </div>
+        <h3 class="confirm-title">${title}</h3>
+      </div>
+      <div class="confirm-body">
+        <p class="confirm-message">${message}</p>
+      </div>
+      <div class="confirm-footer">
+        <button class="modal-btn confirm-btn-cancel">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+          </svg>
+          ${cancelText || 'Cancel'}
+        </button>
+        <button class="modal-btn confirm-btn-danger">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+          </svg>
+          ${confirmText || 'Confirm'}
+        </button>
+      </div>
+    </div>
+  `;
+  
+  // Add event listeners
+  const cancelBtn = overlay.querySelector('.confirm-btn-cancel');
+  cancelBtn.addEventListener('click', () => {
+    if (onCancel) onCancel();
+    closeModal(overlay);
+  });
+  
+  const confirmBtn = overlay.querySelector('.confirm-btn-danger');
+  confirmBtn.addEventListener('click', async () => {
+    if (onConfirm) await onConfirm();
+    closeModal(overlay);
+  });
+  
+  // Close on overlay click
+  overlay.addEventListener('click', (e) => {
+    if (e.target === overlay) {
+      if (onCancel) onCancel();
+      closeModal(overlay);
+    }
+  });
+  
+  // Close on Escape key
+  const escapeHandler = (e) => {
+    if (e.key === 'Escape') {
+      if (onCancel) onCancel();
+      closeModal(overlay);
+      document.removeEventListener('keydown', escapeHandler);
+    }
+  };
+  document.addEventListener('keydown', escapeHandler);
+  
+  return overlay;
+}
+
+// Edit module
+function editModule_OLD(moduleId) {
+  console.log('Edit module:', moduleId);
+  // TODO: Implement module editing
+  alert('Module editing coming soon!');
+}
+
 // Delete module
 async function deleteModule(moduleId) {
-  if (!confirm('Are you sure you want to delete this module? This action cannot be undone.')) {
-    return;
-  }
-
   try {
     // Check if currentSpace is loaded
     if (!currentSpace || !currentSpace._id) {
       console.error('Current space not loaded:', currentSpace);
-      alert('Space data not loaded. Please refresh the page.');
+      showNotification('Space data not loaded. Please refresh the page.', 'error');
       return;
     }
     
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem('authToken');
+    
+    if (!token) {
+      console.error('No auth token found');
+      showNotification('Authentication required. Please login again.', 'error');
+      return;
+    }
+    
+    console.log('[Delete Module] Deleting module:', moduleId);
+    console.log('[Delete Module] Space ID:', currentSpace._id);
+    
     const response = await fetch(`${API_URL}/faculty-modules/${currentSpace._id}/modules/${moduleId}`, {
       method: 'DELETE',
       headers: {
-        'Authorization': `Bearer ${token}`
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
       }
     });
 
     if (!response.ok) {
-      throw new Error('Failed to delete module');
+      const errorText = await response.text();
+      console.error('[Delete Module] Error response:', errorText);
+      throw new Error(`Failed to delete module: ${response.status}`);
     }
 
     // Reload space data
     await loadSpaceData(currentSpace._id);
-    alert('Module deleted successfully!');
+    showNotification('Module deleted successfully!', 'success');
   } catch (error) {
     console.error('Error deleting module:', error);
-    alert('Failed to delete module. Please try again.');
+    showNotification(`Failed to delete module: ${error.message}`, 'error');
   }
 }
 

@@ -204,18 +204,57 @@ router.post('/:spaceId/modules', requireAuth, async (req, res) => {
       return res.status(403).json({ success: false, error: 'Access denied' });
     }
     
-    space.modules.push({
-      ...moduleData,
+    // Create new module with materials
+    const newModule = {
+      title: moduleData.title || moduleData.name,
+      description: moduleData.description || '',
       order: space.modules.length,
+      materials: moduleData.materials || [],
       lessons: [],
       quizzes: []
-    });
+    };
+    
+    space.modules.push(newModule);
     
     await space.save();
     
     res.json({ success: true, space: space.toJSON() });
   } catch (error) {
     console.error('Add module error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
+// Delete module from space
+router.delete('/:spaceId/modules/:moduleId', requireAuth, async (req, res) => {
+  try {
+    const { spaceId, moduleId } = req.params;
+    
+    const space = await FacultySpace.findById(spaceId);
+    
+    if (!space) {
+      return res.status(404).json({ success: false, error: 'Space not found' });
+    }
+    
+    // Check permissions
+    if (space.creatorId.toString() !== req.user.sub && req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, error: 'Access denied' });
+    }
+    
+    // Find and remove the module
+    const moduleIndex = space.modules.findIndex(m => m._id.toString() === moduleId);
+    
+    if (moduleIndex === -1) {
+      return res.status(404).json({ success: false, error: 'Module not found' });
+    }
+    
+    space.modules.splice(moduleIndex, 1);
+    
+    await space.save();
+    
+    res.json({ success: true, message: 'Module deleted successfully', space: space.toJSON() });
+  } catch (error) {
+    console.error('Delete module error:', error);
     res.status(500).json({ success: false, error: error.message });
   }
 });

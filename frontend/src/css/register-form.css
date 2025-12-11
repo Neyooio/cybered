@@ -590,6 +590,26 @@ input[type="password"]::-webkit-contacts-auto-fill-button {
   text-decoration: underline;
 }
 
+/* Forgot password link */
+.reg-forgot-password {
+  text-align: right;
+  margin-top: 8px;
+  margin-bottom: 12px;
+}
+
+.reg-forgot-password a {
+  color: #ffffff;
+  font-size: 13px;
+  text-decoration: none;
+  opacity: 0.9;
+  transition: opacity 0.2s ease;
+}
+
+.reg-forgot-password a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
 /* ========================================
    Avatar Selection Overlay
    ======================================== */

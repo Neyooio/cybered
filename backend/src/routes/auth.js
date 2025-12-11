@@ -31,7 +31,7 @@ function isAdminCredential(email, password) {
 
 router.post('/register', async (req, res) => {
   try {
-    const { username, email, phone, password, name, avatarUrl } = req.body || {};
+    const { username, email, password, name, avatarUrl } = req.body || {};
     if (!username || !email || !password) return res.status(400).json({ error: 'Username, email and password required' });
 
     // Password policy (allow env-admin credentials to bypass to avoid dev lockout)
@@ -45,7 +45,7 @@ router.post('/register', async (req, res) => {
     const passwordHash = await bcrypt.hash(password, 10);
     const role = isAdminCredential(email, password) ? 'admin' : 'user';
 
-    const user = await User.create({ username, email: email.toLowerCase(), phone, passwordHash, role, name, avatarUrl });
+    const user = await User.create({ username, email: email.toLowerCase(), passwordHash, role, name, avatarUrl });
     const token = sign(user);
     return res.status(201).json({ token, role: user.role, user });
   } catch (e) {
@@ -256,6 +256,52 @@ router.put('/notifications/mark-all-read', requireAuth, async (req, res) => {
   } catch (error) {
     console.error('Error marking all as read:', error);
     return res.status(500).json({ error: 'Failed to mark all notifications as read' });
+  }
+});
+
+// Forgot password endpoint
+router.post('/forgot-password', async (req, res) => {
+  try {
+    const { email } = req.body;
+    
+    if (!email) {
+      return res.status(400).json({ error: 'Email is required' });
+    }
+    
+    const user = await User.findOne({ email: email.toLowerCase() });
+    
+    // For security, always return success even if user doesn't exist
+    // This prevents user enumeration attacks
+    if (!user) {
+      console.log(`Password reset requested for non-existent email: ${email}`);
+      return res.json({ 
+        success: true, 
+        message: 'If an account exists with this email, you will receive password reset instructions.' 
+      });
+    }
+    
+    // Generate a temporary password or reset token
+    // For this implementation, we'll generate a temporary password
+    const tempPassword = Math.random().toString(36).slice(-8) + 'A1!'; // Meets password policy
+    const passwordHash = await bcrypt.hash(tempPassword, 10);
+    
+    user.passwordHash = passwordHash;
+    await user.save();
+    
+    // In a production environment, you would send an email here
+    // For now, we'll just log it (DO NOT do this in production!)
+    console.log(`Password reset for ${email}. Temporary password: ${tempPassword}`);
+    console.log('NOTE: In production, this should be sent via email, not logged!');
+    
+    return res.json({ 
+      success: true, 
+      message: 'Password reset instructions have been sent to your email.',
+      // TEMPORARY: Remove this in production!
+      tempPassword: tempPassword // Only for development/testing
+    });
+  } catch (error) {
+    console.error('Forgot password error:', error);
+    return res.status(500).json({ error: 'Failed to process password reset request' });
   }
 });
 

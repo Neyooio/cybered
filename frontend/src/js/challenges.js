@@ -21,7 +21,7 @@ const challengesIndex = [
     icon: '../../assets/images/C4.png', 
     difficulty: 'Hard', 
     blurb: 'Outsmart stealthy hacker NPCs before they breach the core.',
-    gameUrl: '../../games/security-breach-protocol/index.html' // Interactive branching scenario game
+    gameUrl: '../../games/intrusion-intercept/index.html' // Interactive branching scenario game
   },
   { 
     id: 'header-check', 

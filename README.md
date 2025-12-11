@@ -47,7 +47,7 @@ To push to GitHub (after creating an empty repo `yourname/cybered`):
 
 ```powershell
 git branch -M main
-git remote add origin https://github.com/yourname/cybered.git
+git remote add origin https://github.com/neyooio/cybered.git
 git push -u origin main
 ```
 

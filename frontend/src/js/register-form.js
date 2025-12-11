@@ -63,6 +63,11 @@ document.addEventListener("DOMContentLoaded", () => {
     }
   })();
 
+  // Check URL parameters to determine initial mode BEFORE intro
+  const urlParams = new URLSearchParams(window.location.search);
+  const mode = urlParams.get('mode');
+  const skipIntro = mode === 'login'; // Skip intro if coming to login directly
+
   // Intro dialogue handling 
   const overlay = document.getElementById("introOverlay");         
   const blurWrapper = document.getElementById("signupBlurWrapper"); 
@@ -91,7 +96,17 @@ document.addEventListener("DOMContentLoaded", () => {
     if (step < dialogues.length - 1) { step += 1; renderDialogue(); }
     else { finishIntro(); }
   };
-  renderDialogue();
+  
+  // Skip intro if accessing login directly
+  if (skipIntro) {
+    if (overlay) overlay.style.display = "none";
+    if (blurWrapper) {
+      blurWrapper.classList.remove("blur-lg", "pointer-events-none");
+      blurWrapper.classList.add("pointer-events-auto");
+    }
+  } else {
+    renderDialogue();
+  }
 
   // Auth form behavior (toggle Sign up/Login)
   const registerForm = document.getElementById("registerForm");
@@ -104,7 +119,6 @@ document.addEventListener("DOMContentLoaded", () => {
   // Inputs referenced for validation toggling
   const regUsername = document.getElementById("regUsername");
   const regEmail = document.getElementById("regEmail");
-  const regPhone = document.getElementById("regPhone");
   const regPassword = document.getElementById("regPassword");
   const pwMeterFill = document.getElementById('pwMeterFill');
   const pwChecklist = document.getElementById('pwChecklist');
@@ -112,20 +126,43 @@ document.addEventListener("DOMContentLoaded", () => {
   const basePwHint = 'Use at least 8 characters with uppercase, lowercase, number, and symbol.';
   const loginEmail = document.getElementById("loginEmail");
   const loginPassword = document.getElementById("loginPassword");
+  const socialText = document.getElementById("socialText");
 
-  let isLogin = false; // false => Sign Up view, true => Login view
+  // Set initial mode based on URL parameter (already checked above)
+  let isLogin = mode === 'login';
 
  
   function syncRequired() {
-    if (!regUsername || !regEmail || !regPhone || !regPassword || !loginEmail || !loginPassword) return;
+    if (!regUsername || !regEmail || !regPassword || !loginEmail || !loginPassword) return;
     regUsername.required = !isLogin;
     regEmail.required = !isLogin;
-    regPhone.required = !isLogin;
     regPassword.required = !isLogin;
     loginEmail.required = isLogin;
     loginPassword.required = isLogin;
   }
-  syncRequired();
+  
+  // Apply initial mode from URL parameter
+  function applyInitialMode() {
+    if (isLogin) {
+      if (signupFields) signupFields.classList.add("hidden");
+      if (loginFields) loginFields.classList.remove("hidden");
+      if (formTitle) formTitle.textContent = "Login";
+      if (toggleText) toggleText.textContent = "Don't have an account?";
+      if (toggleBtn) toggleBtn.textContent = "Sign Up";
+      if (socialText) socialText.textContent = "Or Login using";
+    } else {
+      if (signupFields) signupFields.classList.remove("hidden");
+      if (loginFields) loginFields.classList.add("hidden");
+      if (formTitle) formTitle.textContent = "Sign Up";
+      if (toggleText) toggleText.textContent = "Already have an account?";
+      if (toggleBtn) toggleBtn.textContent = "Login";
+      if (socialText) socialText.textContent = "Or Sign up using";
+    }
+    syncRequired();
+  }
+  
+  // Apply mode immediately on page load
+  applyInitialMode();
 
   if (toggleBtn) {
     toggleBtn.addEventListener("click", (e) => {
@@ -139,10 +176,60 @@ document.addEventListener("DOMContentLoaded", () => {
       formTitle.textContent = isLogin ? "Login" : "Sign Up";
       toggleText.textContent = isLogin ? "Don't have an account?" : "Already have an account?";
       toggleBtn.textContent = isLogin ? "Sign Up" : "Login";
+      if (socialText) {
+        socialText.textContent = isLogin ? "Or Login using" : "Or Sign up using";
+      }
 
       
       syncRequired();
     });
+  }
+
+  // Forgot password handler
+  const forgotPasswordLink = document.getElementById("forgotPasswordLink");
+  if (forgotPasswordLink) {
+    forgotPasswordLink.addEventListener("click", async (e) => {
+      e.preventDefault();
+      const email = loginEmail.value.trim();
+      
+      if (!email) {
+        showNotify("Please enter your email address first.", "error");
+        loginEmail.focus();
+        return;
+      }
+      
+      if (!isValidEmail(email)) {
+        showNotify("Please enter a valid email address.", "error");
+        return;
+      }
+      
+      try {
+        showNotify("Sending password reset email...", "info");
+        
+        const response = await fetch(`${API_BASE}/auth/forgot-password`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
+        
+        const data = await response.json();
+        
+        if (response.ok) {
+          showNotify("Password reset instructions sent to your email!", "success");
+        } else {
+          showNotify(data.error || "Failed to send reset email. Please try again.", "error");
+        }
+      } catch (error) {
+        console.error("Forgot password error:", error);
+        showNotify("Network error. Please check your connection and try again.", "error");
+      }
+    });
+  }
+
+  // Email validation helper
+  function isValidEmail(email) {
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+    return emailRegex.test(email);
   }
 
   // Password strength evaluation and UI updates
@@ -386,13 +473,12 @@ document.addEventListener("DOMContentLoaded", () => {
         try{
           const username = (regUsername?.value || '').trim();
           const email = (regEmail?.value || '').trim();
-          const phone = (regPhone?.value || '').trim();
           const password = (regPassword?.value || '').trim();
-          if (!username || !email || !phone || !password){ notify('Please fill out all required fields.', 'error'); return; }
+          if (!username || !email || !password){ notify('Please fill out all required fields.', 'error'); return; }
           const pwRes = updatePwUI(password);
           const meetsPolicy = pwRes.len && pwRes.lower && pwRes.upper && pwRes.num && pwRes.sym;
           if (!meetsPolicy){ notify('Password must be at least 8 chars and include upper, lower, number, and symbol.', 'error'); return; }
-          const data = await apiJson('/auth/register', { username, email, phone, password });
+          const data = await apiJson('/auth/register', { username, email, password });
           persistAuth(data);
           if (data.role === 'admin') { notify('Welcome back, Admin!', 'success'); setTimeout(()=>{ window.location.href = HOMEPAGE_PATH; }, 600); return; }
           notify('Registration successful! Choose your avatar to continue.', 'success');
