@@ -3,23 +3,20 @@ console.info('[includes.js] Script loaded and executing - VERSION:', INCLUDES_VE
 
 // Helper function to get API base URL
 function getApiBase() {
-  // Use global config if available
-  if (window.API_BASE_URL) return window.API_BASE_URL + '/api';
-  
-  const hostname = window.location.hostname;
-  
-  // Production environments
-  if (hostname.includes('netlify.app') || hostname.includes('github.io') || hostname.includes('onrender.com')) {
-    return 'https://cybered-backend.onrender.com/api';
+  // Ensure window.API_BASE_URL is set
+  if (!window.API_BASE_URL) {
+    const hostname = window.location.hostname;
+    if (hostname.includes('netlify.app') || hostname.includes('github.io') || hostname.includes('onrender.com')) {
+      window.API_BASE_URL = 'https://cybered-backend.onrender.com';
+    } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      window.API_BASE_URL = 'http://localhost:4000';
+    } else {
+      window.API_BASE_URL = `http://${hostname}:4000`;
+    }
   }
   
-  // Local development
-  if (hostname === 'localhost' || hostname === '127.0.0.1') {
-    return 'http://localhost:4000/api';
-  }
-  
-  // Network access (LAN)
-  return `${window.location.protocol}//${hostname}:4000/api`;
+  // Return with /api suffix
+  return window.API_BASE_URL + '/api';
 }
 
 // Run immediately if DOM is already ready, or wait for DOMContentLoaded

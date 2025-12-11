@@ -257,6 +257,17 @@
     </div>
   </div>
   
+  <script>
+    // Set API_BASE_URL before includes.js loads
+    const hostname = window.location.hostname;
+    if (hostname.includes('netlify.app') || hostname.includes('github.io') || hostname.includes('onrender.com')) {
+      window.API_BASE_URL = 'https://cybered-backend.onrender.com';
+    } else if (hostname === 'localhost' || hostname === '127.0.0.1') {
+      window.API_BASE_URL = 'http://localhost:4000';
+    } else {
+      window.API_BASE_URL = `http://${hostname}:4000`;
+    }
+  </script>
   <script src="../js/includes.js"></script>
   <script src="../js/config.js" type="module"></script>
 

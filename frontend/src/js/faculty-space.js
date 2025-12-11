@@ -597,18 +597,18 @@ async function saveSpaceSettings() {
     renderSpaceHeader();
     
     closeSettingsModal();
-    alert('Space settings updated successfully!');
+    showNotification('Space settings updated successfully!', 'success');
   } catch (error) {
     console.error('Error updating space:', error);
-    alert('Failed to update space settings. Please try again.');
+    showNotification('Failed to update space settings. Please try again.', 'error');
   }
 }
 
 // Kick student from space
 async function kickStudent(studentId) {
-  if (!confirm('Are you sure you want to remove this student from the space?')) {
-    return;
-  }
+  // Will be handled by removeStudent function with custom dialog
+  return;
+}
   
   try {
     // Check if currentSpace is loaded
@@ -820,15 +820,38 @@ function renderAnnouncements() {
     return;
   }
 
-  container.innerHTML = currentSpace.announcements.map(announcement => `
-    <div class="announcement-card">
-      <div class="announcement-header">
-        <div class="announcement-title">${announcement.title}</div>
-        <div class="announcement-date">${formatDate(announcement.createdAt)}</div>
+  container.innerHTML = currentSpace.announcements.map(announcement => {
+    const announcementId = announcement._id || announcement.id;
+    
+    // Show edit/delete buttons only for faculty/admin
+    const actionButtonsHtml = isFacultyOrAdmin ? `
+      <div class="announcement-actions">
+        <button class="announcement-action-btn" onclick="editAnnouncement('${announcementId}')" title="Edit announcement">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" />
+          </svg>
+        </button>
+        <button class="announcement-action-btn announcement-delete-btn" onclick="deleteAnnouncement('${announcementId}', '${announcement.title}')" title="Delete announcement">
+          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+          </svg>
+        </button>
       </div>
-      <div class="announcement-content">${announcement.content}</div>
-    </div>
-  `).join('');
+    ` : '';
+    
+    return `
+      <div class="announcement-card">
+        <div class="announcement-header">
+          <div class="announcement-title">${announcement.title}</div>
+          <div class="announcement-header-right">
+            <div class="announcement-date">${formatDate(announcement.createdAt)}</div>
+            ${actionButtonsHtml}
+          </div>
+        </div>
+        <div class="announcement-content">${announcement.content}</div>
+      </div>
+    `;
+  }).join('');
 }
 
 // Render students list
@@ -1835,6 +1858,210 @@ function openAddAnnouncementModal() {
   }, 100);
 }
 
+// Edit announcement
+function editAnnouncement(announcementId) {
+  console.log('[Edit Announcement] Opening editor for announcement:', announcementId);
+  
+  if (!currentSpace || !currentSpace.announcements) {
+    console.error('[Edit Announcement] Current space or announcements not loaded');
+    showNotification('Space data not loaded. Please refresh the page.', 'error');
+    return;
+  }
+  
+  const announcement = currentSpace.announcements.find(a => (a._id || a.id) === announcementId);
+  
+  if (!announcement) {
+    console.error('[Edit Announcement] Announcement not found:', announcementId);
+    showNotification('Announcement not found', 'error');
+    return;
+  }
+  
+  console.log('[Edit Announcement] Found announcement:', announcement);
+  
+  const modal = createModal({
+    title: 'Edit Announcement',
+    icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5.882V19.24a1.76 1.76 0 01-3.417.592l-2.147-6.15M18 13a3 3 0 100-6M5.436 13.683A4.001 4.001 0 017 6h1.832c4.1 0 7.625-1.234 9.168-3v14c-1.543-1.766-5.067-3-9.168-3H7a3.988 3.988 0 01-1.564-.317z" />
+    </svg>`,
+    content: `
+      <div class="modal-form-group">
+        <label class="modal-label required">Title</label>
+        <input type="text" id="editAnnouncementTitle" class="modal-input" value="${announcement.title}" placeholder="Enter announcement title" maxlength="100" required />
+        <div class="modal-input-hint">Max 100 characters</div>
+      </div>
+      
+      <div class="modal-form-group">
+        <label class="modal-label required">Content</label>
+        <textarea id="editAnnouncementContent" class="modal-textarea" placeholder="Enter announcement content" maxlength="1000" required>${announcement.content}</textarea>
+        <div class="modal-input-hint">Max 1000 characters</div>
+      </div>
+    `,
+    primaryButton: {
+      text: 'Save Changes',
+      icon: `<svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
+      </svg>`,
+      onClick: async () => {
+        const title = document.getElementById('editAnnouncementTitle').value.trim();
+        const content = document.getElementById('editAnnouncementContent').value.trim();
+        
+        if (!title || !content) {
+          showNotification('Please fill in all required fields', 'error');
+          return false;
+        }
+        
+        try {
+          await updateAnnouncement(announcementId, title, content);
+          closeModal(modal);
+          return true;
+        } catch (error) {
+          return false;
+        }
+      }
+    }
+  });
+  
+  document.body.appendChild(modal);
+  
+  // Focus on first input
+  setTimeout(() => {
+    document.getElementById('editAnnouncementTitle').focus();
+  }, 100);
+}
+
+// Update announcement
+async function updateAnnouncement(announcementId, title, content) {
+  try {
+    if (!currentSpace || !currentSpace._id) {
+      console.error('[Update Announcement] Current space not loaded:', currentSpace);
+      showNotification('Space data not loaded. Please refresh the page.', 'error');
+      throw new Error('Space not loaded');
+    }
+    
+    if (!announcementId) {
+      console.error('[Update Announcement] Announcement ID is missing');
+      showNotification('Announcement ID is missing', 'error');
+      throw new Error('Announcement ID is missing');
+    }
+    
+    const token = localStorage.getItem('authToken');
+    
+    if (!token) {
+      console.error('[Update Announcement] No auth token found');
+      showNotification('Authentication required. Please login again.', 'error');
+      throw new Error('No auth token');
+    }
+    
+    console.log('[Update Announcement] Updating announcement:', announcementId);
+    console.log('[Update Announcement] Space ID:', currentSpace._id);
+    
+    const updateUrl = `${API_URL}/faculty-modules/${currentSpace._id}/announcements/${announcementId}`;
+    console.log('[Update Announcement] URL:', updateUrl);
+    
+    const response = await fetch(updateUrl, {
+      method: 'PUT',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ title, content })
+    });
+    
+    console.log('[Update Announcement] Response status:', response.status);
+    
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error('[Update Announcement] Error response:', errorText);
+      
+      if (response.status === 404) {
+        throw new Error('Announcement not found');
+      } else if (response.status === 401 || response.status === 403) {
+        throw new Error('Authentication error. Please login again.');
+      } else {
+        const errorData = await response.json().catch(() => ({ error: errorText }));
+        throw new Error(errorData.error || 'Failed to update announcement');
+      }
+    }
+    
+    const data = await response.json();
+    console.log('[Update Announcement] Success:', data);
+    
+    // Reload space data
+    await loadSpaceData(currentSpace._id);
+    
+    showNotification('Announcement updated successfully!', 'success');
+  } catch (error) {
+    console.error('[Update Announcement] Error:', error);
+    showNotification(`Failed to update announcement: ${error.message}`, 'error');
+    throw error;
+  }
+}
+
+// Delete announcement
+async function deleteAnnouncement(announcementId, announcementTitle) {
+  const modal = createConfirmDialog({
+    title: 'Delete Announcement',
+    message: `Are you sure you want to delete "${announcementTitle}"?`,
+    confirmText: 'Delete',
+    cancelText: 'Cancel',
+    isDangerous: true,
+    onConfirm: async () => {
+      try {
+        if (!currentSpace || !currentSpace._id) {
+          console.error('[Delete Announcement] Current space not loaded');
+          showNotification('Space data not loaded. Please refresh the page.', 'error');
+          return;
+        }
+        
+        const token = localStorage.getItem('authToken');
+        
+        if (!token) {
+          console.error('[Delete Announcement] No auth token found');
+          showNotification('Authentication required. Please login again.', 'error');
+          return;
+        }
+        
+        console.log('[Delete Announcement] Deleting announcement:', announcementId);
+        
+        const deleteUrl = `${API_URL}/faculty-modules/${currentSpace._id}/announcements/${announcementId}`;
+        console.log('[Delete Announcement] URL:', deleteUrl);
+        
+        const response = await fetch(deleteUrl, {
+          method: 'DELETE',
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+        
+        console.log('[Delete Announcement] Response status:', response.status);
+        
+        if (!response.ok) {
+          const errorText = await response.text();
+          console.error('[Delete Announcement] Error response:', errorText);
+          throw new Error('Failed to delete announcement');
+        }
+        
+        const data = await response.json();
+        console.log('[Delete Announcement] Success:', data);
+        
+        // Reload space data
+        await loadSpaceData(currentSpace._id);
+        
+        showNotification('Announcement deleted successfully!', 'success');
+      } catch (error) {
+        console.error('[Delete Announcement] Error:', error);
+        showNotification(`Failed to delete announcement: ${error.message}`, 'error');
+      }
+    }
+  });
+  
+  document.body.appendChild(modal);
+}
+
+// Make functions globally accessible
+window.editAnnouncement = editAnnouncement;
+window.deleteAnnouncement = deleteAnnouncement;
+
 // Add announcement to space
 async function addAnnouncement(title, content) {
   try {
@@ -2244,14 +2471,16 @@ async function removeStudent(studentId, studentName) {
 }
 
 // Create confirmation dialog
-function createConfirmDialog({ title, message, confirmText, cancelText, onConfirm, onCancel }) {
+function createConfirmDialog({ title, message, confirmText, cancelText, onConfirm, onCancel, isDangerous }) {
   const overlay = document.createElement('div');
   overlay.className = 'modal-overlay';
+  
+  const iconColor = isDangerous ? '#ef4444' : '#f97316';
   
   overlay.innerHTML = `
     <div class="confirm-dialog">
       <div class="confirm-header">
-        <div class="confirm-icon">
+        <div class="confirm-icon" style="color: ${iconColor};">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
           </svg>
@@ -2263,15 +2492,9 @@ function createConfirmDialog({ title, message, confirmText, cancelText, onConfir
       </div>
       <div class="confirm-footer">
         <button class="modal-btn confirm-btn-cancel">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-          </svg>
           ${cancelText || 'Cancel'}
         </button>
-        <button class="modal-btn confirm-btn-danger">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7" />
-          </svg>
+        <button class="modal-btn ${isDangerous ? 'confirm-btn-danger' : 'confirm-btn-success'}">
           ${confirmText || 'Confirm'}
         </button>
       </div>

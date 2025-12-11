@@ -71,9 +71,12 @@ async function loadLeaderboard(gameId) {
     const token = localStorage.getItem('authToken');
     const apiBase = getApiBase();
     
-    if (gameId === 'cyber-runner') {
+    // List of supported games
+    const supportedGames = ['cyber-runner', 'cyber-runner-multiplayer', 'header-check', 'intrusion-intercept'];
+    
+    if (supportedGames.includes(gameId)) {
       // Fetch real player data from backend
-      const response = await fetch(`${apiBase}/api/challenges/leaderboard?challengeId=cyber-runner&limit=50`, {
+      const response = await fetch(`${apiBase}/api/challenges/leaderboard?challengeId=${gameId}&limit=50`, {
         headers: {
           'Authorization': `Bearer ${token}`
         }
@@ -86,27 +89,34 @@ async function loadLeaderboard(gameId) {
       const data = await response.json();
       const leaderboard = data.leaderboard || [];
       
-      // Add local high score if not in leaderboard
-      const localHighScore = localStorage.getItem('cyberRunnerHighScore') || 0;
-      const currentUserId = localStorage.getItem('authUserId');
+      if (leaderboard.length === 0) {
+        leaderboardBody.innerHTML = `
+          <div class="empty-state">
+            <div class="empty-state-icon">📊</div>
+            <p>No scores yet for this game!</p>
+            <p style="margin-top: 1rem; font-size: 0.9rem;">Be the first to play and set a record.</p>
+          </div>
+        `;
+        return;
+      }
       
       // Transform data for display - only show players from backend
       const leaderboardData = leaderboard.map((entry, index) => ({
         rank: index + 1,
-        name: entry.user?.username || entry.username || entry.name || 'Anonymous',
-        score: entry.bestScore || entry.score || 0,
-        level: entry.level || Math.floor((entry.bestScore || 0) / 100) + 1,
-        userId: entry.user?._id || entry.userId || entry._id
+        name: entry.username || entry.name || 'Anonymous',
+        score: entry.score || 0,
+        level: entry.level || Math.floor((entry.score || 0) / 100) + 1,
+        userId: entry._id
       }));
       
       displayLeaderboard(leaderboardData);
     } else {
-      // Other games - show empty state
+      // Unsupported games - show empty state
       leaderboardBody.innerHTML = `
         <div class="empty-state">
           <div class="empty-state-icon">🎮</div>
           <p>Leaderboard for this game is coming soon!</p>
-          <p style="margin-top: 1rem; font-size: 0.9rem;">Play Cyber Runner to see your scores here.</p>
+          <p style="margin-top: 1rem; font-size: 0.9rem;">Check back later for updates.</p>
         </div>
       `;
     }

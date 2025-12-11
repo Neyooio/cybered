@@ -2,6 +2,36 @@
 const canvas = document.getElementById('gameCanvas');
 const ctx = canvas.getContext('2d');
 
+// Backend URL configuration
+const getBackendUrl = () => {
+    // Use global config if available
+    if (window.API_BASE_URL) return window.API_BASE_URL;
+    
+    const hostname = window.location.hostname;
+    
+    // Production environments
+    if (hostname.includes('netlify.app') || hostname.includes('github.io') || hostname.includes('onrender.com')) {
+        return 'https://cybered-backend.onrender.com';
+    }
+    
+    // Local development
+    if (hostname === 'localhost' || hostname === '127.0.0.1') {
+        return 'http://localhost:4000';
+    }
+    
+    // Network access (LAN)
+    return `http://${hostname}:4000`;
+};
+
+// Get player data from localStorage
+function getPlayerData() {
+    const token = localStorage.getItem('authToken') || new URLSearchParams(window.location.search).get('token');
+    const username = localStorage.getItem('username') || 'Player';
+    const avatarSrc = localStorage.getItem('avatarSrc') || '👤';
+    
+    return { username, avatarSrc, token };
+}
+
 // Set canvas size
 function resizeCanvas() {
     canvas.width = window.innerWidth;
@@ -813,6 +843,62 @@ function loadNextScenario(nextScenarioId) {
     nextScenario(nextScenarioId);
 }
 
+// Calculate leaderboard score based on rating
+function calculateLeaderboardScore(score) {
+    // Grade multipliers: A=5, B=4, C=3, D=2, F=1
+    let multiplier;
+    if (score >= 90) {
+        multiplier = 5; // A
+    } else if (score >= 80) {
+        multiplier = 4; // B
+    } else if (score >= 70) {
+        multiplier = 3; // C
+    } else if (score >= 60) {
+        multiplier = 2; // D
+    } else {
+        multiplier = 1; // F
+    }
+    
+    return Math.round(score * multiplier);
+}
+
+// Submit score to leaderboard
+async function submitScore(finalScore) {
+    const playerData = getPlayerData();
+    if (!playerData.token) {
+        console.log('No auth token found, skipping score submission');
+        return;
+    }
+    
+    try {
+        const leaderboardScore = calculateLeaderboardScore(finalScore);
+        
+        const response = await fetch(`${getBackendUrl()}/api/challenges/complete`, {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${playerData.token}`
+            },
+            body: JSON.stringify({
+                challengeId: 'intrusion-intercept',
+                score: leaderboardScore,
+                maxScore: 500, // Max score is 100 * 5 = 500 (A grade)
+                timeSpent: 0,
+                correct: finalScore >= 60 ? 1 : 0, // Pass/Fail
+                total: 1
+            })
+        });
+        
+        if (response.ok) {
+            console.log('Score submitted successfully:', leaderboardScore);
+        } else {
+            console.error('Failed to submit score:', response.status);
+        }
+    } catch (error) {
+        console.error('Error submitting score:', error);
+    }
+}
+
 // End game
 function endGame() {
     stopTimer();
@@ -824,6 +910,9 @@ function endGame() {
     const finalScore = document.getElementById('finalScore');
     
     finalScore.textContent = gameState.score;
+    
+    // Submit score to leaderboard
+    submitScore(gameState.score);
     
     if (gameState.score >= 90) {
         gameOverTitle.textContent = 'Excellent! (A)';

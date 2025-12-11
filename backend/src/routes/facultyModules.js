@@ -312,6 +312,58 @@ router.post('/:spaceId/announcements', requireAuth, async (req, res) => {
   }
 });
 
+// Update announcement in space
+router.put('/:spaceId/announcements/:announcementId', requireAuth, async (req, res) => {
+  try {
+    const { spaceId, announcementId } = req.params;
+    const { title, content } = req.body;
+    
+    console.log('[Update Announcement] Received request');
+    console.log('[Update Announcement] Space ID:', spaceId);
+    console.log('[Update Announcement] Announcement ID:', announcementId);
+    console.log('[Update Announcement] User:', req.user?.sub);
+    
+    const space = await FacultySpace.findById(spaceId);
+    
+    if (!space) {
+      console.error('[Update Announcement] Space not found:', spaceId);
+      return res.status(404).json({ success: false, error: 'Space not found' });
+    }
+    
+    console.log('[Update Announcement] Found space:', space.name);
+    
+    // Check permissions
+    if (space.creatorId.toString() !== req.user.sub && req.user.role !== 'admin') {
+      return res.status(403).json({ success: false, error: 'Access denied' });
+    }
+    
+    // Find the announcement
+    const announcement = space.announcements.find(a => a._id.toString() === announcementId);
+    
+    if (!announcement) {
+      console.error('[Update Announcement] Announcement not found in space');
+      console.error('[Update Announcement] Looking for announcement ID:', announcementId);
+      console.error('[Update Announcement] Available announcement IDs:', space.announcements.map(a => a._id.toString()));
+      return res.status(404).json({ success: false, error: 'Announcement not found' });
+    }
+    
+    console.log('[Update Announcement] Found announcement:', announcement.title);
+    
+    // Update announcement fields
+    if (title !== undefined) announcement.title = title;
+    if (content !== undefined) announcement.content = content;
+    announcement.updatedAt = new Date();
+    
+    await space.save();
+    
+    console.log('[Update Announcement] Announcement updated successfully');
+    res.json({ success: true, message: 'Announcement updated successfully', space: space.toJSON() });
+  } catch (error) {
+    console.error('[Update Announcement] Error:', error);
+    res.status(500).json({ success: false, error: error.message });
+  }
+});
+
 // Delete announcement from space
 router.delete('/:spaceId/announcements/:announcementId', requireAuth, async (req, res) => {
   try {

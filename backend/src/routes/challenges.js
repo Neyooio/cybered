@@ -159,9 +159,10 @@ router.get('/leaderboard', requireAuth, async (req, res) => {
     let users;
     
     if (challengeId) {
-      // Leaderboard for specific challenge
+      // Leaderboard for specific challenge - exclude admin users
       users = await User.find({
-        'challengeProgress.challengeId': challengeId
+        'challengeProgress.challengeId': challengeId,
+        role: { $ne: 'admin' } // Exclude admin users
       })
       .select('username avatarName avatarSrc experience level challengeProgress')
       .lean();
@@ -182,8 +183,10 @@ router.get('/leaderboard', requireAuth, async (req, res) => {
         .sort((a, b) => b.score - a.score)
         .slice(0, 50); // Top 50
     } else {
-      // Overall leaderboard by XP
-      users = await User.find()
+      // Overall leaderboard by XP - exclude admin users
+      users = await User.find({
+        role: { $ne: 'admin' } // Exclude admin users
+      })
         .select('username avatarName avatarSrc experience level')
         .sort({ experience: -1 })
         .limit(50)
